@@ -3,212 +3,176 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Barra Flotante</title>
+  <title>Barra de usuario</title>
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: sans-serif; }
-
-    .barra-flotante {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 50px;
-      background-color: #f68e03;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
+    body {
+      margin: 0;
+      font-family: sans-serif;
     }
 
-    .barra-contenido {
+    .barra {
+      position: fixed;
+      top: 0;
       width: 100%;
-      max-width: 1105px;
+      height: 50px;
+      background: #222;
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 10px;
-      position: relative;
-      height: 100%;
+      z-index: 1000;
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
-    .grupo-botones {
+    .botones {
       display: flex;
-      align-items: center;
+      gap: 10px;
       flex-wrap: nowrap;
-      gap: 6px;
+      align-items: center;
     }
 
-    .btn {
-      background-color: #bb6c00;
+    .botones button,
+    .botones a {
+      background: #444;
       color: #fff;
       border: none;
       padding: 6px 10px;
-      border-radius: 4px;
-      font-size: 14px;
-      white-space: nowrap;
       cursor: pointer;
-      transition: background 0.3s ease;
+      font-size: 14px;
+      text-decoration: none;
+      white-space: nowrap;
     }
 
-    .btn:hover {
-      background-color: #a55a00;
+    .botones button:hover,
+    .botones a:hover {
+      background: #666;
     }
 
-    .popup-login {
+    .login-form {
       position: absolute;
       top: 0;
       left: 0;
-      right: 0;
+      width: 100%;
       height: 50px;
-      background-color: #f68e03;
+      background: #111;
       display: none;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      animation: fadeIn 0.3s ease;
-      z-index: 10000;
+      gap: 10px;
+      z-index: 1100;
     }
 
-    .popup-login input {
+    .login-form input {
       padding: 6px;
-      border-radius: 4px;
-      border: none;
+      font-size: 14px;
       width: 200px;
     }
 
-    .popup-login .mensaje-error {
-      color: white;
-      background-color: red;
-      padding: 5px 10px;
-      border-radius: 4px;
+    .login-form .cerrar {
+      background: red;
+      padding: 6px 10px;
+    }
+
+    .mensaje-error {
+      color: red;
       font-size: 13px;
+      margin-top: 52px;
+      text-align: center;
       display: none;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
     @media (max-width: 600px) {
-      .btn {
-        font-size: 13px;
-        padding: 5px 8px;
+      .botones {
+        flex: 1;
+        justify-content: space-between;
       }
 
-      .grupo-botones {
-        flex-wrap: nowrap;
-        flex-shrink: 1;
-        gap: 4px;
-        overflow: hidden;
-      }
-
-      .popup-login input {
-        width: 140px;
+      .login-form input {
+        width: 120px;
       }
     }
   </style>
 </head>
 <body>
 
-<div class="barra-flotante">
-  <div class="barra-contenido" id="barraContenido">
-    <div class="grupo-botones" id="izquierda">
-      <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()">Iniciar sesión</button>
-      <span id="saludoUsuario" style="color:white; font-weight:bold;"></span>
+  <div class="barra">
+    <div class="botones" id="zona-izquierda">
+      <button onclick="mostrarLogin()">Iniciar sesión</button>
     </div>
 
-    <div class="grupo-botones" id="derecha">
-      <button class="btn">Suscribirme</button>
-      <button class="btn">Ayuda</button>
-    </div>
-
-    <div class="popup-login" id="popupLogin">
-      <input type="email" id="inputEmail" placeholder="Tu correo" />
-      <button class="btn" onclick="validarEmail()">Ingresar</button>
-      <button class="btn" onclick="cerrarLogin()">✕</button>
-      <span class="mensaje-error" id="mensajeError"></span>
+    <div class="botones" id="zona-derecha">
+      <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" target="_blank">⭐ Suscribirme</a>
+      <a href="https://www.prenoticia.com/mi-cuenta-ayuda" target="_blank">ℹ️ Ayuda</a>
     </div>
   </div>
-</div>
 
-<script>
-  const usuarios = {
-    "mauricioacostacom@gmail.com": {
-      activo: true,
+  <div class="login-form" id="loginForm">
+    <input type="email" id="emailInput" placeholder="Tu correo electrónico">
+    <button onclick="iniciarSesion()">Ingresar</button>
+    <button class="cerrar" onclick="cerrarLogin()">X</button>
+  </div>
+
+  <div class="mensaje-error" id="mensajeError">Por favor, ingresá tu correo electrónico</div>
+
+  <script>
+    let usuarioActivo = {
       nombre: "Mauricio",
-      apellido: "Acosta Danaher"
-    },
-    "luciacarpio20@gmail.com": {
-      activo: false,
-      nombre: "Maria",
-      apellido: "Carpio Peralta",
-      deuda: "$1.000"
-    }
-  };
-
-  function mostrarLogin() {
-    document.getElementById("popupLogin").style.display = "flex";
-    document.getElementById("mensajeError").style.display = "none";
-  }
-
-  function cerrarLogin() {
-    document.getElementById("popupLogin").style.display = "none";
-    document.getElementById("inputEmail").value = "";
-  }
-
-  function validarEmail() {
-    const email = document.getElementById("inputEmail").value.trim().toLowerCase();
-    const mensaje = document.getElementById("mensajeError");
-
-    if (usuarios[email]) {
-      if (usuarios[email].activo) {
-        localStorage.setItem("usuarioLogueado", JSON.stringify(usuarios[email]));
-        mostrarUsuario(usuarios[email].nombre);
-        cerrarLogin();
-      } else {
-        mensaje.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`;
-        mensaje.style.display = "inline-block";
-      }
-    } else {
-      mensaje.textContent = "El correo ingresado no está suscripto.";
-      mensaje.style.display = "inline-block";
-    }
-  }
-
-  function mostrarUsuario(nombre) {
-    document.getElementById("btnIniciarSesion").style.display = "none";
-    document.getElementById("saludoUsuario").textContent = `Hola, ${nombre}`;
-
-    const derecha = document.getElementById("derecha");
-    derecha.innerHTML = "";
-
-    const btnCuenta = document.createElement("button");
-    btnCuenta.textContent = "Mi cuenta";
-    btnCuenta.className = "btn";
-    btnCuenta.onclick = () => window.location.href = "https://www.prenoticia.com/mi-cuenta";
-
-    const btnCerrar = document.createElement("button");
-    btnCerrar.textContent = "Cerrar sesión";
-    btnCerrar.className = "btn";
-    btnCerrar.onclick = () => {
-      localStorage.removeItem("usuarioLogueado");
-      location.reload();
+      apellido: "Acosta Danaher",
+      email: "mauricioacostacom@gmail.com",
+      medioPago: "Mercado Pago",
+      ultimoPago: "31 de julio",
+      proximoPago: "31 de septiembre"
     };
 
-    derecha.appendChild(btnCuenta);
-    derecha.appendChild(btnCerrar);
-  }
-
-  // Persistencia de sesión
-  window.onload = () => {
-    const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
-    if (usuario && usuario.activo) {
-      mostrarUsuario(usuario.nombre);
+    function mostrarLogin() {
+      document.getElementById("loginForm").style.display = "flex";
+      document.getElementById("mensajeError").style.display = "none";
     }
-  };
-</script>
+
+    function cerrarLogin() {
+      document.getElementById("loginForm").style.display = "none";
+    }
+
+    function iniciarSesion() {
+      const email = document.getElementById("emailInput").value.trim();
+
+      if (!email) {
+        document.getElementById("mensajeError").style.display = "block";
+        return;
+      }
+
+      localStorage.setItem("usuarioEmail", email);
+      mostrarUsuario();
+      cerrarLogin();
+    }
+
+    function mostrarUsuario() {
+      const nombre = usuarioActivo.nombre;
+      const zonaIzquierda = document.getElementById("zona-izquierda");
+      const zonaDerecha = document.getElementById("zona-derecha");
+
+      zonaIzquierda.innerHTML = `<span>Hola, ${nombre}</span>`;
+      zonaDerecha.innerHTML = `
+        <a href="https://www.prenoticia.com/mi-cuenta" target="_blank">Mi cuenta</a>
+        <button onclick="cerrarSesion()">Cerrar sesión</button>
+      `;
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem("usuarioEmail");
+      location.reload();
+    }
+
+    // Cargar sesión desde localStorage si existe
+    window.onload = () => {
+      const emailGuardado = localStorage.getItem("usuarioEmail");
+      if (emailGuardado === usuarioActivo.email) {
+        mostrarUsuario();
+      }
+    };
+  </script>
 
 </body>
 </html>
