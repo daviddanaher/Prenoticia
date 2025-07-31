@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Barra Flotante Login</title>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+  }
+
+  .floating-bar {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    background: #f68e03;
+    border-radius: 0 0 8px 8px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .floating-bar.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  /* Para cuando está logueado, limitamos max-width */
+  #userBar.visible .content-wrapper {
+    max-width: 1105px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+  }
+
+  .content-wrapper {
+    max-width: 1105px;
+    width: 100%;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  #authBar .content-wrapper {
+    justify-content: flex-start;
+  }
+
+  #loginContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-grow: 1;
+    max-width: 400px;
+    transition: max-width 0.4s ease;
+    position: relative;
+  }
+  #loginContainer.collapsed { max-width: 150px; }
+  #loginContainer.expanded { max-width: 100%; }
+
+  button.login-button,
+  a.subscribe-button,
+  #loginError {
+    height: 34px;
+    line-height: 34px;
+    font-size: 13px;
+    border-radius: 20px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    white-space: nowrap;
+    border: none;
+  }
+
+  #loginToggle {
+    background: #555;
+    color: white;
+    flex-shrink: 0;
+  }
+  #submitLogin {
+    background: #444;
+    color: white;
+    flex-shrink: 0;
+    display: none;
+  }
+  #closeLoginBtn {
+    background: #999;
+    color: white;
+    flex-shrink: 0;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 0 10px;
+    display: none;
+    justify-content: center;
+  }
+
+  #emailInput {
+    flex-grow: 1;
+    border-radius: 20px;
+    border: none;
+    padding: 0 12px;
+    font-size: 13px;
+    height: 34px;
+    display: none;
+    outline: none;
+    min-width: 200px;
+    max-width: 100%;
+  }
+
+  a.subscribe-button {
+    background: gold;
+    color: #222;
+    margin-left: auto;
+    text-decoration: none;
+    position: relative;
+  }
+  a.subscribe-button::after {
+    content: "Suscribite hoy mismo por tan solo $1.000";
+    position: absolute;
+    top: 105%;
+    left: 0;
+    background: #fff8dc;
+    color: #333;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10001;
+  }
+  a.subscribe-button:hover::after {
+    opacity: 1;
+  }
+
+  #loginError {
+    background: #f44336;
+    color: white;
+    padding: 0 10px;
+    display: none;
+    justify-content: flex-start; /* alineación izquierda */
+    flex-grow: 1;
+    max-width: 100%;
+    font-weight: 600;
+  }
+  #loginError span {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+  }
+  #loginError button.close-error {
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 6px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  /* Usuario logueado */
+  #userBar {
+    display: none;
+  }
+  #userBar.visible {
+    display: flex !important;
+  }
+
+  #userBar .content-wrapper span#userName {
+    font-weight: bold;
+  }
+
+  #userBar .content-wrapper > div {
+    display: flex;
+    gap: 10px;
+  }
+
+  #userBar button {
+    background: #555;
+    color: white;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    border: none;
+  }
+
+  @media (max-width: 768px) {
+    .floating-bar {
+      top: 50px;
+      border-radius: 0;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      transform: translateY(0) !important;
+    }
+
+    .content-wrapper {
+      padding: 10px 15px;
+      font-size: 90%;
+    }
+
+    #loginContainer.collapsed {
+      max-width: 150px !important;
+    }
+
+    a.subscribe-button {
+      margin-left: auto;
+      position: relative;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Usuario logueado -->
+<div class="floating-bar" id="userBar" role="region" aria-label="Barra usuario logueado">
+  <div class="content-wrapper">
+    <span id="userName">Hola, Usuario</span>
+    <div>
+      <button id="miCuentaBtn">Mi cuenta</button>
+      <button id="logoutBtn">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- Barra auth -->
+<div class="floating-bar" id="authBar" role="region" aria-label="Barra inicio de sesión">
+  <div class="content-wrapper">
+
+    <!-- Error -->
+    <div id="loginError" role="alert">
+      <span id="errorMessage"></span>
+      <button class="close-error" aria-label="Cerrar mensaje de error">&times;</button>
+    </div>
+
+    <!-- Login -->
+    <div id="loginContainer" class="collapsed" tabindex="0">
+      <button id="loginToggle" class="login-button">👤 Iniciar sesión</button>
+      <input type="email" id="emailInput" placeholder="Ingresá tu email" autocomplete="username" aria-hidden="true" />
+      <button id="submitLogin" class="login-button">Ingresar</button>
+      <button id="closeLoginBtn" class="login-button" aria-label="Cerrar formulario">&times;</button>
+    </div>
+
+    <!-- Suscribite -->
+    <a href="#" id="subscribeButton" class="subscribe-button">Suscribite</a>
+
+  </div>
+</div>
+
+<script>
+  const users = {
+    "mauricioacostacom@gmail.com": { nombre: "Mauricio David Acosta", estado: "activo" },
+    "luciacarpio20@gmail.com": { nombre: "Lucia Carpio", estado: "suspendido" },
+    "usuario_cancelado@gmail.com": { nombre: "Juan Cancelado", estado: "cancelado" }
+  };
+
+  const userBar = document.getElementById("userBar");
+  const authBar = document.getElementById("authBar");
+  const userName = document.getElementById("userName");
+
+  const loginContainer = document.getElementById("loginContainer");
+  const loginToggle = document.getElementById("loginToggle");
+  const emailInput = document.getElementById("emailInput");
+  const submitLogin = document.getElementById("submitLogin");
+  const closeLoginBtn = document.getElementById("closeLoginBtn");
+
+  const loginError = document.getElementById("loginError");
+  const errorMessage = document.getElementById("errorMessage");
+  const closeErrorBtn = loginError.querySelector(".close-error");
+
+  const subscribeButton = document.getElementById("subscribeButton");
+
+  const miCuentaBtn = document.getElementById("miCuentaBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  let loggedIn = false;
+
+  function checkScroll() {
+    if (window.innerWidth <= 768) {
+      authBar.classList.add("visible");
+      if (loggedIn) userBar.classList.add("visible");
+      else userBar.classList.remove("visible");
+      return;
+    }
+
+    const scrollY = window.scrollY;
+    if (scrollY > 150) {
+      authBar.classList.add("visible");
+      if (loggedIn) userBar.classList.add("visible");
+    } else {
+      authBar.classList.remove("visible");
+      userBar.classList.remove("visible");
+    }
+  }
+
+  function loadFromCache() {
+    const u = JSON.parse(localStorage.getItem("user"));
+    if (u && localStorage.getItem("logged") === "true") {
+      userName.textContent = `Hola, ${u.nombre}`;
+      loggedIn = true;
+      userBar.style.display = "flex";
+      userBar.classList.add("visible");
+      authBar.style.display = "none";
+      authBar.classList.remove("visible");
+    } else {
+      loggedIn = false;
+      userBar.style.display = "none";
+      authBar.style.display = "flex";
+      authBar.classList.add("visible");
+      resetLoginState();
+    }
+  }
+
+  function expandLogin() {
+    loginContainer.classList.remove("collapsed");
+    loginContainer.classList.add("expanded");
+    loginToggle.style.display = "none";
+    emailInput.style.display = "block";
+    emailInput.setAttribute("aria-hidden", "false");
+    submitLogin.style.display = "flex";
+    closeLoginBtn.style.display = "flex";
+    hideError();
+    subscribeButton.style.display = "none";
+    emailInput.focus();
+  }
+
+  function collapseLogin() {
+    resetLoginState();
+  }
+
+  function showError(msg) {
+    errorMessage.style.textAlign = "left"; // Alineamos texto a la izquierda
+    errorMessage.textContent = msg;
+    loginError.style.display = "flex";
+
+    loginToggle.style.display = "none";
+    emailInput.style.display = "none";
+    emailInput.setAttribute("aria-hidden", "true");
+    submitLogin.style.display = "none";
+    closeLoginBtn.style.display = "none";
+
+    subscribeButton.style.display = "flex";
+    loginContainer.classList.remove("expanded");
+    loginContainer.classList.add("collapsed");
+
+    emailInput.value = "";
+  }
+
+  function hideError() {
+    loginError.style.display = "none";
+    errorMessage.textContent = "";
+  }
+
+  function resetLoginState() {
+    loginContainer.classList.remove("expanded");
+    loginContainer.classList.add("collapsed");
+
+    loginToggle.style.display = "flex";
+    emailInput.style.display = "none";
+    emailInput.setAttribute("aria-hidden", "true");
+    submitLogin.style.display = "none";
+    closeLoginBtn.style.display = "none";
+
+    subscribeButton.style.display = "flex";
+    hideError();
+    emailInput.value = "";
+  }
+
+  function login() {
+    const email = emailInput.value.trim().toLowerCase();
+    const user = users[email];
+
+    if (!email) {
+      showError("Por favor, ingresá un email.");
+      return;
+    }
+
+    if (user) {
+      if (user.estado === "activo") {
+        userName.textContent = `Hola, ${user.nombre}`;
+        userBar.style.display = "flex";
+        authBar.style.display = "none";
+        localStorage.setItem("logged", "true");
+        localStorage.setItem("user", JSON.stringify(user));
+        loggedIn = true;
+        userBar.classList.add("visible");
+      } else {
+        showError("Usuario inactivo. Por favor contactarse con soporte.");
+      }
+    } else {
+      showError("Correo electrónico no encontrado.");
+    }
+  }
+
+  function logout() {
+    localStorage.setItem("logged", "false");
+    localStorage.removeItem("user");
+    loggedIn = false;
+    userBar.style.display = "none";
+    userBar.classList.remove("visible");
+    authBar.style.display = "flex";
+    authBar.classList.add("visible");
+    resetLoginState();
+  }
+
+  loginToggle.addEventListener("click", expandLogin);
+  submitLogin.addEventListener("click", login);
+  closeLoginBtn.addEventListener("click", collapseLogin);
+  closeErrorBtn.addEventListener("click", () => {
+    hideError();
+    resetLoginState();
+  });
+
+  emailInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") login();
+    else if (e.key === "Escape") collapseLogin();
+  });
+
+  logoutBtn.addEventListener("click", logout);
+
+  miCuentaBtn.addEventListener("click", () => {
+    alert("Ir a Mi cuenta (puede redirigir a página de usuario).");
+  });
+
+  window.addEventListener("scroll", checkScroll);
+  window.addEventListener("resize", checkScroll);
+
+  loadFromCache();
+  checkScroll();
+</script>
+</body>
+</html>
