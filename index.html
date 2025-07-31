@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Barra de usuario</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barra de Usuario</title>
   <style>
     body {
       margin: 0;
@@ -11,168 +11,205 @@
     }
 
     .barra {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      height: 50px;
-      background: #222;
-      color: #fff;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 0 10px;
-      z-index: 1000;
-      box-sizing: border-box;
-      overflow: hidden;
-    }
-
-    .botones {
-      display: flex;
-      gap: 10px;
-      flex-wrap: nowrap;
       align-items: center;
+      height: 50px;
+      background-color: #f5f5f5;
+      padding: 0 10px;
+      position: relative;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      z-index: 1000;
     }
 
-    .botones button,
-    .botones a {
-      background: #444;
-      color: #fff;
-      border: none;
+    .grupo-izquierda,
+    .grupo-derecha {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      background-color: #fff;
+      border: 1px solid #ccc;
       padding: 6px 10px;
-      cursor: pointer;
+      border-radius: 4px;
       font-size: 14px;
-      text-decoration: none;
+      cursor: pointer;
       white-space: nowrap;
     }
 
-    .botones button:hover,
-    .botones a:hover {
-      background: #666;
+    .btn:hover {
+      background-color: #eee;
     }
 
-    .login-form {
+    .panel-login {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 50px;
-      background: #111;
-      display: none;
-      align-items: center;
+      background: rgba(255, 255, 255, 0.97);
+      display: flex;
       justify-content: center;
+      align-items: center;
       gap: 10px;
-      z-index: 1100;
+      padding: 0 10px;
+      box-sizing: border-box;
     }
 
-    .login-form input {
-      padding: 6px;
+    .panel-login input {
+      padding: 5px;
       font-size: 14px;
-      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 220px;
     }
 
-    .login-form .cerrar {
-      background: red;
-      padding: 6px 10px;
+    .oculto {
+      display: none;
     }
 
     .mensaje-error {
       color: red;
       font-size: 13px;
-      margin-top: 52px;
-      text-align: center;
-      display: none;
+      margin-left: 10px;
     }
 
     @media (max-width: 600px) {
-      .botones {
-        flex: 1;
-        justify-content: space-between;
+      .barra {
+        flex-wrap: nowrap;
+        overflow-x: auto;
       }
 
-      .login-form input {
-        width: 120px;
+      .grupo-izquierda,
+      .grupo-derecha {
+        flex-wrap: nowrap;
+        gap: 6px;
+      }
+
+      .btn {
+        font-size: 13px;
+        padding: 5px 8px;
+      }
+
+      .panel-login input {
+        width: 150px;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="barra">
-    <div class="botones" id="zona-izquierda">
-      <button onclick="mostrarLogin()">Iniciar sesión</button>
-    </div>
-
-    <div class="botones" id="zona-derecha">
-      <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" target="_blank">⭐ Suscribirme</a>
-      <a href="https://www.prenoticia.com/mi-cuenta-ayuda" target="_blank">ℹ️ Ayuda</a>
-    </div>
+<div class="barra" id="barra">
+  <div class="grupo-izquierda" id="grupo-izquierda">
+    <button class="btn" onclick="mostrarLogin()">Iniciar sesión</button>
   </div>
-
-  <div class="login-form" id="loginForm">
-    <input type="email" id="emailInput" placeholder="Tu correo electrónico">
-    <button onclick="iniciarSesion()">Ingresar</button>
-    <button class="cerrar" onclick="cerrarLogin()">X</button>
+  <div class="grupo-derecha" id="grupo-derecha">
+    <button class="btn" onclick="window.open('https://www.prenoticia.com/p/suscribirme-prenoticia.html', '_blank')">⭐ Suscribirme</button>
+    <button class="btn" onclick="window.open('https://www.prenoticia.com/mi-cuenta-ayuda', '_blank')">ℹ️ Ayuda</button>
   </div>
+</div>
 
-  <div class="mensaje-error" id="mensajeError">Por favor, ingresá tu correo electrónico</div>
+<div class="panel-login oculto" id="panel-login">
+  <input type="email" id="correo-input" placeholder="Ingresá tu correo">
+  <button class="btn" onclick="iniciarSesion()">Ingresar</button>
+  <button class="btn" onclick="cerrarLogin()">❌</button>
+  <span class="mensaje-error" id="mensaje-error"></span>
+</div>
 
-  <script>
-    let usuarioActivo = {
+<script>
+  const panelLogin = document.getElementById("panel-login");
+  const mensajeError = document.getElementById("mensaje-error");
+  const barra = document.getElementById("barra");
+  const izquierda = document.getElementById("grupo-izquierda");
+  const derecha = document.getElementById("grupo-derecha");
+
+  const usuarios = {
+    "mauricioacostacom@gmail.com": {
       nombre: "Mauricio",
       apellido: "Acosta Danaher",
-      email: "mauricioacostacom@gmail.com",
       medioPago: "Mercado Pago",
       ultimoPago: "31 de julio",
-      proximoPago: "31 de septiembre"
-    };
+      proximoPago: "31 de septiembre",
+      activo: true
+    },
+    "luciacarpio20@gmail.com": {
+      nombre: "Maria Lucia",
+      apellido: "Carpio Peralta",
+      medioPago: "Mercado Pago",
+      ultimoPago: "31 de mayo",
+      deuda: "$1.000",
+      activo: false
+    }
+  };
 
-    function mostrarLogin() {
-      document.getElementById("loginForm").style.display = "flex";
-      document.getElementById("mensajeError").style.display = "none";
+  function mostrarLogin() {
+    panelLogin.classList.remove("oculto");
+    mensajeError.textContent = "";
+  }
+
+  function cerrarLogin() {
+    panelLogin.classList.add("oculto");
+    mensajeError.textContent = "";
+  }
+
+  function iniciarSesion() {
+    const correo = document.getElementById("correo-input").value.trim().toLowerCase();
+    if (!correo) {
+      mensajeError.textContent = "Por favor, ingresá tu correo electrónico";
+      return;
     }
 
-    function cerrarLogin() {
-      document.getElementById("loginForm").style.display = "none";
-    }
+    const usuario = usuarios[correo];
 
-    function iniciarSesion() {
-      const email = document.getElementById("emailInput").value.trim();
-
-      if (!email) {
-        document.getElementById("mensajeError").style.display = "block";
-        return;
-      }
-
-      localStorage.setItem("usuarioEmail", email);
-      mostrarUsuario();
+    if (usuario) {
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+      actualizarBarra(usuario);
       cerrarLogin();
+    } else {
+      mensajeError.textContent = "Correo no registrado";
     }
+  }
 
-    function mostrarUsuario() {
-      const nombre = usuarioActivo.nombre;
-      const zonaIzquierda = document.getElementById("zona-izquierda");
-      const zonaDerecha = document.getElementById("zona-derecha");
+  function cerrarSesion() {
+    localStorage.removeItem("usuario");
+    location.reload();
+  }
 
-      zonaIzquierda.innerHTML = `<span>Hola, ${nombre}</span>`;
-      zonaDerecha.innerHTML = `
-        <a href="https://www.prenoticia.com/mi-cuenta" target="_blank">Mi cuenta</a>
-        <button onclick="cerrarSesion()">Cerrar sesión</button>
+  function actualizarBarra(usuario) {
+    barra.innerHTML = `
+      <div class="grupo-izquierda">
+        <span>Hola, <b>${usuario.nombre}</b></span>
+      </div>
+      <div class="grupo-derecha">
+        <button class="btn" onclick="window.open('https://www.prenoticia.com/mi-cuenta', '_blank')">Mi cuenta</button>
+        <button class="btn" onclick="cerrarSesion()">Cerrar sesión</button>
+      </div>
+    `;
+
+    if (!usuario.activo) {
+      const aviso = document.createElement("div");
+      aviso.style.background = "#ffdddd";
+      aviso.style.padding = "10px";
+      aviso.style.fontSize = "14px";
+      aviso.style.borderTop = "1px solid #ccc";
+      aviso.innerHTML = `
+        Tu cuenta registra una deuda impaga de <b>${usuario.deuda}</b> correspondiente al mes de julio.<br>
+        Por favor regularizá tu situación. <a href="https://www.prenoticia.com/mi-cuenta-ayuda" target="_blank">Contactar con soporte</a>.
       `;
+      document.body.insertBefore(aviso, document.body.children[1]);
     }
+  }
 
-    function cerrarSesion() {
-      localStorage.removeItem("usuarioEmail");
-      location.reload();
+  window.onload = () => {
+    const usuarioGuardado = localStorage.getItem("usuario");
+    if (usuarioGuardado) {
+      const usuario = JSON.parse(usuarioGuardado);
+      actualizarBarra(usuario);
     }
-
-    // Cargar sesión desde localStorage si existe
-    window.onload = () => {
-      const emailGuardado = localStorage.getItem("usuarioEmail");
-      if (emailGuardado === usuarioActivo.email) {
-        mostrarUsuario();
-      }
-    };
-  </script>
+  };
+</script>
 
 </body>
 </html>
