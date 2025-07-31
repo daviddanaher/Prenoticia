@@ -2,11 +2,18 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Barra Flotante Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barra Flotante Unificada</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
 
     .floating-bar {
       position: fixed;
@@ -18,8 +25,8 @@
       opacity: 0;
       pointer-events: none;
       transform: translateY(-10px);
-      transition: all 0.4s ease;
-      z-index: 9999;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      z-index: 10000;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -37,29 +44,26 @@
       padding: 10px 20px;
       display: flex;
       align-items: center;
-      gap: 10px;
     }
 
     .login-button,
     .subscribe-button,
     .info-button,
-    .login-error,
-    #submitLogin,
-    #closeLoginBtn,
-    .account-button {
+    .my-account-button,
+    .logout-button {
       height: 36px;
-      border-radius: 18px;
+      line-height: 36px;
+      font-size: 14px;
+      border-radius: 20px;
+      padding: 0 16px;
+      margin: 0 6px;
+      cursor: pointer;
+      border: none;
       display: flex;
       align-items: center;
-      padding: 0 14px;
-      font-size: 14px;
-      border: none;
-      cursor: pointer;
+      white-space: nowrap;
     }
 
-    .login-button { background: #444; color: white; }
-    .account-button { background: #0077cc; color: white; }
-    .info-button { background: #eee; color: #444; }
     .subscribe-button {
       background: gold;
       color: #222;
@@ -67,221 +71,251 @@
     }
 
     .subscribe-button::before {
-      content: "⭐ ";
-      font-size: 16px;
+      content: '⭐';
+      margin-right: 6px;
     }
 
-    #emailInput {
-      display: none;
-      height: 36px;
-      border-radius: 18px;
-      border: none;
-      padding: 0 12px;
-      font-size: 14px;
-      flex-grow: 1;
-      max-width: 300px;
+    .info-button {
+      background: #0077cc;
+      color: #fff;
     }
 
-    #loginError {
-      display: none;
-      background: #d32f2f;
+    .login-button {
+      background: #333;
       color: white;
-      padding: 0 14px;
-      border-radius: 18px;
+    }
+
+    .logout-button {
+      background: #c0392b;
+      color: white;
+    }
+
+    .my-account-button {
+      background: #2c3e50;
+      color: white;
+    }
+
+    .login-form {
+      display: none;
       align-items: center;
-      font-weight: bold;
+      gap: 10px;
       flex-grow: 1;
-      justify-content: space-between;
+      max-width: 100%;
     }
 
-    #loginError span { flex-grow: 1; }
-    .close-error {
-      background: transparent;
+    .login-form.visible {
+      display: flex;
+    }
+
+    .login-form input {
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .error-message {
+      background: #e74c3c;
       color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: none;
+      flex: 1;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .error-message.visible {
+      display: flex;
+    }
+
+    .error-message button {
+      background: none;
       border: none;
+      color: white;
       font-size: 18px;
       cursor: pointer;
-      margin-left: 10px;
     }
-
-    .hidden { display: none !important; }
 
     @media (max-width: 768px) {
       .floating-bar {
+        position: fixed;
+        top: 50px;
         border-radius: 0;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .content-wrapper {
+        flex-wrap: wrap;
+        gap: 10px;
       }
     }
   </style>
 </head>
 <body>
+  <div class="floating-bar" id="authBar">
+    <div class="content-wrapper">
+      <div class="error-message" id="errorBox">
+        <span id="errorText"></span>
+        <button onclick="hideError()">&times;</button>
+      </div>
 
-<!-- Barra de usuario logueado -->
-<div class="floating-bar" id="userBar">
-  <div class="content-wrapper">
-    <span id="userName">Hola, Usuario</span>
-    <button class="account-button" onclick="viewAccount()">Mi cuenta</button>
-    <button class="login-button" onclick="logout()">Cerrar sesión</button>
-  </div>
-</div>
+      <div id="loginControls">
+        <button class="login-button" onclick="showLoginForm()">👤 Iniciar sesión</button>
+      </div>
 
-<!-- Barra de login -->
-<div class="floating-bar" id="authBar">
-  <div class="content-wrapper">
+      <div class="login-form" id="loginForm">
+        <input type="email" id="emailInput" placeholder="Tu correo electrónico" />
+        <button class="login-button" onclick="loginUser()">Ingresar</button>
+        <button class="login-button" onclick="cancelLogin()">&times;</button>
+      </div>
 
-    <div id="loginError" class="login-error">
-      <span id="errorMessage">Error</span>
-      <button class="close-error" onclick="resetLoginState()">&times;</button>
+      <a class="subscribe-button" href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" id="subscribeBtn">Suscribite</a>
+      <button class="info-button" id="infoBtn">ℹ Información</button>
     </div>
-
-    <div id="loginContainer">
-      <button id="loginToggle" class="login-button">👤 Iniciar sesión</button>
-      <input type="email" id="emailInput" placeholder="Ingresá tu email" />
-      <button id="submitLogin" class="login-button">Ingresar</button>
-      <button id="closeLoginBtn" class="login-button">&times;</button>
-    </div>
-
-    <a id="subscribeButton" class="subscribe-button" href="https://www.prenoticia.com/p/suscribirme-prenoticia.html">Suscribite</a>
-    <button id="infoBtn" class="info-button">ℹ️ Info</button>
-
   </div>
-</div>
 
-<script>
-  const users = {
-    "mauricioacostacom@gmail.com": {
-      nombre: "Mauricio David",
-      apellido: "Acosta Danaher",
-      correo: "mauricioacostacom@gmail.com",
-      medio: "Mercado Pago",
-      estado: "activo",
-      tipo: "Mensual",
-      pagoDia: 31,
-      proximo: "31 de agosto de 2025",
-      concursos: [
-        { titulo: "Premio Nacional 2024", link: "https://ejemplo.com/concurso1" },
-        { titulo: "Fotografía Anual", link: "https://ejemplo.com/concurso2" }
-      ]
+  <div class="floating-bar" id="userBar" style="display: none;">
+    <div class="content-wrapper">
+      <span id="userName"></span>
+      <button class="my-account-button">Mi cuenta</button>
+      <button class="logout-button" onclick="logoutUser()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <script>
+    const users = {
+      "mauricioacostacom@gmail.com": {
+        nombre: "Mauricio",
+        apellido: "Acosta Danaher",
+        correo: "mauricioacostacom@gmail.com",
+        medio: "Mercado Pago",
+        tipo: "Mensual",
+        pago: "31 de cada mes",
+        proximo: "31 de agosto de 2025",
+        concursos: [
+          { titulo: "Concurso X", link: "#" },
+          { titulo: "Concurso Y", link: "#" }
+        ],
+        estado: "activo"
+      }
+    };
+
+    const authBar = document.getElementById("authBar");
+    const userBar = document.getElementById("userBar");
+    const userName = document.getElementById("userName");
+
+    const loginForm = document.getElementById("loginForm");
+    const loginControls = document.getElementById("loginControls");
+    const emailInput = document.getElementById("emailInput");
+
+    const errorBox = document.getElementById("errorBox");
+    const errorText = document.getElementById("errorText");
+
+    const infoBtn = document.getElementById("infoBtn");
+    const subscribeBtn = document.getElementById("subscribeBtn");
+
+    function showLoginForm() {
+      loginControls.style.display = "none";
+      loginForm.classList.add("visible");
+      subscribeBtn.style.display = "none";
+      infoBtn.style.display = "none";
+      hideError();
+      emailInput.focus();
     }
-  };
 
-  const userBar = document.getElementById("userBar");
-  const authBar = document.getElementById("authBar");
-  const loginToggle = document.getElementById("loginToggle");
-  const emailInput = document.getElementById("emailInput");
-  const submitLogin = document.getElementById("submitLogin");
-  const closeLoginBtn = document.getElementById("closeLoginBtn");
-  const loginError = document.getElementById("loginError");
-  const errorMessage = document.getElementById("errorMessage");
-  const userName = document.getElementById("userName");
-  const subscribeButton = document.getElementById("subscribeButton");
-  const infoBtn = document.getElementById("infoBtn");
+    function cancelLogin() {
+      loginControls.style.display = "block";
+      loginForm.classList.remove("visible");
+      subscribeBtn.style.display = "inline-flex";
+      infoBtn.style.display = "inline-flex";
+      hideError();
+      emailInput.value = "";
+    }
 
-  let loggedIn = false;
+    function loginUser() {
+      const email = emailInput.value.trim().toLowerCase();
+      const user = users[email];
 
-  function checkScroll() {
-    if (window.innerWidth <= 768) {
-      authBar.classList.add("visible");
-      userBar.classList.toggle("visible", loggedIn);
-    } else {
-      const scrollY = window.scrollY;
-      if (scrollY > 150) {
+      if (!email) {
+        showError("Ingresá un correo electrónico.");
+        return;
+      }
+
+      if (!user) {
+        showError("Correo electrónico no registrado.");
+        return;
+      }
+
+      if (user.estado !== "activo") {
+        showError("Cuenta suspendida. Contactá soporte.");
+        return;
+      }
+
+      localStorage.setItem("logged", "true");
+      localStorage.setItem("user", JSON.stringify(user));
+      showUser(user);
+    }
+
+    function showUser(user) {
+      userName.textContent = `Hola, ${user.nombre}`;
+      authBar.style.display = "none";
+      userBar.style.display = "flex";
+    }
+
+    function logoutUser() {
+      localStorage.removeItem("logged");
+      localStorage.removeItem("user");
+      userBar.style.display = "none";
+      authBar.style.display = "flex";
+      cancelLogin();
+    }
+
+    function showError(msg) {
+      errorText.textContent = msg;
+      errorBox.classList.add("visible");
+      loginForm.classList.remove("visible");
+      subscribeBtn.style.display = "inline-flex";
+      infoBtn.style.display = "inline-flex";
+    }
+
+    function hideError() {
+      errorBox.classList.remove("visible");
+      errorText.textContent = "";
+    }
+
+    function checkScroll() {
+      if (window.innerWidth <= 768) return;
+
+      if (window.scrollY > 150) {
         authBar.classList.add("visible");
-        if (loggedIn) userBar.classList.add("visible");
+        if (localStorage.getItem("logged") === "true") {
+          userBar.classList.add("visible");
+        }
       } else {
         authBar.classList.remove("visible");
         userBar.classList.remove("visible");
       }
     }
-  }
 
-  function loadFromCache() {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user && localStorage.getItem("logged") === "true") {
-      userName.textContent = `Hola, ${user.nombre}`;
-      loggedIn = true;
-      authBar.classList.remove("visible");
-      userBar.style.display = "flex";
-      userBar.classList.add("visible");
+    function init() {
+      const u = JSON.parse(localStorage.getItem("user"));
+      if (localStorage.getItem("logged") === "true" && u) {
+        showUser(u);
+      } else {
+        userBar.style.display = "none";
+        authBar.style.display = "flex";
+      }
+      checkScroll();
     }
-  }
 
-  function expandLogin() {
-    loginToggle.classList.add("hidden");
-    emailInput.style.display = "block";
-    submitLogin.style.display = "flex";
-    closeLoginBtn.style.display = "flex";
-    subscribeButton.classList.add("hidden");
-    infoBtn.classList.add("hidden");
-    emailInput.focus();
-  }
-
-  function resetLoginState() {
-    loginToggle.classList.remove("hidden");
-    emailInput.style.display = "none";
-    submitLogin.style.display = "none";
-    closeLoginBtn.style.display = "none";
-    subscribeButton.classList.remove("hidden");
-    infoBtn.classList.remove("hidden");
-    loginError.style.display = "none";
-    emailInput.value = "";
-  }
-
-  function showError(msg) {
-    loginError.style.display = "flex";
-    errorMessage.textContent = msg;
-    emailInput.style.display = "none";
-    submitLogin.style.display = "none";
-    closeLoginBtn.style.display = "none";
-    loginToggle.classList.add("hidden");
-    subscribeButton.classList.remove("hidden");
-    infoBtn.classList.remove("hidden");
-  }
-
-  function login() {
-    const email = emailInput.value.trim().toLowerCase();
-    const user = users[email];
-    if (!email) return showError("Ingresá un correo electrónico.");
-    if (!user) return showError("Correo no registrado.");
-    if (user.estado !== "activo") return showError("Cuenta suspendida. Contactá soporte.");
-    
-    userName.textContent = `Hola, ${user.nombre}`;
-    localStorage.setItem("logged", "true");
-    localStorage.setItem("user", JSON.stringify(user));
-    loggedIn = true;
-    userBar.style.display = "flex";
-    userBar.classList.add("visible");
-    authBar.classList.remove("visible");
-  }
-
-  function logout() {
-    localStorage.removeItem("logged");
-    localStorage.removeItem("user");
-    loggedIn = false;
-    userBar.style.display = "none";
-    userBar.classList.remove("visible");
-    authBar.classList.add("visible");
-    resetLoginState();
-  }
-
-  function viewAccount() {
-    alert("Funcionalidad de cuenta: En construcción");
-  }
-
-  loginToggle.addEventListener("click", expandLogin);
-  submitLogin.addEventListener("click", login);
-  closeLoginBtn.addEventListener("click", resetLoginState);
-
-  emailInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") login();
-    else if (e.key === "Escape") resetLoginState();
-  });
-
-  window.addEventListener("scroll", checkScroll);
-  window.addEventListener("resize", checkScroll);
-
-  loadFromCache();
-  checkScroll();
-</script>
-
+    window.addEventListener("scroll", checkScroll);
+    window.addEventListener("resize", checkScroll);
+    window.addEventListener("DOMContentLoaded", init);
+  </script>
 </body>
 </html>
