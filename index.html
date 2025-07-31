@@ -1,94 +1,78 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Barra flotante de suscripción</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Barra Flotante Suscriptores</title>
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
     }
 
-    .nav-bar {
-      background-color: #f68e03;
+    .barra-flotante {
       position: fixed;
       top: 0;
+      left: 0;
       width: 100%;
+      background-color: #f68e03;
       z-index: 9999;
-    }
-
-    .nav-container {
-      max-width: 1105px;
-      margin: 0 auto;
-      padding: 10px 15px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
-    .nav-buttons {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .nav-button {
-      background-color: #bb6c00;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .nav-button:hover {
-      background-color: #a55f00;
-    }
-
-    .login-form,
-    .message-box {
+    .barra-contenido {
       width: 100%;
-      background-color: #fff8e1;
-      padding: 20px;
-      display: none;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    .login-form input {
+      max-width: 1105px;
       padding: 10px;
-      width: 70%;
-      max-width: 400px;
-      margin-right: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
     }
 
-    .login-form .submit-btn {
+    .btn {
       background-color: #bb6c00;
-      color: white;
-      padding: 10px 15px;
+      color: #fff;
       border: none;
+      padding: 10px 15px;
+      margin: 5px;
       border-radius: 5px;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
 
-    .close-btn {
-      margin-top: 15px;
-      background-color: #999;
+    .btn:hover {
+      background-color: #a55a00;
+    }
+
+    .seccion-login {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f68e03;
+      padding: 15px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .seccion-login input {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .mensaje-error {
       color: white;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .message {
-      color: #bb6c00;
-      font-weight: bold;
+      background-color: rgba(255, 0, 0, 0.8);
+      padding: 10px;
+      border-radius: 5px;
       margin-top: 10px;
+      animation: fadeIn 0.5s ease;
     }
 
     @keyframes fadeIn {
@@ -96,77 +80,78 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @media screen and (max-width: 600px) {
-      .nav-buttons {
+    @media (max-width: 600px) {
+      .barra-contenido {
         flex-direction: column;
-        width: 100%;
         align-items: stretch;
       }
-
-      .login-form input {
+      .btn {
         width: 100%;
-        margin-bottom: 10px;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="nav-bar">
-    <div class="nav-container">
-      <div class="nav-buttons" id="button-group">
-        <button class="nav-button" onclick="showLogin()">Iniciar sesión</button>
-        <button class="nav-button">★ Suscribirme</button>
-        <button class="nav-button">Ayuda</button>
-      </div>
+<div class="barra-flotante">
+  <div class="barra-contenido" id="barraContenido">
+    <div id="botonesInicio">
+      <button class="btn" onclick="mostrarLogin()">Iniciar sesión</button>
     </div>
-    <div class="login-form" id="login-form">
-      <input type="email" id="email-input" placeholder="Ingresá tu correo electrónico">
-      <button class="submit-btn" onclick="validateEmail()">Ingresar</button>
-      <br>
-      <button class="close-btn" onclick="closeLogin()">Cerrar</button>
-    </div>
-    <div class="message-box" id="message-box">
-      <div class="message" id="message-text"></div>
-      <button class="close-btn" onclick="closeLogin()">Cerrar</button>
-      <button class="nav-button">Ayuda</button>
+    <div>
+      <button class="btn">Suscribirme</button>
+      <button class="btn">Ayuda</button>
     </div>
   </div>
 
-  <script>
-    const loginForm = document.getElementById('login-form');
-    const messageBox = document.getElementById('message-box');
-    const messageText = document.getElementById('message-text');
+  <div class="seccion-login" id="seccionLogin">
+    <input type="email" id="emailInput" placeholder="Ingresá tu correo electrónico" />
+    <button class="btn" onclick="validarEmail()">Ingresar</button>
+    <button class="btn" onclick="cerrarLogin()">Cerrar</button>
+    <div id="mensaje" class="mensaje-error" style="display: none;"></div>
+  </div>
+</div>
 
-    const usuariosValidos = ['usuario@example.com', 'prueba@correo.com'];
-    const usuariosSuspendidos = ['suspendido@correo.com'];
+<script>
+  const seccionLogin = document.getElementById('seccionLogin');
+  const barraContenido = document.getElementById('barraContenido');
+  const mensaje = document.getElementById('mensaje');
 
-    function showLogin() {
-      loginForm.style.display = 'block';
-      messageBox.style.display = 'none';
+  const usuariosActivos = ["usuario@ejemplo.com", "suscriptor@correo.com"];
+  const usuariosSuspendidos = ["suspendido@correo.com"];
+
+  function mostrarLogin() {
+    barraContenido.style.display = 'none';
+    seccionLogin.style.display = 'flex';
+    mensaje.style.display = 'none';
+  }
+
+  function cerrarLogin() {
+    seccionLogin.style.display = 'none';
+    barraContenido.style.display = 'flex';
+    mensaje.style.display = 'none';
+  }
+
+  function validarEmail() {
+    const email = document.getElementById('emailInput').value.trim().toLowerCase();
+
+    if (usuariosSuspendidos.includes(email)) {
+      mensaje.innerText = "Tu cuenta ha sido suspendida.";
+      mensaje.style.display = 'block';
+      return;
     }
 
-    function closeLogin() {
-      loginForm.style.display = 'none';
-      messageBox.style.display = 'none';
+    if (!usuariosActivos.includes(email)) {
+      mensaje.innerText = "El correo ingresado no está suscripto.";
+      mensaje.style.display = 'block';
+      return;
     }
 
-    function validateEmail() {
-      const email = document.getElementById('email-input').value.trim();
-      if (usuariosSuspendidos.includes(email)) {
-        loginForm.style.display = 'none';
-        messageText.textContent = "Tu cuenta ha sido suspendida.";
-        messageBox.style.display = 'block';
-      } else if (usuariosValidos.includes(email)) {
-        alert("Sesión iniciada correctamente para: " + email);
-        closeLogin();
-      } else {
-        loginForm.style.display = 'none';
-        messageText.textContent = "El correo ingresado no está suscripto.";
-        messageBox.style.display = 'block';
-      }
-    }
-  </script>
+    // Simula inicio de sesión exitoso
+    alert("Sesión iniciada correctamente");
+    cerrarLogin();
+  }
+</script>
 
 </body>
 </html>
