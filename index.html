@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Barra Flotante</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: sans-serif;
-    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: sans-serif; }
 
     .barra-flotante {
       position: fixed;
@@ -24,17 +19,24 @@
       justify-content: center;
       align-items: center;
       z-index: 9999;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
     .barra-contenido {
       width: 100%;
       max-width: 1105px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       padding: 0 10px;
+      position: relative;
       height: 100%;
+    }
+
+    .grupo-botones {
+      display: flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 6px;
     }
 
     .btn {
@@ -42,8 +44,7 @@
       color: #fff;
       border: none;
       padding: 6px 10px;
-      margin-left: 5px;
-      border-radius: 5px;
+      border-radius: 4px;
       font-size: 14px;
       white-space: nowrap;
       cursor: pointer;
@@ -54,63 +55,57 @@
       background-color: #a55a00;
     }
 
-    .login-popup {
+    .popup-login {
       position: absolute;
-      top: 60px;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
       background-color: #f68e03;
-      padding: 10px;
-      border-radius: 5px;
       display: none;
-      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      gap: 8px;
       animation: fadeIn 0.3s ease;
       z-index: 10000;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
-    .login-popup input {
-      padding: 8px;
-      border-radius: 5px;
+    .popup-login input {
+      padding: 6px;
+      border-radius: 4px;
       border: none;
-      margin-bottom: 10px;
-      width: 220px;
+      width: 200px;
     }
 
-    .login-popup .mensaje-error {
+    .popup-login .mensaje-error {
       color: white;
       background-color: red;
       padding: 5px 10px;
-      border-radius: 5px;
+      border-radius: 4px;
       font-size: 13px;
       display: none;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translate(-50%, -10px); }
-      to { opacity: 1; transform: translate(-50%, 0); }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     @media (max-width: 600px) {
-      .barra-contenido {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 5px;
-      }
-
       .btn {
-        font-size: 12px;
+        font-size: 13px;
         padding: 5px 8px;
-        margin-left: 3px;
       }
 
-      .login-popup {
-        width: 95%;
-        left: 50%;
-        transform: translateX(-50%);
+      .grupo-botones {
+        flex-wrap: nowrap;
+        flex-shrink: 1;
+        gap: 4px;
+        overflow: hidden;
+      }
+
+      .popup-login input {
+        width: 140px;
       }
     }
   </style>
@@ -119,21 +114,22 @@
 
 <div class="barra-flotante">
   <div class="barra-contenido" id="barraContenido">
-    <div id="izquierda">
+    <div class="grupo-botones" id="izquierda">
       <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()">Iniciar sesión</button>
-      <span id="saludoUsuario" style="color: white; font-weight: bold;"></span>
+      <span id="saludoUsuario" style="color:white; font-weight:bold;"></span>
     </div>
-    <div id="derecha">
-      <button class="btn" id="btnSuscribirme">Suscribirme</button>
-      <button class="btn" id="btnAyuda">Ayuda</button>
-    </div>
-  </div>
 
-  <div class="login-popup" id="loginPopup">
-    <input type="email" id="inputEmail" placeholder="Ingresá tu correo" />
-    <button class="btn" onclick="validarEmail()">Ingresar</button>
-    <span class="mensaje-error" id="mensajeError"></span>
-    <button class="btn" style="margin-top: 8px;" onclick="cerrarLogin()">Cerrar ✕</button>
+    <div class="grupo-botones" id="derecha">
+      <button class="btn">Suscribirme</button>
+      <button class="btn">Ayuda</button>
+    </div>
+
+    <div class="popup-login" id="popupLogin">
+      <input type="email" id="inputEmail" placeholder="Tu correo" />
+      <button class="btn" onclick="validarEmail()">Ingresar</button>
+      <button class="btn" onclick="cerrarLogin()">✕</button>
+      <span class="mensaje-error" id="mensajeError"></span>
+    </div>
   </div>
 </div>
 
@@ -142,30 +138,23 @@
     "mauricioacostacom@gmail.com": {
       activo: true,
       nombre: "Mauricio",
-      apellido: "Acosta Danaher",
-      email: "mauricioacostacom@gmail.com",
-      medioPago: "Mercado Pago",
-      ultimoPago: "30 de agosto de 2025",
-      proximoPago: "31 de septiembre de 2025"
+      apellido: "Acosta Danaher"
     },
     "luciacarpio20@gmail.com": {
       activo: false,
       nombre: "Maria",
       apellido: "Carpio Peralta",
-      email: "luciacarpio20@gmail.com",
-      medioPago: "Mercado Pago",
-      ultimoPago: "31 de mayo",
       deuda: "$1.000"
     }
   };
 
   function mostrarLogin() {
-    document.getElementById("loginPopup").style.display = "flex";
+    document.getElementById("popupLogin").style.display = "flex";
     document.getElementById("mensajeError").style.display = "none";
   }
 
   function cerrarLogin() {
-    document.getElementById("loginPopup").style.display = "none";
+    document.getElementById("popupLogin").style.display = "none";
     document.getElementById("inputEmail").value = "";
   }
 
@@ -179,23 +168,21 @@
         mostrarUsuario(usuarios[email].nombre);
         cerrarLogin();
       } else {
-        mensaje.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}. Por favor regularizá tu situación.`;
-        mensaje.style.display = "block";
+        mensaje.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`;
+        mensaje.style.display = "inline-block";
       }
     } else {
       mensaje.textContent = "El correo ingresado no está suscripto.";
-      mensaje.style.display = "block";
+      mensaje.style.display = "inline-block";
     }
   }
 
   function mostrarUsuario(nombre) {
     document.getElementById("btnIniciarSesion").style.display = "none";
     document.getElementById("saludoUsuario").textContent = `Hola, ${nombre}`;
-    document.getElementById("saludoUsuario").style.display = "inline-block";
 
-    // Botones Mi Cuenta y Cerrar sesión
     const derecha = document.getElementById("derecha");
-    derecha.innerHTML = ''; // limpiar
+    derecha.innerHTML = "";
 
     const btnCuenta = document.createElement("button");
     btnCuenta.textContent = "Mi cuenta";
@@ -220,7 +207,7 @@
     if (usuario && usuario.activo) {
       mostrarUsuario(usuario.nombre);
     }
-  }
+  };
 </script>
 
 </body>
