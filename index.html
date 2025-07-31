@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Barra Flotante Suscriptores</title>
+  <title>Barra Flotante de Suscriptores</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
       font-family: sans-serif;
     }
-
     .barra-flotante {
       position: fixed;
       top: 0;
@@ -21,17 +23,15 @@
       justify-content: center;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-
     .barra-contenido {
       width: 100%;
       max-width: 1105px;
-      padding: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 10px;
       flex-wrap: wrap;
     }
-
     .btn {
       background-color: #bb6c00;
       color: #fff;
@@ -42,51 +42,76 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
     .btn:hover {
       background-color: #a55a00;
     }
 
-    .seccion-login {
+    .login-form {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
+      max-width: 1105px;
+      height: 100%;
       display: none;
-      flex-direction: column;
       align-items: center;
-      background-color: #f68e03;
-      padding: 15px;
-      animation: fadeIn 0.5s ease;
+      justify-content: space-between;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(4px);
+      animation: slideDown 0.4s ease;
     }
 
-    .seccion-login input {
+    .login-form form {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .login-form input {
       padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      max-width: 400px;
+      border: none;
       border-radius: 5px;
-      border: 1px solid #ccc;
+      flex-grow: 1;
+      max-width: 300px;
+    }
+
+    .close-btn {
+      font-size: 18px;
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 5px 10px;
+    }
+
+    .mensaje-error, .mensaje-exito {
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 5px;
+      margin-left: 10px;
+      font-size: 14px;
+      background-color: #bb6c00;
     }
 
     .mensaje-error {
-      color: white;
-      background-color: rgba(255, 0, 0, 0.8);
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 10px;
-      animation: fadeIn 0.5s ease;
+      background-color: red;
     }
 
-    @keyframes fadeIn {
+    @keyframes slideDown {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 600px) {
-      .barra-contenido {
+      .barra-contenido, .login-form {
         flex-direction: column;
         align-items: stretch;
       }
-      .btn {
+      .btn, .login-form input {
         width: 100%;
+        margin: 5px 0;
       }
     }
   </style>
@@ -95,64 +120,102 @@
 
 <div class="barra-flotante">
   <div class="barra-contenido" id="barraContenido">
-    <div id="botonesInicio">
-      <button class="btn" onclick="mostrarLogin()">Iniciar sesión</button>
+    <div id="izquierda">
+      <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()">Iniciar sesión</button>
+      <span id="nombreUsuario" style="color: white; font-weight: bold;"></span>
     </div>
-    <div>
+    <div id="derecha">
       <button class="btn">Suscribirme</button>
       <button class="btn">Ayuda</button>
     </div>
   </div>
 
-  <div class="seccion-login" id="seccionLogin">
-    <input type="email" id="emailInput" placeholder="Ingresá tu correo electrónico" />
-    <button class="btn" onclick="validarEmail()">Ingresar</button>
-    <button class="btn" onclick="cerrarLogin()">Cerrar</button>
-    <div id="mensaje" class="mensaje-error" style="display: none;"></div>
+  <div class="login-form" id="loginForm">
+    <form onsubmit="event.preventDefault(); validarEmail();">
+      <input type="email" id="inputEmail" placeholder="Ingresá tu correo" required />
+      <button class="btn" type="submit">Ingresar</button>
+      <span id="mensaje" class="mensaje-error" style="display: none;"></span>
+    </form>
+    <button class="close-btn" onclick="cerrarLogin()">✕</button>
   </div>
 </div>
 
 <script>
-  const seccionLogin = document.getElementById('seccionLogin');
-  const barraContenido = document.getElementById('barraContenido');
-  const mensaje = document.getElementById('mensaje');
-
-  const usuariosActivos = ["usuario@ejemplo.com", "suscriptor@correo.com"];
-  const usuariosSuspendidos = ["suspendido@correo.com"];
+  const usuarios = {
+    "mauricioacostacom@gmail.com": {
+      activo: true,
+      nombre: "Mauricio",
+      apellido: "Acosta Danaher",
+      medioPago: "Mercado Pago",
+      ultimoPago: "30 de agosto de 2025",
+      proximoPago: "31 de septiembre de 2025"
+    },
+    "luciacarpio20@gmail.com": {
+      activo: false,
+      nombre: "Maria",
+      apellido: "Carpio Peralta",
+      medioPago: "Mercado Pago",
+      ultimoPago: "31 de mayo de 2025",
+      deuda: "$1.000"
+    }
+  };
 
   function mostrarLogin() {
-    barraContenido.style.display = 'none';
-    seccionLogin.style.display = 'flex';
-    mensaje.style.display = 'none';
+    document.getElementById("loginForm").style.display = "flex";
+    document.getElementById("mensaje").style.display = "none";
   }
 
   function cerrarLogin() {
-    seccionLogin.style.display = 'none';
-    barraContenido.style.display = 'flex';
-    mensaje.style.display = 'none';
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("inputEmail").value = "";
+    document.getElementById("mensaje").style.display = "none";
   }
 
   function validarEmail() {
-    const email = document.getElementById('emailInput').value.trim().toLowerCase();
+    const email = document.getElementById("inputEmail").value.trim().toLowerCase();
+    const mensaje = document.getElementById("mensaje");
 
-    if (usuariosSuspendidos.includes(email)) {
-      mensaje.innerText = "Tu cuenta ha sido suspendida.";
-      mensaje.style.display = 'block';
-      return;
+    if (usuarios[email]) {
+      if (usuarios[email].activo) {
+        localStorage.setItem("usuarioLogueado", JSON.stringify(usuarios[email]));
+        mostrarUsuario(usuarios[email].nombre);
+        cerrarLogin();
+      } else {
+        mensaje.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}. Por favor regularizá tu situación. Contactá con soporte.`;
+        mensaje.className = "mensaje-error";
+        mensaje.style.display = "inline-block";
+      }
+    } else {
+      mensaje.textContent = "El correo ingresado no está suscripto.";
+      mensaje.className = "mensaje-error";
+      mensaje.style.display = "inline-block";
     }
+  }
 
-    if (!usuariosActivos.includes(email)) {
-      mensaje.innerText = "El correo ingresado no está suscripto.";
-      mensaje.style.display = 'block';
-      return;
+  function mostrarUsuario(nombre) {
+    document.getElementById("btnIniciarSesion").style.display = "none";
+    document.getElementById("nombreUsuario").textContent = nombre;
+    document.getElementById("nombreUsuario").style.display = "inline-block";
+
+    // Botón para cerrar sesión (opcional)
+    const btnCerrar = document.createElement("button");
+    btnCerrar.textContent = "Cerrar sesión";
+    btnCerrar.className = "btn";
+    btnCerrar.onclick = () => {
+      localStorage.removeItem("usuarioLogueado");
+      location.reload();
+    };
+    document.getElementById("izquierda").appendChild(btnCerrar);
+  }
+
+  // Si ya está logueado (persistencia)
+  window.onload = () => {
+    const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
+    if (usuario && usuario.activo) {
+      mostrarUsuario(usuario.nombre);
     }
-
-    // Simula inicio de sesión exitoso
-    alert("Sesión iniciada correctamente");
-    cerrarLogin();
   }
 </script>
 
 </body>
 </html>
- 
