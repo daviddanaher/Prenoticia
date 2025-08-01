@@ -228,5 +228,16 @@
   };
 </script>
 
+  <script>
+  window.addEventListener("DOMContentLoaded", function () {
+    const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
+    if (usuario && usuario.activo) {
+      const bloques = document.querySelectorAll(".contenido-exclusivo");
+      bloques.forEach(bloque => bloque.style.display = "block");
+    }
+  });
+</script>
+
+
 </body>
 </html>
