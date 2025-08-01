@@ -228,15 +228,26 @@
   };
 </script>
 
-  <script>
-  window.addEventListener("DOMContentLoaded", function () {
+ <script>
+(function () {
+  function mostrarContenidoExclusivo() {
     const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
     if (usuario && usuario.activo) {
-      const bloques = document.querySelectorAll(".contenido-exclusivo");
-      bloques.forEach(bloque => bloque.style.display = "block");
+      const interval = setInterval(() => {
+        const bloques = document.querySelectorAll(".contenido-exclusivo");
+        if (bloques.length > 0) {
+          bloques.forEach(bloque => bloque.style.display = "block");
+          clearInterval(interval); // Detiene cuando encuentra los bloques
+        }
+      }, 500); // Revisa cada medio segundo
     }
-  });
+  }
+
+  // Ejecutar cuando la página haya cargado
+  window.addEventListener("load", mostrarContenidoExclusivo);
+})();
 </script>
+
 
 
 </body>
