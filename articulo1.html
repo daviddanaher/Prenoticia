@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contenido Exclusivo</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; }
+    .contenido { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+  </style>
+  <script>
+    // ⚠️ Control simple para verificar si el usuario está activo
+    const usuarioActivo = localStorage.getItem("usuarioLogueado");
+
+    window.onload = function () {
+      if (usuarioActivo === "true") {
+        document.getElementById("contenido-exclusivo").style.display = "block";
+      } else {
+        document.getElementById("contenido-exclusivo").innerHTML = "<p>Acceso denegado. Iniciá sesión para ver este contenido.</p>";
+      }
+    };
+  </script>
+</head>
+<body>
+  <div class="contenido" id="contenido-exclusivo" style="display: none;">
+    <h1>🎉 Esta es una noticia exclusiva</h1>
+    <p>Solamente los usuarios con sesión iniciada pueden ver esto.</p>
+  </div>
+</body>
+</html>
