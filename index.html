@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Barra Flotante con Mi Cuenta Desplegable</title>
+  <title>Barra Flotante con Panel Mi Cuenta</title>
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: sans-serif; background: #fefefe; color: #222; padding-top: 50px; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #fefefe; }
 
-    /* ===== Barra Flotante ORIGINAL ===== */
+    /* Barra flotante */
     .barra-flotante {
       position: fixed;
       top: 0;
@@ -21,24 +21,29 @@
       align-items: center;
       padding: 0 5px;
       z-index: 9999;
+      user-select: none;
+      overflow: hidden;
     }
+
     .barra-contenido {
       width: 100%;
       max-width: 1085px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 10px;
       position: relative;
       height: 100%;
     }
+
     .grupo-botones {
       display: flex;
       align-items: center;
-      flex-wrap: nowrap;
       gap: 6px;
       height: 100%;
+      flex-wrap: nowrap;
+      white-space: nowrap;
     }
+
     .btn {
       background-color: #bb6c00;
       color: #fff;
@@ -46,18 +51,18 @@
       padding: 6px 10px;
       border-radius: 4px;
       font-size: 14px;
-      white-space: nowrap;
       cursor: pointer;
-      transition: background 0.3s ease;
       height: 32px;
       display: flex;
       align-items: center;
       text-decoration: none;
+      transition: background 0.3s ease;
     }
     .btn:hover {
       background-color: #a55a00;
       text-decoration: none;
     }
+
     .popup-login {
       position: absolute;
       top: 50px;
@@ -72,14 +77,18 @@
       padding: 0 10px;
       animation: fadeIn 0.3s ease;
       z-index: 10000;
+      user-select: auto;
     }
+
     .popup-login input {
       padding: 6px;
       border-radius: 4px;
       border: none;
       width: 200px;
+      font-size: 14px;
     }
-    .popup-login .mensaje-error {
+
+    .mensaje-error {
       color: white;
       background-color: red;
       padding: 5px 10px;
@@ -87,135 +96,91 @@
       font-size: 13px;
       display: none;
     }
+
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
+
+    /* PANEL MI CUENTA dentro de la barra */
+    #panelMiCuenta {
+      position: absolute;
+      top: 0;
+      left: 100%;
+      height: 50px;
+      background-color: #bb6c00;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px;
+      white-space: nowrap;
+      font-size: 14px;
+      overflow-x: auto;
+      transition: left 0.35s ease;
+      user-select: none;
+      z-index: 10000;
+      border-radius: 0 4px 4px 0;
+    }
+
+    #panelMiCuenta.visible {
+      left: 0;
+    }
+
+    /* Botones dentro del panel */
+    #panelMiCuenta .btn-panel {
+      background: rgba(255 255 255 / 0.15);
+      border: 1px solid rgba(255 255 255 / 0.3);
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.25s ease;
+    }
+    #panelMiCuenta .btn-panel:hover {
+      background: rgba(255 255 255 / 0.35);
+    }
+
+    /* Texto en panel (valor) */
+    #panelMiCuenta .valor {
+      margin-left: 6px;
+      font-weight: bold;
+    }
+
+    /* Scrollbar panel */
+    #panelMiCuenta::-webkit-scrollbar {
+      height: 6px;
+    }
+    #panelMiCuenta::-webkit-scrollbar-thumb {
+      background: rgba(255 255 255 / 0.3);
+      border-radius: 3px;
+    }
+
+    /* Adaptaciones móviles */
     @media (max-width: 600px) {
       .btn {
         font-size: 13px;
         padding: 5px 8px;
-      }
-      .grupo-botones {
-        flex-wrap: nowrap;
-        flex-shrink: 1;
-        gap: 4px;
-        overflow: hidden;
+        height: 28px;
       }
       .popup-login input {
         width: 140px;
       }
-    }
-
-    /* ===== Panel Mi Cuenta Desplegable ===== */
-    #panelMiCuenta {
-      position: fixed;
-      top: 50px; /* justo debajo de barra */
-      right: 0;
-      width: 100%;
-      max-width: 420px;
-      height: calc(100vh - 50px);
-      background: #fff;
-      box-shadow: -4px 0 10px rgba(0,0,0,0.2);
-      overflow-y: auto;
-      transform: translateX(100%);
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 10001;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-    #panelMiCuenta.abierto {
-      transform: translateX(0);
-    }
-
-    #panelMiCuenta h2 {
-      color: #f68e02;
-      margin-top: 0;
-      margin-bottom: 20px;
-      font-weight: bold;
-      text-align: center;
-      user-select: none;
-    }
-
-    .botones-menu,
-    .botones-submenu {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .btn-panel {
-      background-color: #bb6c00;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 12px 16px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      text-align: left;
-      user-select: none;
-      box-shadow: 0 2px 5px rgb(0 0 0 / 0.15);
-    }
-    .btn-panel:hover {
-      background-color: #a55a00;
-    }
-
-    .btn-volver {
-      background-color: #ccc;
-      color: #222;
-      align-self: flex-end;
-      padding: 6px 12px;
-      font-size: 14px;
-      margin-top: 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      user-select: none;
-      box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
-      transition: background-color 0.3s ease;
-    }
-    .btn-volver:hover {
-      background-color: #bbb;
-    }
-
-    .info-usuario {
-      margin-top: 15px;
-      line-height: 1.4;
-      font-size: 15px;
-      color: #222;
-      user-select: text;
-    }
-
-    .info-label {
-      font-weight: bold;
-      margin-right: 6px;
-      color: #555;
-    }
-
-    .link-external {
-      color: #bb6c00;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .link-external:hover {
-      text-decoration: underline;
-    }
-
-    .check-verificado {
-      color: green;
-      font-weight: bold;
-      font-size: 18px;
-      vertical-align: middle;
-      margin-left: 6px;
-      user-select: none;
+      #panelMiCuenta {
+        font-size: 13px;
+        padding: 0 6px;
+      }
+      #panelMiCuenta .btn-panel {
+        padding: 5px 8px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Barra Flotante original -->
+  <!-- Barra flotante principal -->
   <div class="barra-flotante">
     <div class="barra-contenido" id="barraContenido">
       <div class="grupo-botones" id="izquierda">
@@ -228,282 +193,275 @@
         <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank" rel="noopener noreferrer">Ayuda</a>
       </div>
 
-      <div class="popup-login" id="popupLogin" aria-label="Formulario de inicio de sesión">
-        <input type="email" id="inputEmail" placeholder="Tu correo" aria-label="Correo electrónico" />
+      <!-- Panel Mi Cuenta oculto inicialmente -->
+      <div id="panelMiCuenta" aria-hidden="true" role="region" aria-label="Panel Mi Cuenta"></div>
+
+      <!-- Popup login -->
+      <div class="popup-login" id="popupLogin" aria-hidden="true">
+        <input type="email" id="inputEmail" placeholder="Tu correo" aria-label="Correo electrónico"/>
         <button class="btn" onclick="validarEmail()">Ingresar</button>
-        <button class="btn" onclick="cerrarLogin()" aria-label="Cerrar formulario">✕</button>
-        <span class="mensaje-error" id="mensajeError" role="alert"></span>
+        <button class="btn" onclick="cerrarLogin()" aria-label="Cerrar login">✕</button>
+        <span class="mensaje-error" id="mensajeError"></span>
       </div>
     </div>
   </div>
 
-  <!-- Panel Mi Cuenta desplegable -->
-  <section id="panelMiCuenta" aria-hidden="true" role="region" aria-label="Panel de cuenta de usuario">
-    <h2 id="tituloPanel">Mi Cuenta</h2>
-
-    <nav class="botones-menu" id="menuPrincipal">
-      <button class="btn-panel" id="btnInfoPersonal">Información Personal</button>
-      <button class="btn-panel" id="btnMetodoPago">Método de Pago</button>
-      <button class="btn-panel" id="btnProximosPagos">Próximas Fechas de Pago</button>
-      <button class="btn-panel" id="btnBajaSuscripcion">Dar de baja suscripción</button>
-    </nav>
-
-    <nav class="botones-submenu" id="submenu" style="display:none;"></nav>
-
-    <button class="btn-volver" id="btnVolver" style="display:none;">Volver</button>
-  </section>
-
-<script>
-  // Usuarios con datos nuevos agregados (incluye Máximo Antonio Acosta)
-  const usuarios = {
-    "mauricioacostacom@gmail.com": {
-      activo: true,
-      nombre: "Mauricio",
-      apellido: "Acosta Danaher",
-      email: "mauricioacostacom@gmail.com",
-      medioPago: "Mercado Pago",
-      pais: "Argentina",
-      montoSuscripcion: "$2.000",
-      ultimoPago: "31 de julio de 2025",
-      proximoPago: "31 de septiembre de 2025",
-      emailVerificado: true
-    },
-    "luciacarpio20@gmail.com": {
-      activo: false,
-      nombre: "Maria",
-      apellido: "Carpio Peralta",
-      email: "luciacarpio20@gmail.com",
-      medioPago: "PayPal",
-      pais: "Chile",
-      montoSuscripcion: "$1.000",
-      ultimoPago: "15 de junio de 2025",
-      proximoPago: "15 de julio de 2025",
-      emailVerificado: false,
-      deuda: "$1.000"
-    },
-    "maximoantonioacosta@hotmail.com": {
-      activo: true,
-      nombre: "Máximo Antonio",
-      apellido: "Acosta",
-      email: "maximoantonioacosta@hotmail.com",
-      medioPago: "Mercado Pago",
-      pais: "Argentina",
-      montoSuscripcion: "$2.500",
-      ultimoPago: "5 de agosto de 2025",
-      proximoPago: "5 de septiembre de 2025",
-      emailVerificado: true
-    }
-  };
-
-  // Estado de navegación del panel
-  let nivelMenu = 0; // 0: menú principal, 1: submenu info
-  let usuarioActual = null;
-
-  const panel = document.getElementById("panelMiCuenta");
-  const menuPrincipal = document.getElementById("menuPrincipal");
-  const submenu = document.getElementById("submenu");
-  const btnVolver = document.getElementById("btnVolver");
-  const tituloPanel = document.getElementById("tituloPanel");
-
-  // Mostrar panel con animación
-  function abrirPanel() {
-    panel.classList.add("abierto");
-    panel.setAttribute("aria-hidden", "false");
-  }
-
-  function cerrarPanel() {
-    panel.classList.remove("abierto");
-    panel.setAttribute("aria-hidden", "true");
-    nivelMenu = 0;
-    mostrarMenuPrincipal();
-  }
-
-  // Mostrar menú principal
-  function mostrarMenuPrincipal() {
-    tituloPanel.textContent = "Mi Cuenta";
-    menuPrincipal.style.display = "flex";
-    submenu.style.display = "none";
-    submenu.innerHTML = "";
-    btnVolver.style.display = "none";
-  }
-
-  // Mostrar info personal
-  function mostrarInfoPersonal() {
-    nivelMenu = 1;
-    tituloPanel.textContent = "Información Personal";
-
-    menuPrincipal.style.display = "none";
-    submenu.style.display = "flex";
-    btnVolver.style.display = "inline-block";
-
-    const verificado = usuarioActual.emailVerificado ? `<span class="check-verificado" title="Email verificado">✅</span>` : "";
-
-    submenu.innerHTML = `
-      <div class="info-usuario"><span class="info-label">Nombre completo:</span>${usuarioActual.nombre} ${usuarioActual.apellido}</div>
-      <div class="info-usuario"><span class="info-label">Nombre de usuario (email):</span>${usuarioActual.email} ${verificado}</div>
-    `;
-  }
-
-  // Mostrar método de pago con opción cambiar
-  function mostrarMetodoPago() {
-    nivelMenu = 1;
-    tituloPanel.textContent = "Método de Pago";
-
-    menuPrincipal.style.display = "none";
-    submenu.style.display = "flex";
-    btnVolver.style.display = "inline-block";
-
-    submenu.innerHTML = `
-      <div class="info-usuario"><span class="info-label">Método de pago asociado:</span>${usuarioActual.medioPago || "No especificado"}</div>
-      <button class="btn-panel" id="btnCambiarPago">Cambiar método de pago</button>
-    `;
-
-    document.getElementById("btnCambiarPago").onclick = () => {
-      window.open("https://www.prenoticia.com/contacto", "_blank", "noopener");
+  <script>
+    // Datos usuarios actualizados, agregando Máximo Antonio Acosta
+    const usuarios = {
+      "mauricioacostacom@gmail.com": {
+        activo: true,
+        nombre: "Mauricio",
+        apellido: "Acosta Danaher",
+        email: "mauricioacostacom@gmail.com",
+        medioPago: "Mercado Pago",
+        ultimoPago: "31 de julio de 2025",
+        proximoPago: "31 de septiembre de 2025",
+        pais: "Argentina",
+        emailVerificado: true
+      },
+      "luciacarpio20@gmail.com": {
+        activo: false,
+        nombre: "Maria",
+        apellido: "Carpio Peralta",
+        email: "luciacarpio20@gmail.com",
+        deuda: "$1.000"
+      },
+      "maximoantonioacosta@hotmail.com": {
+        activo: true,
+        nombre: "Máximo Antonio",
+        apellido: "Acosta",
+        email: "maximoantonioacosta@hotmail.com",
+        medioPago: "Mercado Pago",
+        ultimoPago: "20 de julio de 2025",
+        proximoPago: "20 de agosto de 2025",
+        pais: "Argentina",
+        emailVerificado: true
+      }
     };
-  }
 
-  // Mostrar próximas fechas de pago
-  function mostrarProximosPagos() {
-    nivelMenu = 1;
-    tituloPanel.textContent = "Próximas Fechas de Pago";
-
-    menuPrincipal.style.display = "none";
-    submenu.style.display = "flex";
-    btnVolver.style.display = "inline-block";
-
-    submenu.innerHTML = `
-      <div class="info-usuario"><span class="info-label">Último pago:</span>${usuarioActual.ultimoPago || "No disponible"}</div>
-      <div class="info-usuario"><span class="info-label">Próximo pago:</span>${usuarioActual.proximoPago || "No disponible"}</div>
-    `;
-  }
-
-  // Manejar botón Volver
-  btnVolver.onclick = () => {
-    if (nivelMenu === 1) {
-      mostrarMenuPrincipal();
-      nivelMenu = 0;
-    }
-  };
-
-  // Botón Mi Cuenta en la barra (reemplaza enlace externo)
-  function agregarBtnMiCuenta() {
+    const btnIniciarSesion = document.getElementById("btnIniciarSesion");
+    const saludoUsuario = document.getElementById("saludoUsuario");
+    const popupLogin = document.getElementById("popupLogin");
+    const mensajeError = document.getElementById("mensajeError");
+    const inputEmail = document.getElementById("inputEmail");
+    const panelMiCuenta = document.getElementById("panelMiCuenta");
+    const barraContenido = document.getElementById("barraContenido");
     const derecha = document.getElementById("derecha");
+    const izquierda = document.getElementById("izquierda");
 
-    // Evitar duplicados
-    if (document.getElementById("btnMiCuenta")) return;
+    // Estado de navegación panel
+    let panelEstado = "inicio"; // valores: inicio, nombre, metodoPago, proximosPagos
 
-    const btnCuenta = document.createElement("button");
-    btnCuenta.textContent = "Mi cuenta";
-    btnCuenta.className = "btn";
-    btnCuenta.id = "btnMiCuenta";
-    btnCuenta.type = "button";
+    function mostrarLogin() {
+      mensajeError.style.display = "none";
+      popupLogin.style.display = "flex";
+      popupLogin.setAttribute("aria-hidden", "false");
+      inputEmail.focus();
+    }
 
-    btnCuenta.onclick = () => {
-      if (!usuarioActual) {
-        alert("Por favor, inicia sesión para acceder a Mi Cuenta.");
+    function cerrarLogin() {
+      popupLogin.style.display = "none";
+      popupLogin.setAttribute("aria-hidden", "true");
+      inputEmail.value = "";
+      mensajeError.style.display = "none";
+    }
+
+    function validarEmail() {
+      const email = inputEmail.value.trim().toLowerCase();
+
+      if (!email) {
+        mensajeError.textContent = "Por favor, ingresá tu correo electrónico";
+        mensajeError.style.display = "inline-block";
         return;
       }
-      abrirPanel();
-      mostrarMenuPrincipal();
-    };
 
-    derecha.insertBefore(btnCuenta, derecha.firstChild);
-  }
-
-  // Funciones Login originales adaptadas para guardar usuario completo y mostrar saludo
-  function mostrarLogin() {
-    document.getElementById("popupLogin").style.display = "flex";
-    document.getElementById("mensajeError").style.display = "none";
-  }
-  function cerrarLogin() {
-    document.getElementById("popupLogin").style.display = "none";
-    document.getElementById("inputEmail").value = "";
-  }
-  function validarEmail() {
-    const email = document.getElementById("inputEmail").value.trim().toLowerCase();
-    const mensaje = document.getElementById("mensajeError");
-
-    if (!email) {
-      mensaje.textContent = "Por favor, ingresá tu correo electrónico";
-      mensaje.style.display = "inline-block";
-      return;
-    }
-
-    if (usuarios[email]) {
-      if (usuarios[email].activo) {
-        localStorage.setItem("usuarioLogueado", JSON.stringify({ email }));
-        usuarioActual = usuarios[email];
-        mostrarUsuario(usuarioActual.nombre);
-        cerrarLogin();
-        agregarBtnMiCuenta();
+      if (usuarios[email]) {
+        if (usuarios[email].activo) {
+          localStorage.setItem("usuarioLogueado", email);
+          cargarSesion(usuarios[email]);
+          cerrarLogin();
+        } else {
+          mensajeError.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`;
+          mensajeError.style.display = "inline-block";
+        }
       } else {
-        mensaje.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`;
-        mensaje.style.display = "inline-block";
+        mensajeError.textContent = "El correo ingresado no está suscripto.";
+        mensajeError.style.display = "inline-block";
       }
-    } else {
-      mensaje.textContent = "El correo ingresado no está suscripto.";
-      mensaje.style.display = "inline-block";
     }
-  }
 
-  function mostrarUsuario(nombre) {
-    document.getElementById("btnIniciarSesion").style.display = "none";
-    document.getElementById("saludoUsuario").textContent = `Hola, ${nombre}`;
+    // Mostrar saludo y botón Mi cuenta
+    function cargarSesion(usuario) {
+      btnIniciarSesion.style.display = "none";
+      saludoUsuario.textContent = `Hola, ${usuario.nombre}`;
 
-    const derecha = document.getElementById("derecha");
-    derecha.innerHTML = "";
+      // Limpiar botones derecha y agregar Mi cuenta + Cerrar sesión
+      derecha.innerHTML = "";
 
-    // Botón Mi cuenta (desplegable)
-    agregarBtnMiCuenta();
+      // Botón Mi cuenta
+      const btnCuenta = document.createElement("button");
+      btnCuenta.textContent = "Mi cuenta";
+      btnCuenta.className = "btn";
+      btnCuenta.type = "button";
+      btnCuenta.setAttribute("aria-expanded", "false");
+      btnCuenta.onclick = () => {
+        if (panelMiCuenta.classList.contains("visible")) {
+          ocultarPanelMiCuenta();
+          btnCuenta.setAttribute("aria-expanded", "false");
+        } else {
+          mostrarPanelMiCuenta(usuario);
+          btnCuenta.setAttribute("aria-expanded", "true");
+        }
+      };
+      derecha.appendChild(btnCuenta);
 
-    // Botón cerrar sesión
-    const btnCerrar = document.createElement("button");
-    btnCerrar.textContent = "Cerrar sesión";
-    btnCerrar.className = "btn";
-    btnCerrar.onclick = () => {
-      localStorage.removeItem("usuarioLogueado");
-      usuarioActual = null;
-      cerrarPanel();
-      location.reload();
+      // Botón Cerrar sesión
+      const btnCerrar = document.createElement("button");
+      btnCerrar.textContent = "Cerrar sesión";
+      btnCerrar.className = "btn";
+      btnCerrar.type = "button";
+      btnCerrar.onclick = () => {
+        localStorage.removeItem("usuarioLogueado");
+        location.reload();
+      };
+      derecha.appendChild(btnCerrar);
+
+      // Guardar usuario en variable global para acceso panel
+      window.usuarioActual = usuario;
+    }
+
+    // Mostrar panel Mi Cuenta horizontal con botones y contenido deslizable
+    function mostrarPanelMiCuenta(usuario) {
+      panelEstado = "inicio";
+      construirPanel(usuario, panelEstado);
+      panelMiCuenta.classList.add("visible");
+      panelMiCuenta.setAttribute("aria-hidden", "false");
+    }
+
+    // Ocultar panel Mi Cuenta
+    function ocultarPanelMiCuenta() {
+      panelMiCuenta.classList.remove("visible");
+      panelMiCuenta.setAttribute("aria-hidden", "true");
+      panelMiCuenta.innerHTML = "";
+      panelEstado = "inicio";
+    }
+
+    // Construir contenido panel según estado
+    function construirPanel(usuario, estado) {
+      panelMiCuenta.innerHTML = ""; // limpiar
+
+      // Función para botón volver si no estamos en "inicio"
+      function crearBtnVolver() {
+        const btnVolver = document.createElement("button");
+        btnVolver.className = "btn-panel";
+        btnVolver.textContent = "← Volver";
+        btnVolver.onclick = () => {
+          if (panelEstado === "nombre" || panelEstado === "metodoPago" || panelEstado === "proximosPagos") {
+            panelEstado = "inicio";
+            construirPanel(usuario, panelEstado);
+          }
+        };
+        return btnVolver;
+      }
+
+      if (estado === "inicio") {
+        // Mostrar los botones principales
+
+        // Nombre completo
+        const btnNombre = document.createElement("button");
+        btnNombre.className = "btn-panel";
+        btnNombre.type = "button";
+        btnNombre.textContent = "Nombre completo";
+        btnNombre.onclick = () => {
+          panelEstado = "nombre";
+          construirPanel(usuario, panelEstado);
+        };
+        panelMiCuenta.appendChild(btnNombre);
+
+        // Método de pago
+        const btnMetodo = document.createElement("button");
+        btnMetodo.className = "btn-panel";
+        btnMetodo.type = "button";
+        btnMetodo.textContent = "Método de pago";
+        btnMetodo.onclick = () => {
+          panelEstado = "metodoPago";
+          construirPanel(usuario, panelEstado);
+        };
+        panelMiCuenta.appendChild(btnMetodo);
+
+        // Próximas fechas de pago
+        const btnFechas = document.createElement("button");
+        btnFechas.className = "btn-panel";
+        btnFechas.type = "button";
+        btnFechas.textContent = "Próximas fechas de pago";
+        btnFechas.onclick = () => {
+          panelEstado = "proximosPagos";
+          construirPanel(usuario, panelEstado);
+        };
+        panelMiCuenta.appendChild(btnFechas);
+
+        // Dar de baja suscripción (link directo)
+        const btnBaja = document.createElement("a");
+        btnBaja.className = "btn-panel";
+        btnBaja.textContent = "Dar de baja suscripción";
+        btnBaja.href = "https://www.prenoticia.com/baja-suscripción";
+        btnBaja.target = "_blank";
+        btnBaja.rel = "noopener noreferrer";
+        panelMiCuenta.appendChild(btnBaja);
+
+      } else if (estado === "nombre") {
+        // Mostrar nombre completo y email con verificado si aplica + botón volver
+        const textoNombre = document.createElement("span");
+        textoNombre.textContent = `Nombre: ${usuario.nombre} ${usuario.apellido} (Email: ${usuario.email})`;
+        if (usuario.emailVerificado) {
+          const verif = document.createElement("span");
+          verif.textContent = " ✅";
+          verif.title = "Email verificado";
+          verif.style.marginLeft = "6px";
+          textoNombre.appendChild(verif);
+        }
+        panelMiCuenta.appendChild(textoNombre);
+
+        panelMiCuenta.appendChild(crearBtnVolver());
+
+      } else if (estado === "metodoPago") {
+        // Mostrar método de pago + botón cambiar + botón volver
+        const contPago = document.createElement("span");
+        contPago.textContent = `Método de pago: ${usuario.medioPago || "No especificado"}`;
+        panelMiCuenta.appendChild(contPago);
+
+        const btnCambiar = document.createElement("button");
+        btnCambiar.className = "btn-panel";
+        btnCambiar.textContent = "Cambiar método de pago";
+        btnCambiar.onclick = () => {
+          window.open("https://www.prenoticia.com/contacto", "_blank", "noopener");
+        };
+        panelMiCuenta.appendChild(btnCambiar);
+
+        panelMiCuenta.appendChild(crearBtnVolver());
+
+      } else if (estado === "proximosPagos") {
+        // Mostrar próximas fechas de pago y último pago + botón volver
+        const textoPagos = document.createElement("span");
+        textoPagos.innerHTML = `
+          Último pago: <b>${usuario.ultimoPago || "No disponible"}</b> &nbsp;&nbsp; 
+          Próximo pago: <b>${usuario.proximoPago || "No disponible"}</b>
+        `;
+        panelMiCuenta.appendChild(textoPagos);
+
+        panelMiCuenta.appendChild(crearBtnVolver());
+      }
+    }
+
+    // Al cargar página, persistir sesión
+    window.onload = () => {
+      const emailGuardado = localStorage.getItem("usuarioLogueado");
+      if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) {
+        cargarSesion(usuarios[emailGuardado]);
+      }
     };
-    derecha.appendChild(btnCerrar);
-
-    // Botón Suscribirme y Ayuda (como antes)
-    const suscribir = document.createElement("a");
-    suscribir.href = "https://www.prenoticia.com/p/suscribirme-prenoticia.html";
-    suscribir.className = "btn";
-    suscribir.target = "_blank";
-    suscribir.rel = "noopener noreferrer";
-    suscribir.textContent = "Suscribirme";
-    derecha.appendChild(suscribir);
-
-    const ayuda = document.createElement("a");
-    ayuda.href = "https://www.prenoticia.com/mi-cuenta-ayuda";
-    ayuda.className = "btn";
-    ayuda.target = "_blank";
-    ayuda.rel = "noopener noreferrer";
-    ayuda.textContent = "Ayuda";
-    derecha.appendChild(ayuda);
-  }
-
-  // Al cargar la página, verificar sesión y actualizar UI
-  window.onload = () => {
-    const usuarioLogueado = JSON.parse(localStorage.getItem("usuarioLogueado"));
-    if (usuarioLogueado && usuarioLogueado.email && usuarios[usuarioLogueado.email] && usuarios[usuarioLogueado.email].activo) {
-      usuarioActual = usuarios[usuarioLogueado.email];
-      mostrarUsuario(usuarioActual.nombre);
-    }
-  };
-
-  // Eventos de botones del panel Mi Cuenta
-  document.getElementById("btnInfoPersonal").onclick = mostrarInfoPersonal;
-  document.getElementById("btnMetodoPago").onclick = mostrarMetodoPago;
-  document.getElementById("btnProximosPagos").onclick = mostrarProximosPagos;
-  document.getElementById("btnBajaSuscripcion").onclick = () => {
-    window.open("https://www.prenoticia.com/baja-suscripción", "_blank", "noopener");
-  };
-</script>
+  </script>
 
 </body>
 </html>
