@@ -22,8 +22,7 @@
       padding: 0 5px;
       z-index: 9999;
       user-select: none;
-      overflow-x: auto; /* Scroll horizontal si se desborda */
-      white-space: nowrap;
+      overflow: hidden;
     }
 
     .barra-contenido {
@@ -34,7 +33,6 @@
       justify-content: space-between;
       position: relative;
       height: 100%;
-      flex-shrink: 0;
     }
 
     .grupo-botones {
@@ -44,7 +42,6 @@
       height: 100%;
       flex-wrap: nowrap;
       white-space: nowrap;
-      flex-shrink: 0;
     }
 
     .btn {
@@ -60,7 +57,7 @@
       align-items: center;
       text-decoration: none;
       transition: background 0.3s ease;
-      flex-shrink: 0;
+      white-space: nowrap;
     }
     .btn:hover {
       background-color: #a55a00;
@@ -106,11 +103,12 @@
       to { opacity: 1; }
     }
 
-    /* PANEL MI CUENTA */
+    /* PANEL MI CUENTA dentro de la barra */
     #panelMiCuenta {
       position: absolute;
       top: 0;
-      left: 100%;
+      left: 0;
+      right: 0;
       height: 50px;
       background-color: #bb6c00;
       color: white;
@@ -121,16 +119,53 @@
       white-space: nowrap;
       font-size: 14px;
       overflow-x: auto;
-      transition: left 0.35s ease;
+      transition: opacity 0.35s ease;
       user-select: none;
       z-index: 10000;
       border-radius: 0 4px 4px 0;
+      opacity: 0;
+      pointer-events: none;
+      scrollbar-width: none; /* Firefox no scroll bar */
+      -ms-overflow-style: none; /* IE and Edge */
+    }
+    #panelMiCuenta::-webkit-scrollbar {
+      height: 6px;
+    }
+    #panelMiCuenta::-webkit-scrollbar-thumb {
+      background: rgba(255 255 255 / 0.3);
+      border-radius: 3px;
+    }
+    /* Scrollbar oculto en móvil */
+    @media (max-width: 600px) {
+      #panelMiCuenta::-webkit-scrollbar {
+        display: none;
+      }
+      #panelMiCuenta {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    }
+    /* Scrollbar fina en tablet */
+    @media (min-width: 601px) and (max-width: 900px) {
+      #panelMiCuenta::-webkit-scrollbar {
+        height: 3px;
+      }
+      #panelMiCuenta::-webkit-scrollbar-thumb {
+        background: rgba(255 255 255 / 0.5);
+        border-radius: 2px;
+      }
+      #panelMiCuenta {
+        scrollbar-width: thin;
+      }
     }
 
+    /* Panel visible */
     #panelMiCuenta.visible {
-      left: 0;
+      opacity: 1;
+      pointer-events: auto;
     }
 
+    /* Botones dentro del panel */
     #panelMiCuenta .btn-panel {
       background: rgba(255 255 255 / 0.15);
       border: 1px solid rgba(255 255 255 / 0.3);
@@ -141,25 +176,19 @@
       display: flex;
       align-items: center;
       transition: background-color 0.25s ease;
+      white-space: nowrap;
     }
     #panelMiCuenta .btn-panel:hover {
       background: rgba(255 255 255 / 0.35);
     }
 
+    /* Texto en panel (valor) */
     #panelMiCuenta .valor {
       margin-left: 6px;
       font-weight: bold;
     }
 
-    #panelMiCuenta::-webkit-scrollbar {
-      height: 6px;
-    }
-    #panelMiCuenta::-webkit-scrollbar-thumb {
-      background: rgba(255 255 255 / 0.3);
-      border-radius: 3px;
-    }
-
-    /* Móvil */
+    /* Adaptaciones móviles */
     @media (max-width: 600px) {
       .btn {
         font-size: 13px;
@@ -181,11 +210,12 @@
 </head>
 <body>
 
-  <div class="barra-flotante">
+  <!-- Barra flotante principal -->
+  <div class="barra-flotante" role="banner" aria-label="Barra principal de navegación y cuenta">
     <div class="barra-contenido" id="barraContenido">
       <div class="grupo-botones" id="izquierda">
-        <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()">Iniciar sesión</button>
-        <span id="saludoUsuario" style="color:white; font-weight:bold;"></span>
+        <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()" aria-label="Iniciar sesión">Iniciar sesión</button>
+        <span id="saludoUsuario" style="color:white; font-weight:bold;" aria-live="polite"></span>
       </div>
 
       <div class="grupo-botones" id="derecha">
@@ -193,34 +223,50 @@
         <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank" rel="noopener noreferrer">Ayuda</a>
       </div>
 
+      <!-- Panel Mi Cuenta oculto inicialmente -->
       <div id="panelMiCuenta" aria-hidden="true" role="region" aria-label="Panel Mi Cuenta"></div>
 
+      <!-- Popup login -->
       <div class="popup-login" id="popupLogin" aria-hidden="true">
         <input type="email" id="inputEmail" placeholder="Tu correo" aria-label="Correo electrónico"/>
         <button class="btn" onclick="validarEmail()">Ingresar</button>
         <button class="btn" onclick="cerrarLogin()" aria-label="Cerrar login">✕</button>
-        <span class="mensaje-error" id="mensajeError"></span>
+        <span class="mensaje-error" id="mensajeError" role="alert"></span>
       </div>
     </div>
   </div>
 
   <script>
+    // Datos usuarios actualizados, agregando Máximo Antonio Acosta
     const usuarios = {
       "mauricioacostacom@gmail.com": {
-        activo: true, nombre: "Mauricio", apellido: "Acosta Danaher",
-        email: "mauricioacostacom@gmail.com", medioPago: "Mercado Pago",
-        ultimoPago: "31 de julio de 2025", proximoPago: "31 de septiembre de 2025",
-        pais: "Argentina", emailVerificado: true
+        activo: true,
+        nombre: "Mauricio",
+        apellido: "Acosta Danaher",
+        email: "mauricioacostacom@gmail.com",
+        medioPago: "Mercado Pago",
+        ultimoPago: "31 de julio de 2025",
+        proximoPago: "31 de septiembre de 2025",
+        pais: "Argentina",
+        emailVerificado: true
       },
       "luciacarpio20@gmail.com": {
-        activo: false, nombre: "Maria", apellido: "Carpio Peralta",
-        email: "luciacarpio20@gmail.com", deuda: "$1.000"
+        activo: false,
+        nombre: "Maria",
+        apellido: "Carpio Peralta",
+        email: "luciacarpio20@gmail.com",
+        deuda: "$1.000"
       },
       "maximoantonioacosta@hotmail.com": {
-        activo: true, nombre: "Máximo Antonio", apellido: "Acosta",
-        email: "maximoantonioacosta@hotmail.com", medioPago: "Mercado Pago",
-        ultimoPago: "20 de julio de 2025", proximoPago: "20 de agosto de 2025",
-        pais: "Argentina", emailVerificado: true
+        activo: true,
+        nombre: "Máximo Antonio",
+        apellido: "Acosta",
+        email: "maximoantonioacosta@hotmail.com",
+        medioPago: "Mercado Pago",
+        ultimoPago: "20 de julio de 2025",
+        proximoPago: "20 de agosto de 2025",
+        pais: "Argentina",
+        emailVerificado: true
       }
     };
 
@@ -230,9 +276,18 @@
     const mensajeError = document.getElementById("mensajeError");
     const inputEmail = document.getElementById("inputEmail");
     const panelMiCuenta = document.getElementById("panelMiCuenta");
+    const barraContenido = document.getElementById("barraContenido");
     const derecha = document.getElementById("derecha");
+    const izquierda = document.getElementById("izquierda");
 
-    let panelEstado = "inicio";
+    // Estado de navegación panel
+    let panelEstado = "inicio"; // valores: inicio, nombre, metodoPago, proximosPagos
+
+    // Guarda referencia al botón Mi cuenta para intercambiar con Volver
+    let btnCuenta = null;
+    let btnCerrarSesion = null;
+    let btnSuscribirme = null;
+    let btnAyuda = null;
 
     function mostrarLogin() {
       mensajeError.style.display = "none";
@@ -250,11 +305,13 @@
 
     function validarEmail() {
       const email = inputEmail.value.trim().toLowerCase();
+
       if (!email) {
         mensajeError.textContent = "Por favor, ingresá tu correo electrónico";
         mensajeError.style.display = "inline-block";
         return;
       }
+
       if (usuarios[email]) {
         if (usuarios[email].activo) {
           localStorage.setItem("usuarioLogueado", email);
@@ -270,73 +327,121 @@
       }
     }
 
+    // Mostrar saludo y botón Mi cuenta
     function cargarSesion(usuario) {
       btnIniciarSesion.style.display = "none";
       saludoUsuario.textContent = `Hola, ${usuario.nombre}`;
+
+      // Guardar botones fijos para alternar luego
+      btnSuscribirme = derecha.querySelector('a[href*="suscribirme"]');
+      btnAyuda = derecha.querySelector('a[href*="mi-cuenta-ayuda"]');
+
+      // Limpiar botones derecha y agregar Mi cuenta + Cerrar sesión
       derecha.innerHTML = "";
 
-      const btnCuenta = document.createElement("button");
+      // Botón Mi cuenta
+      btnCuenta = document.createElement("button");
       btnCuenta.textContent = "Mi cuenta";
       btnCuenta.className = "btn";
       btnCuenta.type = "button";
+      btnCuenta.setAttribute("aria-expanded", "false");
       btnCuenta.onclick = () => {
         if (panelMiCuenta.classList.contains("visible")) {
-          ocultarPanelMiCuenta(btnCuenta);
+          ocultarPanelMiCuenta(usuario);
         } else {
-          mostrarPanelMiCuenta(usuario, btnCuenta);
+          mostrarPanelMiCuenta(usuario);
         }
       };
       derecha.appendChild(btnCuenta);
 
-      const btnCerrar = document.createElement("button");
-      btnCerrar.textContent = "Cerrar sesión";
-      btnCerrar.className = "btn";
-      btnCerrar.onclick = () => {
+      // Botón Cerrar sesión
+      btnCerrarSesion = document.createElement("button");
+      btnCerrarSesion.textContent = "Cerrar sesión";
+      btnCerrarSesion.className = "btn";
+      btnCerrarSesion.type = "button";
+      btnCerrarSesion.onclick = () => {
         localStorage.removeItem("usuarioLogueado");
         location.reload();
       };
-      derecha.appendChild(btnCerrar);
+      derecha.appendChild(btnCerrarSesion);
 
+      // Guardar usuario en variable global para acceso panel
       window.usuarioActual = usuario;
     }
 
-    function mostrarPanelMiCuenta(usuario, btnCuenta) {
+    // Mostrar panel Mi Cuenta horizontal con botones y contenido deslizable
+    function mostrarPanelMiCuenta(usuario) {
       panelEstado = "inicio";
       construirPanel(usuario, panelEstado);
+
+      // Ocultar grupo derecha original y grupo izquierda (saludo)
+      derecha.style.display = "none";
+      izquierda.style.display = "none";
+
+      // Mostrar panel
       panelMiCuenta.classList.add("visible");
-      btnCuenta.textContent = "Volver";
+      panelMiCuenta.setAttribute("aria-hidden", "false");
+
+      // Construir botón Volver a la derecha dentro del panel
+      construirBotonVolver(usuario);
     }
 
-    function ocultarPanelMiCuenta(btnCuenta) {
+    // Ocultar panel Mi Cuenta y restaurar barra original
+    function ocultarPanelMiCuenta(usuario) {
       panelMiCuenta.classList.remove("visible");
+      panelMiCuenta.setAttribute("aria-hidden", "true");
       panelMiCuenta.innerHTML = "";
       panelEstado = "inicio";
-      btnCuenta.textContent = "Mi cuenta";
+
+      // Restaurar grupo derecha y grupo izquierda
+      derecha.style.display = "flex";
+      izquierda.style.display = "flex";
     }
 
+    // Construir contenido panel según estado
     function construirPanel(usuario, estado) {
-      panelMiCuenta.innerHTML = "";
-      function crearBtnVolver() {
-        const btnVolver = document.createElement("button");
-        btnVolver.className = "btn-panel";
-        btnVolver.textContent = "← Volver";
-        btnVolver.onclick = () => {
-          panelEstado = "inicio";
-          construirPanel(usuario, panelEstado);
-        };
-        return btnVolver;
-      }
+      panelMiCuenta.innerHTML = ""; // limpiar
+
       if (estado === "inicio") {
-        ["Nombre completo", "Método de pago", "Próximas fechas de pago"].forEach((texto, i) => {
-          const btn = document.createElement("button");
-          btn.className = "btn-panel";
-          btn.textContent = texto;
-          btn.onclick = () => {
-            panelEstado = i === 0 ? "nombre" : i === 1 ? "metodoPago" : "proximosPagos";
-            construirPanel(usuario, panelEstado);
-          };
-          panelMiCuenta.appendChild(btn);
-        });
+        // Mostrar los botones principales
+
+        // Nombre completo
+        const btnNombre = document.createElement("button");
+        btnNombre.className = "btn-panel";
+        btnNombre.type = "button";
+        btnNombre.textContent = "Nombre completo";
+        btnNombre.onclick = () => {
+          panelEstado = "nombre";
+          construirPanel(usuario, panelEstado);
+          construirBotonVolver(usuario);
+        };
+        panelMiCuenta.appendChild(btnNombre);
+
+        // Método de pago
+        const btnMetodo = document.createElement("button");
+        btnMetodo.className = "btn-panel";
+        btnMetodo.type = "button";
+        btnMetodo.textContent = "Método de pago";
+        btnMetodo.onclick = () => {
+          panelEstado = "metodoPago";
+          construirPanel(usuario, panelEstado);
+          construirBotonVolver(usuario);
+        };
+        panelMiCuenta.appendChild(btnMetodo);
+
+        // Próximas fechas de pago
+        const btnFechas = document.createElement("button");
+        btnFechas.className = "btn-panel";
+        btnFechas.type = "button";
+        btnFechas.textContent = "Próximas fechas de pago";
+        btnFechas.onclick = () => {
+          panelEstado = "proximosPagos";
+          construirPanel(usuario, panelEstado);
+          construirBotonVolver(usuario);
+        };
+        panelMiCuenta.appendChild(btnFechas);
+
+        // Dar de baja suscripción (link directo)
         const btnBaja = document.createElement("a");
         btnBaja.className = "btn-panel";
         btnBaja.textContent = "Dar de baja suscripción";
@@ -344,21 +449,26 @@
         btnBaja.target = "_blank";
         btnBaja.rel = "noopener noreferrer";
         panelMiCuenta.appendChild(btnBaja);
+
       } else if (estado === "nombre") {
+        // Mostrar nombre completo y email con verificado si aplica
         const textoNombre = document.createElement("span");
         textoNombre.textContent = `Nombre: ${usuario.nombre} ${usuario.apellido} (Email: ${usuario.email})`;
         if (usuario.emailVerificado) {
           const verif = document.createElement("span");
           verif.textContent = " ✅";
           verif.title = "Email verificado";
+          verif.style.marginLeft = "6px";
           textoNombre.appendChild(verif);
         }
         panelMiCuenta.appendChild(textoNombre);
-        panelMiCuenta.appendChild(crearBtnVolver());
+
       } else if (estado === "metodoPago") {
+        // Mostrar método de pago + botón cambiar
         const contPago = document.createElement("span");
         contPago.textContent = `Método de pago: ${usuario.medioPago || "No especificado"}`;
         panelMiCuenta.appendChild(contPago);
+
         const btnCambiar = document.createElement("button");
         btnCambiar.className = "btn-panel";
         btnCambiar.textContent = "Cambiar método de pago";
@@ -366,15 +476,42 @@
           window.open("https://www.prenoticia.com/contacto", "_blank", "noopener");
         };
         panelMiCuenta.appendChild(btnCambiar);
-        panelMiCuenta.appendChild(crearBtnVolver());
+
       } else if (estado === "proximosPagos") {
+        // Mostrar próximas fechas de pago y último pago
         const textoPagos = document.createElement("span");
-        textoPagos.innerHTML = `Último pago: <b>${usuario.ultimoPago || "No disponible"}</b> &nbsp;&nbsp; Próximo pago: <b>${usuario.proximoPago || "No disponible"}</b>`;
+        textoPagos.innerHTML = `
+          Último pago: <b>${usuario.ultimoPago || "No disponible"}</b> &nbsp;&nbsp; 
+          Próximo pago: <b>${usuario.proximoPago || "No disponible"}</b>
+        `;
         panelMiCuenta.appendChild(textoPagos);
-        panelMiCuenta.appendChild(crearBtnVolver());
       }
     }
 
+    // Construir botón Volver a la derecha del botón "Dar de baja suscripción"
+    function construirBotonVolver(usuario) {
+      // Evitar que se duplique
+      const btnExistente = document.getElementById("btnVolverPanel");
+      if (btnExistente) return;
+
+      // Crear botón Volver
+      const btnVolver = document.createElement("button");
+      btnVolver.id = "btnVolverPanel";
+      btnVolver.className = "btn-panel";
+      btnVolver.textContent = "← Volver";
+      btnVolver.style.marginLeft = "auto"; // lo lleva al extremo derecho
+      btnVolver.onclick = () => {
+        panelEstado = "inicio";
+        construirPanel(usuario, panelEstado);
+        // Remover botón volver y reconstruir para que aparezca solo al cambiar estado
+        btnVolver.remove();
+        construirBotonVolver(usuario);
+      };
+
+      panelMiCuenta.appendChild(btnVolver);
+    }
+
+    // Al cargar página, persistir sesión
     window.onload = () => {
       const emailGuardado = localStorage.getItem("usuarioLogueado");
       if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) {
@@ -382,5 +519,6 @@
       }
     };
   </script>
+
 </body>
 </html>
