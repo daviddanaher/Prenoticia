@@ -2,12 +2,20 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Barra Flotante</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: sans-serif; }
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sitio con Barra Flotante y Mi Cuenta</title>
 
+  <style>
+    /* Estilos generales */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding-top: 150px; /* espacio para barra flotante y evitar tapar contenido */
+      background: #fefefe;
+      color: #222;
+    }
+
+    /* ===== BARRA FLOTANTE (del segundo HTML) ===== */
     .barra-flotante {
       position: fixed;
       top: 0;
@@ -116,137 +124,310 @@
         width: 140px;
       }
     }
+
+    /* ===== CONTENEDOR DEL PANEL "Mi Cuenta" (del primer HTML) ===== */
+    #contenedorMiCuenta {
+      max-width: 700px;
+      margin: 0 auto 50px auto;
+      padding: 20px;
+      display: none; /* por defecto oculto, se mostrará solo en URLs específicas */
+    }
+
+    .panel-cuenta {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #fff;
+      box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
+      border-radius: 8px;
+      padding: 30px;
+    }
+    #contenedorMiCuenta h1 {
+      text-align: center;
+      color: #f68e02;
+      margin-bottom: 30px;
+    }
+    .fila {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    .fila:last-child {
+      border-bottom: none;
+    }
+    .etiqueta {
+      font-weight: bold;
+      color: #555;
+      min-width: 180px;
+    }
+    .valor {
+      flex: 1;
+      color: #111;
+    }
+    .verificado {
+      color: green;
+      font-weight: bold;
+      margin-left: 8px;
+      font-size: 18px;
+      vertical-align: middle;
+    }
+    .btn-baja {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: #bb6c00;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 30px;
+      transition: background-color 0.3s ease;
+    }
+    .btn-baja:hover {
+      background-color: #a55a00;
+      text-decoration: none;
+      color: white;
+    }
+    .info-legal {
+      margin-top: 40px;
+      background: #fff4e5;
+      padding: 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #663d00;
+    }
   </style>
 </head>
 <body>
 
-<div class="barra-flotante">
-  <div class="barra-contenido" id="barraContenido">
-    <div class="grupo-botones" id="izquierda">
-      <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()">Iniciar sesión</button>
-      <span id="saludoUsuario" style="color:white; font-weight:bold;"></span>
-    </div>
+  <!-- ======= BARRA FLOTANTE ======= -->
+  <div class="barra-flotante">
+    <div class="barra-contenido" id="barraContenido">
+      <div class="grupo-botones" id="izquierda">
+        <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()">Iniciar sesión</button>
+        <span id="saludoUsuario" style="color:white; font-weight:bold;"></span>
+      </div>
 
-    <div class="grupo-botones" id="derecha">
-      <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_blank" rel="noopener noreferrer">Suscribirme</a>
-      <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank" rel="noopener noreferrer">Ayuda</a>
-    </div>
+      <div class="grupo-botones" id="derecha">
+        <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_blank" rel="noopener noreferrer">Suscribirme</a>
+        <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank" rel="noopener noreferrer">Ayuda</a>
+      </div>
 
-    <div class="popup-login" id="popupLogin">
-      <input type="email" id="inputEmail" placeholder="Tu correo" />
-      <button class="btn" onclick="validarEmail()">Ingresar</button>
-      <button class="btn" onclick="cerrarLogin()">✕</button>
-      <span class="mensaje-error" id="mensajeError"></span>
+      <div class="popup-login" id="popupLogin">
+        <input type="email" id="inputEmail" placeholder="Tu correo" />
+        <button class="btn" onclick="validarEmail()">Ingresar</button>
+        <button class="btn" onclick="cerrarLogin()">✕</button>
+        <span class="mensaje-error" id="mensajeError"></span>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  const usuarios = {
-    "mauricioacostacom@gmail.com": {
-      activo: true,
-      nombre: "Mauricio",
-      apellido: "Acosta Danaher",
-      medioPago: "Mercado Pago",
-      ultimoPago: "31 de julio de 2025",
-      proximoPago: "31 de septiembre de 2025"
-    },
-    "luciacarpio20@gmail.com": {
-      activo: false,
-      nombre: "Maria",
-      apellido: "Carpio Peralta",
-      deuda: "$1.000"
-    }
-  };
+  <!-- ======= PANEL "MI CUENTA" ======= -->
+  <div id="contenedorMiCuenta"></div>
 
-  function mostrarLogin() {
-    document.getElementById("popupLogin").style.display = "flex";
-    document.getElementById("mensajeError").style.display = "none";
-  }
-
-  function cerrarLogin() {
-    document.getElementById("popupLogin").style.display = "none";
-    document.getElementById("inputEmail").value = "";
-  }
-
-  function validarEmail() {
-    const email = document.getElementById("inputEmail").value.trim().toLowerCase();
-    const mensaje = document.getElementById("mensajeError");
-
-    if (!email) {
-      mensaje.textContent = "Por favor, ingresá tu correo electrónico";
-      mensaje.style.display = "inline-block";
-      return;
-    }
-
-    if (usuarios[email]) {
-      if (usuarios[email].activo) {
-        localStorage.setItem("usuarioLogueado", JSON.stringify(usuarios[email]));
-        mostrarUsuario(usuarios[email].nombre);
-        cerrarLogin();
-      } else {
-        mensaje.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`;
-        mensaje.style.display = "inline-block";
+  <script>
+    // Datos usuarios (combinar datos de ambos)
+    const usuarios = {
+      "mauricioacostacom@gmail.com": {
+        activo: true,
+        nombre: "Mauricio",
+        apellido: "Acosta Danaher",
+        email: "mauricioacostacom@gmail.com",
+        medioPago: "Mercado Pago",
+        pais: "Argentina",
+        montoSuscripcion: "$2.000",
+        ultimoPago: "31 de julio de 2025",
+        proximoPago: "31 de septiembre de 2025",
+        emailVerificado: true
+      },
+      "luciacarpio20@gmail.com": {
+        activo: false,
+        nombre: "Maria",
+        apellido: "Carpio Peralta",
+        email: "luciacarpio20@gmail.com",
+        medioPago: "PayPal",
+        pais: "Chile",
+        montoSuscripcion: "$1.000",
+        ultimoPago: "15 de junio de 2025",
+        proximoPago: "15 de julio de 2025",
+        emailVerificado: false,
+        deuda: "$1.000"
       }
-    } else {
-      mensaje.textContent = "El correo ingresado no está suscripto.";
-      mensaje.style.display = "inline-block";
-    }
-  }
-
-  function mostrarUsuario(nombre) {
-    document.getElementById("btnIniciarSesion").style.display = "none";
-    document.getElementById("saludoUsuario").textContent = `Hola, ${nombre}`;
-
-    const derecha = document.getElementById("derecha");
-    derecha.innerHTML = "";
-
-    const btnCuenta = document.createElement("a");
-    btnCuenta.textContent = "Mi cuenta";
-    btnCuenta.className = "btn";
-    btnCuenta.href = "https://www.prenoticia.com/mi-cuenta";
-    btnCuenta.target = "_blank";                // <-- Aquí para abrir en nueva pestaña
-    btnCuenta.rel = "noopener noreferrer";      // Buenas prácticas de seguridad
-
-    const btnCerrar = document.createElement("button");
-    btnCerrar.textContent = "Cerrar sesión";
-    btnCerrar.className = "btn";
-    btnCerrar.onclick = () => {
-      localStorage.removeItem("usuarioLogueado");
-      location.reload();
     };
 
-    derecha.appendChild(btnCuenta);
-    derecha.appendChild(btnCerrar);
-  }
-
-  // Persistencia de sesión
-  window.onload = () => {
-    const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
-    if (usuario && usuario.activo) {
-      mostrarUsuario(usuario.nombre);
+    // Funciones barra flotante + login
+    function mostrarLogin() {
+      document.getElementById("popupLogin").style.display = "flex";
+      document.getElementById("mensajeError").style.display = "none";
     }
-  };
-</script>
 
-<script>
-(function () {
-  function mostrarContenidoExclusivo() {
-    const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
-    if (usuario && usuario.activo) {
-      const interval = setInterval(() => {
-        const bloques = document.querySelectorAll(".contenido-exclusivo");
-        if (bloques.length > 0) {
-          bloques.forEach(bloque => bloque.style.display = "block");
-          clearInterval(interval);
+    function cerrarLogin() {
+      document.getElementById("popupLogin").style.display = "none";
+      document.getElementById("inputEmail").value = "";
+    }
+
+    function validarEmail() {
+      const email = document.getElementById("inputEmail").value.trim().toLowerCase();
+      const mensaje = document.getElementById("mensajeError");
+
+      if (!email) {
+        mensaje.textContent = "Por favor, ingresá tu correo electrónico";
+        mensaje.style.display = "inline-block";
+        return;
+      }
+
+      if (usuarios[email]) {
+        if (usuarios[email].activo) {
+          localStorage.setItem("usuarioLogueado", JSON.stringify(usuarios[email]));
+          mostrarUsuario(usuarios[email].nombre);
+          cerrarLogin();
+          mostrarPanelMiCuentaSiCorresponde(); // Actualizar panel si está en la página
+        } else {
+          mensaje.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`;
+          mensaje.style.display = "inline-block";
         }
-      }, 500);
+      } else {
+        mensaje.textContent = "El correo ingresado no está suscripto.";
+        mensaje.style.display = "inline-block";
+      }
     }
-  }
 
-  window.addEventListener("load", mostrarContenidoExclusivo);
-})();
-</script>
+    function mostrarUsuario(nombre) {
+      document.getElementById("btnIniciarSesion").style.display = "none";
+      document.getElementById("saludoUsuario").textContent = `Hola, ${nombre}`;
+
+      const derecha = document.getElementById("derecha");
+      derecha.innerHTML = "";
+
+      const btnCuenta = document.createElement("a");
+      btnCuenta.textContent = "Mi cuenta";
+      btnCuenta.className = "btn";
+      btnCuenta.href = "https://www.prenoticia.com/p/mi-cuenta.html";
+      btnCuenta.target = "_blank";
+      btnCuenta.rel = "noopener noreferrer";
+
+      const btnCerrar = document.createElement("button");
+      btnCerrar.textContent = "Cerrar sesión";
+      btnCerrar.className = "btn";
+      btnCerrar.onclick = () => {
+        localStorage.removeItem("usuarioLogueado");
+        location.reload();
+      };
+
+      derecha.appendChild(btnCuenta);
+      derecha.appendChild(btnCerrar);
+    }
+
+    // Función para mostrar el panel "Mi Cuenta"
+    function mostrarPanel(usuario) {
+      const cont = document.getElementById("contenedorMiCuenta");
+
+      if (!usuario) {
+        cont.innerHTML = `<div class="panel-cuenta" id="panelCuenta">
+          <h1>Mi Cuenta</h1>
+          <p>No estás logueado. Por favor <a href="#" id="linkLogin">iniciá sesión</a> para ver tu cuenta.</p>
+        </div>`;
+        document.getElementById("linkLogin").addEventListener("click", (e) => {
+          e.preventDefault();
+          // Simula login guardando usuario en localStorage
+          localStorage.setItem("usuarioLogueado", JSON.stringify(usuarios["mauricioacostacom@gmail.com"]));
+          mostrarPanel(usuarios["mauricioacostacom@gmail.com"]);
+          mostrarUsuario(usuarios["mauricioacostacom@gmail.com"].nombre);
+        });
+        return;
+      }
+
+      if (!usuario.activo) {
+        cont.innerHTML = `<div class="panel-cuenta" id="panelCuenta">
+          <h1>Mi Cuenta</h1>
+          <p>Tu cuenta no está activa. Por favor regularizá tu situación.</p>
+          <p><b>Deuda actual:</b> ${usuario.deuda || "No disponible"}</p>
+        </div>`;
+        return;
+      }
+
+      let infoLegal = "";
+      switch (usuario.pais?.toLowerCase()) {
+        case "argentina":
+          infoLegal = `<p><b>Información legal para Argentina:</b> De acuerdo a la Ley de Defensa del Consumidor, tenés derecho a dar de baja tu suscripción en cualquier momento y sin penalización. Para solicitar la baja, usá el botón que figura abajo o contactanos a soporte.</p>`;
+          break;
+        case "peru":
+          infoLegal = `<p><b>Información legal para Perú:</b> Según la Ley de Protección al Consumidor, podés cancelar tu suscripción sin cargos adicionales y con derecho a recibir un comprobante. Contactá soporte si necesitás ayuda.</p>`;
+          break;
+        case "chile":
+          infoLegal = `<p><b>Información legal para Chile:</b> Conforme a la Ley del Consumidor, podés dar de baja tu suscripción en cualquier momento y solicitar la devolución proporcional de pagos anticipados si aplica.</p>`;
+          break;
+        default:
+          infoLegal = `<p><b>Información legal:</b> Podés gestionar tu suscripción según los términos y condiciones vigentes en tu país. Para más información, contactá soporte.</p>`;
+          break;
+      }
+
+      cont.innerHTML = `
+        <div class="panel-cuenta" id="panelCuenta">
+          <h1>Mi Cuenta</h1>
+          <div class="fila"><div class="etiqueta">Nombre:</div><div class="valor">${usuario.nombre}</div></div>
+          <div class="fila"><div class="etiqueta">Apellido:</div><div class="valor">${usuario.apellido}</div></div>
+          <div class="fila"><div class="etiqueta">Email:</div><div class="valor">${usuario.email}
+            ${usuario.emailVerificado ? '<span class="verificado" title="Email verificado">✅</span>' : ''}
+          </div></div>
+          <div class="fila"><div class="etiqueta">Método de pago:</div><div class="valor">${usuario.medioPago || "No especificado"}</div></div>
+          <div class="fila"><div class="etiqueta">País:</div><div class="valor">${usuario.pais || "No especificado"}</div></div>
+          <div class="fila"><div class="etiqueta">Monto actual suscripción:</div><div class="valor">${usuario.montoSuscripcion || "No disponible"}</div></div>
+          <div class="fila"><div class="etiqueta">Último pago:</div><div class="valor">${usuario.ultimoPago || "No disponible"}</div></div>
+          <div class="fila"><div class="etiqueta">Próximo pago:</div><div class="valor">${usuario.proximoPago || "No disponible"}</div></div>
+
+          <a href="https://www.prenoticia.com/baja-suscripción" target="_blank" class="btn-baja">Dar de baja suscripción</a>
+
+          <div class="info-legal">${infoLegal}</div>
+        </div>
+      `;
+    }
+
+    // Función para mostrar o esconder el panel "Mi Cuenta" según la URL actual
+    function mostrarPanelMiCuentaSiCorresponde() {
+      const cont = document.getElementById("contenedorMiCuenta");
+      const url = window.location.href.toLowerCase();
+
+      // URLs donde se muestra el panel
+      const urlsPermitidas = [
+        "https://www.prenoticia.com/p/mi-cuenta.html",
+        "https://www.prenoticia.com/p/mi-cuenta.html?=m1"
+      ];
+
+      const mostrar = urlsPermitidas.some(u => url === u);
+
+      if (mostrar) {
+        cont.style.display = "block";
+        // Mostrar panel con datos del usuario logueado o mensaje para loguear
+        const usuarioLogueado = JSON.parse(localStorage.getItem("usuarioLogueado"));
+        if (usuarioLogueado && usuarios[usuarioLogueado.email]) {
+          mostrarPanel(usuarios[usuarioLogueado.email]);
+        } else {
+          mostrarPanel(null);
+        }
+      } else {
+        cont.style.display = "none";
+      }
+    }
+
+    // On load
+    window.onload = () => {
+      const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
+      if (usuario && usuario.activo) {
+        mostrarUsuario(usuario.nombre);
+      }
+      mostrarPanelMiCuentaSiCorresponde();
+    };
+
+    // También chequeamos cuando cambia el historial de navegación con popstate (por SPA o navegacion sin reload)
+    window.addEventListener('popstate', mostrarPanelMiCuentaSiCorresponde);
+
+  </script>
 
 </body>
 </html>
