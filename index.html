@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Barra Flotante</title>
   <style>
     * { box-sizing: border-box; }
@@ -128,8 +128,8 @@
     </div>
 
     <div class="grupo-botones" id="derecha">
-      <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn">Suscribirme</a>
-      <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" id="btnAyuda">Ayuda</a>
+      <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_blank" rel="noopener noreferrer">Suscribirme</a>
+      <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank" rel="noopener noreferrer">Ayuda</a>
     </div>
 
     <div class="popup-login" id="popupLogin">
@@ -205,7 +205,8 @@
     btnCuenta.textContent = "Mi cuenta";
     btnCuenta.className = "btn";
     btnCuenta.href = "https://www.prenoticia.com/mi-cuenta";
-    // Aquí NO agregamos target="_blank", para que abra en la misma pestaña
+    btnCuenta.target = "_blank";                // <-- Aquí para abrir en nueva pestaña
+    btnCuenta.rel = "noopener noreferrer";      // Buenas prácticas de seguridad
 
     const btnCerrar = document.createElement("button");
     btnCerrar.textContent = "Cerrar sesión";
@@ -229,22 +230,22 @@
 </script>
 
 <script>
-  (function () {
-    function mostrarContenidoExclusivo() {
-      const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
-      if (usuario && usuario.activo) {
-        const interval = setInterval(() => {
-          const bloques = document.querySelectorAll(".contenido-exclusivo");
-          if (bloques.length > 0) {
-            bloques.forEach(bloque => bloque.style.display = "block");
-            clearInterval(interval); // Detiene cuando encuentra los bloques
-          }
-        }, 500); // Revisa cada medio segundo
-      }
+(function () {
+  function mostrarContenidoExclusivo() {
+    const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
+    if (usuario && usuario.activo) {
+      const interval = setInterval(() => {
+        const bloques = document.querySelectorAll(".contenido-exclusivo");
+        if (bloques.length > 0) {
+          bloques.forEach(bloque => bloque.style.display = "block");
+          clearInterval(interval);
+        }
+      }, 500);
     }
+  }
 
-    window.addEventListener("load", mostrarContenidoExclusivo);
-  })();
+  window.addEventListener("load", mostrarContenidoExclusivo);
+})();
 </script>
 
 </body>
