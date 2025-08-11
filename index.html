@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Barra Flotante</title>
   <style>
     * { box-sizing: border-box; }
@@ -55,6 +55,7 @@
       display: flex;
       align-items: center;
       text-decoration: none;
+      user-select: none;
     }
 
     .btn:hover {
@@ -64,7 +65,7 @@
 
     .popup-login {
       position: absolute;
-      top: 0;
+      top: 50px;
       left: 0;
       right: 0;
       height: 50px;
@@ -83,6 +84,7 @@
       border-radius: 4px;
       border: none;
       width: 200px;
+      font-size: 14px;
     }
 
     .popup-login .mensaje-error {
@@ -128,8 +130,8 @@
     </div>
 
     <div class="grupo-botones" id="derecha">
-      <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn">Suscribirme</a>
-      <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn">Ayuda</a>
+      <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_self" rel="noopener noreferrer">Suscribirme</a>
+      <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn btn-actualizar" target="_self" rel="noopener noreferrer">Ayuda</a>
     </div>
 
     <div class="popup-login" id="popupLogin">
@@ -203,8 +205,10 @@
 
     const btnCuenta = document.createElement("a");
     btnCuenta.textContent = "Mi cuenta";
-    btnCuenta.className = "btn";
+    btnCuenta.className = "btn btn-actualizar";
     btnCuenta.href = "https://www.prenoticia.com/mi-cuenta";
+    btnCuenta.setAttribute("target", "_self");
+    btnCuenta.setAttribute("rel", "noopener noreferrer");
 
     const btnCerrar = document.createElement("button");
     btnCerrar.textContent = "Cerrar sesión";
@@ -225,9 +229,20 @@
       mostrarUsuario(usuario.nombre);
     }
   };
+
+  // Forzar recarga completa en links con clase btn-actualizar (Ayuda y Mi cuenta)
+  document.addEventListener('click', function(event) {
+    const target = event.target;
+    if (target.matches('.btn-actualizar')) {
+      event.preventDefault();
+      const url = target.href;
+      // Recarga completa navegando a la URL
+      window.location.href = url;
+    }
+  });
 </script>
 
- <script>
+<script>
 (function () {
   function mostrarContenidoExclusivo() {
     const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
@@ -236,18 +251,15 @@
         const bloques = document.querySelectorAll(".contenido-exclusivo");
         if (bloques.length > 0) {
           bloques.forEach(bloque => bloque.style.display = "block");
-          clearInterval(interval); // Detiene cuando encuentra los bloques
+          clearInterval(interval);
         }
-      }, 500); // Revisa cada medio segundo
+      }, 500);
     }
   }
 
-  // Ejecutar cuando la página haya cargado
   window.addEventListener("load", mostrarContenidoExclusivo);
 })();
 </script>
-
-
 
 </body>
 </html>
