@@ -55,7 +55,6 @@
       display: flex;
       align-items: center;
       text-decoration: none;
-      user-select: none;
     }
 
     .btn:hover {
@@ -65,7 +64,7 @@
 
     .popup-login {
       position: absolute;
-      top: 50px;
+      top: 0;
       left: 0;
       right: 0;
       height: 50px;
@@ -84,7 +83,6 @@
       border-radius: 4px;
       border: none;
       width: 200px;
-      font-size: 14px;
     }
 
     .popup-login .mensaje-error {
@@ -130,8 +128,8 @@
     </div>
 
     <div class="grupo-botones" id="derecha">
-      <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_self" rel="noopener noreferrer">Suscribirme</a>
-      <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn btn-actualizar" target="_self" rel="noopener noreferrer">Ayuda</a>
+      <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn">Suscribirme</a>
+      <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" id="btnAyuda">Ayuda</a>
     </div>
 
     <div class="popup-login" id="popupLogin">
@@ -205,10 +203,9 @@
 
     const btnCuenta = document.createElement("a");
     btnCuenta.textContent = "Mi cuenta";
-    btnCuenta.className = "btn btn-actualizar";
+    btnCuenta.className = "btn";
     btnCuenta.href = "https://www.prenoticia.com/mi-cuenta";
-    btnCuenta.setAttribute("target", "_self");
-    btnCuenta.setAttribute("rel", "noopener noreferrer");
+    // Aquí NO agregamos target="_blank", para que abra en la misma pestaña
 
     const btnCerrar = document.createElement("button");
     btnCerrar.textContent = "Cerrar sesión";
@@ -229,36 +226,25 @@
       mostrarUsuario(usuario.nombre);
     }
   };
-
-  // Forzar recarga completa en links con clase btn-actualizar (Ayuda y Mi cuenta)
-  document.addEventListener('click', function(event) {
-    const target = event.target;
-    if (target.matches('.btn-actualizar')) {
-      event.preventDefault();
-      const url = target.href;
-      // Recarga completa navegando a la URL
-      window.location.href = url;
-    }
-  });
 </script>
 
 <script>
-(function () {
-  function mostrarContenidoExclusivo() {
-    const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
-    if (usuario && usuario.activo) {
-      const interval = setInterval(() => {
-        const bloques = document.querySelectorAll(".contenido-exclusivo");
-        if (bloques.length > 0) {
-          bloques.forEach(bloque => bloque.style.display = "block");
-          clearInterval(interval);
-        }
-      }, 500);
+  (function () {
+    function mostrarContenidoExclusivo() {
+      const usuario = JSON.parse(localStorage.getItem("usuarioLogueado"));
+      if (usuario && usuario.activo) {
+        const interval = setInterval(() => {
+          const bloques = document.querySelectorAll(".contenido-exclusivo");
+          if (bloques.length > 0) {
+            bloques.forEach(bloque => bloque.style.display = "block");
+            clearInterval(interval); // Detiene cuando encuentra los bloques
+          }
+        }, 500); // Revisa cada medio segundo
+      }
     }
-  }
 
-  window.addEventListener("load", mostrarContenidoExclusivo);
-})();
+    window.addEventListener("load", mostrarContenidoExclusivo);
+  })();
 </script>
 
 </body>
