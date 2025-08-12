@@ -44,22 +44,26 @@
       white-space: nowrap;
     }
 
-    .btn {
+    /* --- Todos los botones mismo alto --- */
+    .btn, 
+    #panelMiCuenta .btn-panel {
       background-color: #bb6c00;
       color: #fff;
       border: none;
-      padding: 6px 10px;
+      padding: 6px 12px;
       border-radius: 4px;
       font-size: 14px;
       cursor: pointer;
-      height: 32px;
+      height: 36px; /* mismo alto para todos */
       display: flex;
       align-items: center;
       text-decoration: none;
       transition: background 0.3s ease;
       white-space: nowrap;
+      box-sizing: border-box;
     }
-    .btn:hover {
+    .btn:hover,
+    #panelMiCuenta .btn-panel:hover {
       background-color: #a55a00;
       text-decoration: none;
     }
@@ -87,6 +91,7 @@
       border: none;
       width: 200px;
       font-size: 14px;
+      height: 24px;
     }
 
     .mensaje-error {
@@ -133,23 +138,6 @@
 
     #panelMiCuenta.visible { opacity: 1; pointer-events: auto; }
 
-    /* Botones del panel */
-    #panelMiCuenta .btn-panel {
-      background-color: #bb6c00;
-      color: #fff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      transition: background-color 0.25s ease;
-      white-space: nowrap;
-      text-decoration: none !important;
-    }
-    #panelMiCuenta .btn-panel:hover { background-color: #a55a00; }
-
     /* Imagen usuario */
     .foto-usuario {
       width: 32px;
@@ -166,16 +154,26 @@
       align-items: center;
       gap: 8px;
       white-space: nowrap;
+      color: #eee;       /* color unificado */
+      font-size: 14px;   /* tamaño unificado */
+    }
+    .usuario-detalle span {
+      display: inline-block;
+      color: #eee;       /* color unificado */
+      font-size: 14px;   /* tamaño unificado */
     }
     .usuario-datos {
       display: flex;
       gap: 15px;
-      font-size: 13px;
-      color: #eee;
+      font-size: 14px;  /* tamaño unificado */
+      color: #eee;      /* color unificado */
       white-space: nowrap;
+      align-items: center;
     }
     .usuario-datos span {
       display: inline-block;
+      color: #eee;      /* color unificado */
+      font-size: 14px;  /* tamaño unificado */
     }
 
     /* Contenido exclusivo */
@@ -184,6 +182,8 @@
       align-items: center;
       gap: 8px;
       white-space: nowrap;
+      width: 100%;
+      justify-content: space-between; /* espacio entre flechas y noticia */
     }
     .flecha {
       background: rgba(255,255,255,0.2);
@@ -194,6 +194,7 @@
       padding: 4px 8px;
       border-radius: 4px;
       user-select: none;
+      flex-shrink: 0;
     }
     .flecha:hover { background: rgba(255,255,255,0.35); }
     .articulo-exclusivo {
@@ -203,12 +204,17 @@
       border-radius: 4px;
       display: flex;
       align-items: center;
+      flex-grow: 1;
+      margin: 0 8px; /* espacio a los lados para separar de flechas */
+      overflow: hidden;
     }
     .articulo-exclusivo a {
       color: white;
       text-decoration: none;
       font-weight: 600;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .articulo-exclusivo a:hover {
       text-decoration: underline;
@@ -216,7 +222,12 @@
 
     /* Adaptaciones móviles */
     @media (max-width: 600px) {
-      .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
+      .btn, 
+      #panelMiCuenta .btn-panel {
+        font-size: 13px; 
+        padding: 5px 8px; 
+        height: 32px; /* menor alto en móvil, igual para todos */
+      }
       .popup-login input { width: 140px; }
       #panelMiCuenta { font-size: 13px; padding: 0 8px; }
       #panelMiCuenta .btn-panel { padding: 5px 8px; }
@@ -258,13 +269,13 @@
         medioPago: "Mercado Pago",
         ultimoPago: "31 de julio de 2025",
         proximoPago: "31 de septiembre de 2025",
-        pais: "Argentina",
+        pais: "Buenos Aires, Argentina",
         emailVerificado: true,
         foto: "https://pbs.twimg.com/profile_images/1907511710769930240/7oUtDTMv_400x400.jpg",
         articulos: [
-          { titulo: "Noticia exclusiva 1", url: "https://www.prenoticia.com/articulo1" },
-          { titulo: "Noticia exclusiva 2", url: "https://www.prenoticia.com/articulo2" },
-          { titulo: "Noticia exclusiva 3", url: "https://www.prenoticia.com/articulo3" }
+          { titulo: "Submarino desaparece en la Antártida tras descubrir estructuras desconocidas", url: "https://www.prenoticia.com/2025/08/submarino-desaparece-en-la-antartida.html" },
+          { titulo: "Un informe reciente señala que no hace falta caminar tantos pasos como se creía para cuidar la salud", url: "https://www.prenoticia.com/2025/08/un-informe-reciente-senala-que-no-hace.html" },
+          { titulo: "El cerebro del hombre es más grande, pero el de la mujer funciona con más eficiencia", url: "https://www.prenoticia.com/2025/06/el-cerebro-del-hombre-es-mas-grande.html" }
         ]
       },
       "luciacarpio20@gmail.com": {
@@ -436,10 +447,6 @@
       const articuloDiv = document.createElement("div");
       articuloDiv.className = "articulo-exclusivo";
 
-      // Flechas y link con formato "< Título"
-      // Lo reestructuro para que el título esté luego de la flecha izquierda
-      // y la flecha derecha al final, todo en la misma fila
-
       // El texto es un link que abre en pestaña nueva
       const enlace = document.createElement("a");
       enlace.href = usuarioActual.articulos[articuloIndex].url;
@@ -456,7 +463,7 @@
         mostrarArticulo();
       };
 
-      // Para que quede: [<] [Título link] [>]
+      // Ahora las flechas quedan a los extremos y la noticia en el medio (con justify-content: space-between)
       cont.appendChild(flechaIzq);
       cont.appendChild(articuloDiv);
       cont.appendChild(flechaDer);
@@ -493,7 +500,7 @@
 
         panelMiCuenta.appendChild(contUsuario);
 
-        // Datos en línea horizontal: email, verificado, país
+        // Datos en línea horizontal: email, verificado, país (mismo tamaño y color)
         const datos = document.createElement("div");
         datos.className = "usuario-datos";
 
