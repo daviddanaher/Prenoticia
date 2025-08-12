@@ -19,7 +19,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 0 8px; /* Aumentado en móvil */
+      padding: 0 8px;
       z-index: 9999;
       user-select: none;
       overflow: hidden;
@@ -45,7 +45,7 @@
     }
 
     .btn {
-      background-color: #bb6c00; /* Unificado color */
+      background-color: #bb6c00;
       color: #fff;
       border: none;
       padding: 6px 10px;
@@ -170,11 +170,9 @@
     .usuario-datos {
       display: flex;
       gap: 15px;
-      margin-left: 40px;
-      white-space: nowrap;
       font-size: 13px;
       color: #eee;
-      flex-wrap: nowrap;
+      white-space: nowrap;
     }
     .usuario-datos span {
       display: inline-block;
@@ -205,7 +203,6 @@
       border-radius: 4px;
       display: flex;
       align-items: center;
-      gap: 6px;
     }
     .articulo-exclusivo a {
       color: white;
@@ -221,9 +218,9 @@
     @media (max-width: 600px) {
       .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
       .popup-login input { width: 140px; }
-      #panelMiCuenta { font-size: 13px; padding: 0 7px; }
+      #panelMiCuenta { font-size: 13px; padding: 0 8px; }
       #panelMiCuenta .btn-panel { padding: 5px 8px; }
-      .barra-contenido { padding-left: 7px; padding-right: 7px; }
+      .barra-contenido { padding-left: 8px; padding-right: 8px; }
     }
   </style>
 </head>
@@ -373,11 +370,11 @@
     function construirPanelInicio() {
       panelMiCuenta.innerHTML = "";
 
-      const btnUsuario = document.createElement("button");
-      btnUsuario.className = "btn-panel";
-      btnUsuario.textContent = "Usuario";
-      btnUsuario.onclick = () => { construirDetalle("nombre"); };
-      panelMiCuenta.appendChild(btnUsuario);
+      const btnNombre = document.createElement("button");
+      btnNombre.className = "btn-panel";
+      btnNombre.textContent = "Usuario";
+      btnNombre.onclick = () => { construirDetalle("nombre"); };
+      panelMiCuenta.appendChild(btnNombre);
 
       const btnExclusivo = document.createElement("button");
       btnExclusivo.className = "btn-panel";
@@ -439,18 +436,16 @@
       const articuloDiv = document.createElement("div");
       articuloDiv.className = "articulo-exclusivo";
 
+      // Flechas y link con formato "< Título"
+      // Lo reestructuro para que el título esté luego de la flecha izquierda
+      // y la flecha derecha al final, todo en la misma fila
+
+      // El texto es un link que abre en pestaña nueva
       const enlace = document.createElement("a");
       enlace.href = usuarioActual.articulos[articuloIndex].url;
       enlace.target = "_blank";
-      enlace.rel = "noopener noreferrer";
       enlace.textContent = usuarioActual.articulos[articuloIndex].titulo;
 
-      // Orden: flechas a la izquierda del título
-      // así que contenedor tiene: [<] [Título] [>]
-      // Vamos a armar contenedor con los tres elementos
-      // Pero como ya flechaIzq y flechaDer son botones independientes, y titulo es el link
-
-      // Agregamos el enlace dentro de articuloDiv
       articuloDiv.appendChild(enlace);
 
       const flechaDer = document.createElement("button");
@@ -461,22 +456,17 @@
         mostrarArticulo();
       };
 
-      // Limpiamos cont para reordenar: 
-      cont.innerHTML = "";
-      // Append flechaIzq
+      // Para que quede: [<] [Título link] [>]
       cont.appendChild(flechaIzq);
-      // Luego artículo con enlace (título)
       cont.appendChild(articuloDiv);
-      // Luego flechaDer
       cont.appendChild(flechaDer);
-
-      panelMiCuenta.appendChild(cont);
 
       function mostrarArticulo() {
         enlace.href = usuarioActual.articulos[articuloIndex].url;
         enlace.textContent = usuarioActual.articulos[articuloIndex].titulo;
       }
 
+      panelMiCuenta.appendChild(cont);
       construirBotonVolver();
     }
 
@@ -486,21 +476,22 @@
       if (!usuarioActual) return;
 
       if (tipo === "nombre") {
-        // Usuario: foto a la izquierda, luego nombre completo
-        const contenedorNombre = document.createElement("div");
-        contenedorNombre.className = "usuario-detalle";
+        // Mostrar foto a la izquierda y nombre completo sin la palabra "Nombre:"
+        const contUsuario = document.createElement("div");
+        contUsuario.className = "usuario-detalle";
 
-        const img = document.createElement("img");
-        img.className = "foto-usuario";
-        img.src = usuarioActual.foto || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
-        img.alt = "Foto usuario";
-        contenedorNombre.appendChild(img);
+        if (usuarioActual.foto) {
+          const img = document.createElement("img");
+          img.src = usuarioActual.foto;
+          img.className = "foto-usuario";
+          contUsuario.appendChild(img);
+        }
 
-        const spanNombre = document.createElement("span");
-        spanNombre.textContent = `${usuarioActual.nombre} ${usuarioActual.apellido}`;
-        contenedorNombre.appendChild(spanNombre);
+        const nombreSpan = document.createElement("span");
+        nombreSpan.textContent = usuarioActual.nombre + " " + usuarioActual.apellido;
+        contUsuario.appendChild(nombreSpan);
 
-        panelMiCuenta.appendChild(contenedorNombre);
+        panelMiCuenta.appendChild(contUsuario);
 
         // Datos en línea horizontal: email, verificado, país
         const datos = document.createElement("div");
