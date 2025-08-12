@@ -19,7 +19,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 0 4px; /* reducido 1px de 5px */
+      padding: 0 4px; /* reducido 1px para móviles */
       z-index: 9999;
       user-select: none;
       overflow: hidden;
@@ -64,7 +64,7 @@
       text-decoration: none;
     }
 
-    /* Botones "Mi cuenta" y "Cerrar sesión" con mismo color que los nuevos */
+    /* Botones "Mi cuenta" y "Cerrar sesión" */
     .btn.cuenta-style {
       background-color: #0073e6;
     }
@@ -142,7 +142,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 0 10px;
+      padding: 0 4px; /* reducido 1px */
       white-space: nowrap;
       font-size: 14px;
       overflow-x: auto;
@@ -196,6 +196,7 @@
       border-radius: 50%;
       object-fit: cover;
       margin-right: 8px;
+      flex-shrink: 0;
     }
 
     /* Contenedor para usuario con foto + texto */
@@ -204,19 +205,28 @@
       align-items: center;
       gap: 6px;
       font-weight: bold;
+      white-space: nowrap;
     }
 
-    /* Contenedor detalles usuario completo */
+    /* Contenedor detalles usuario completo en fila horizontal */
     .usuario-datos {
       display: flex;
-      flex-direction: column;
+      gap: 12px;
       font-weight: normal;
       font-size: 13px;
       color: #ddd;
-      margin-left: 42px; /* para evitar superposición con foto flotante */
+      margin-left: 12px; /* separar de foto */
+      white-space: nowrap;
+      user-select: text;
+      align-items: center;
     }
     .usuario-datos span {
-      margin: 1px 0;
+      margin: 0;
+      padding: 0;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     /* Sección exclusivo */
@@ -224,10 +234,12 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      white-space: nowrap;
     }
     #contenidoExclusivo .nav-botones {
       display: flex;
       gap: 6px;
+      flex-shrink: 0;
     }
     #contenidoExclusivo .nav-botones button {
       background: rgba(255 255 255 / 0.15);
@@ -238,6 +250,12 @@
       cursor: pointer;
       user-select: none;
       transition: background-color 0.25s ease;
+      white-space: nowrap;
+      font-weight: normal;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     #contenidoExclusivo .nav-botones button:hover {
       background: rgba(255 255 255 / 0.35);
@@ -246,14 +264,19 @@
       color: white;
       font-weight: bold;
       user-select: none;
-      white-space: nowrap;
-      max-width: 300px;
+      max-width: 320px;
       overflow: hidden;
       text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     #contenidoExclusivo .titulo-articulo a {
       color: white;
       text-decoration: none;
+      white-space: nowrap;
+      display: inline-block;
+      max-width: 320px;
     }
     #contenidoExclusivo .titulo-articulo a:hover {
       text-decoration: underline;
@@ -276,17 +299,18 @@
       }
       #panelMiCuenta {
         font-size: 13px;
-        padding: 0 4px; /* reducido 1px de 5px */
+        padding: 0 4px; /* reducido 1px */
       }
       #panelMiCuenta .btn-panel {
         padding: 5px 8px;
       }
       .barra-contenido {
-        padding-left: 4px; /* reducido 1px de 5px */
+        padding-left: 4px; /* reducido 1px */
         padding-right: 4px;
       }
       .usuario-datos {
-        margin-left: 38px;
+        margin-left: 12px;
+        gap: 8px;
       }
     }
   </style>
@@ -334,7 +358,6 @@
         contenidoExclusivo: [
           {titulo: "Artículo 1: Novedades de la semana", link: "https://www.prenoticia.com/articulo1"},
           {titulo: "Artículo 2: Tips para suscriptores", link: "https://www.prenoticia.com/articulo2"},
-          // Podés agregar más artículos por usuario aquí
         ]
       },
       "luciacarpio20@gmail.com": {
@@ -490,164 +513,129 @@
       btnBaja.target = "_blank";
       panelMiCuenta.appendChild(btnBaja);
 
-      // Botón Ayuda a la derecha del botón baja
-      const btnAyuda = document.createElement("a");
-      btnAyuda.className = "btn-baja";
-      btnAyuda.textContent = "Ayuda";
-      btnAyuda.href = "https://www.prenoticia.com/mi-cuenta-ayuda";
-      btnAyuda.target = "_blank";
-      panelMiCuenta.appendChild(btnAyuda);
+      // Sección contenido exclusivo
+      if(usuarioActual.contenidoExclusivo && usuarioActual.contenidoExclusivo.length > 0) {
+        const seccionExclusivo = document.createElement("div");
+        seccionExclusivo.id = "contenidoExclusivo";
+
+        // Botones navegación < >
+        const navBotones = document.createElement("div");
+        navBotones.className = "nav-botones";
+
+        const btnAnterior = document.createElement("button");
+        btnAnterior.textContent = "<";
+        btnAnterior.onclick = () => {
+          contenidoExclusivoIndex = (contenidoExclusivoIndex - 1 + usuarioActual.contenidoExclusivo.length) % usuarioActual.contenidoExclusivo.length;
+          actualizarContenidoExclusivo();
+        };
+
+        const btnSiguiente = document.createElement("button");
+        btnSiguiente.textContent = ">";
+        btnSiguiente.onclick = () => {
+          contenidoExclusivoIndex = (contenidoExclusivoIndex + 1) % usuarioActual.contenidoExclusivo.length;
+          actualizarContenidoExclusivo();
+        };
+
+        navBotones.appendChild(btnAnterior);
+        navBotones.appendChild(btnSiguiente);
+        seccionExclusivo.appendChild(navBotones);
+
+        // Título con link que abre en pestaña nueva
+        const tituloArticulo = document.createElement("div");
+        tituloArticulo.className = "titulo-articulo";
+
+        const linkArticulo = document.createElement("a");
+        linkArticulo.href = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].link;
+        linkArticulo.textContent = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].titulo;
+        linkArticulo.target = "_blank";
+        linkArticulo.rel = "noopener noreferrer";
+
+        // Poner < > a la izquierda del título: se logra con navBotones a la izquierda y título a la derecha
+        tituloArticulo.appendChild(linkArticulo);
+        seccionExclusivo.appendChild(tituloArticulo);
+
+        panelMiCuenta.appendChild(seccionExclusivo);
+      }
+    }
+
+    function actualizarContenidoExclusivo() {
+      const tituloArticulo = document.querySelector("#contenidoExclusivo .titulo-articulo a");
+      if(tituloArticulo && usuarioActual && usuarioActual.contenidoExclusivo && usuarioActual.contenidoExclusivo.length > 0) {
+        tituloArticulo.href = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].link;
+        tituloArticulo.textContent = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].titulo;
+      }
     }
 
     function construirDetalle(tipo) {
       panelEstado = "detalle";
       panelMiCuenta.innerHTML = "";
 
-      if (!usuarioActual) return;
-
-      if (tipo === "nombre") {
-        const contenedor = document.createElement("div");
-        contenedor.className = "usuario-detalle";
-
-        if (usuarioActual.foto) {
-          const img = document.createElement("img");
-          img.src = usuarioActual.foto;
-          img.className = "foto-usuario";
-          contenedor.appendChild(img);
-        }
-
-        // Mostrar nombre completo directamente (sin "Nombre:" o etiqueta)
-        const nombreTexto = document.createElement("span");
-        nombreTexto.textContent = usuarioActual.nombre + " " + usuarioActual.apellido;
-        contenedor.appendChild(nombreTexto);
-        panelMiCuenta.appendChild(contenedor);
-
-        // Mostrar datos completos abajo sin eliminar nada
-        const datosUsuario = document.createElement("div");
-        datosUsuario.className = "usuario-datos";
-
-        const emailSpan = document.createElement("span");
-        emailSpan.textContent = "Correo: " + usuarioActual.email;
-        datosUsuario.appendChild(emailSpan);
-
-        const emailVerificadoSpan = document.createElement("span");
-        emailVerificadoSpan.textContent = "Correo verificado: " + (usuarioActual.emailVerificado ? "Sí" : "No");
-        datosUsuario.appendChild(emailVerificadoSpan);
-
-        if (usuarioActual.pais) {
-          const paisSpan = document.createElement("span");
-          paisSpan.textContent = "País: " + usuarioActual.pais;
-          datosUsuario.appendChild(paisSpan);
-        }
-
-        if (usuarioActual.deuda) {
-          const deudaSpan = document.createElement("span");
-          deudaSpan.textContent = "Deuda: " + usuarioActual.deuda;
-          datosUsuario.appendChild(deudaSpan);
-        }
-
-        panelMiCuenta.appendChild(datosUsuario);
-
-      } else if (tipo === "metodoPago") {
-        const metodo = document.createElement("span");
-        metodo.textContent = usuarioActual.medioPago || "No registrado";
-        panelMiCuenta.appendChild(metodo);
-      } else if (tipo === "proximosPagos") {
-        const proximo = document.createElement("span");
-        proximo.textContent = usuarioActual.proximoPago || "No registrado";
-        panelMiCuenta.appendChild(proximo);
-      }
-
-      construirBotonVolver();
-    }
-
-    function construirContenidoExclusivo() {
-      panelEstado = "exclusivo";
-      panelMiCuenta.innerHTML = "";
-
-      if (!usuarioActual || !usuarioActual.contenidoExclusivo || usuarioActual.contenidoExclusivo.length === 0) {
-        const mensaje = document.createElement("span");
-        mensaje.textContent = "No hay contenido exclusivo disponible.";
-        panelMiCuenta.appendChild(mensaje);
-        construirBotonVolver();
-        return;
-      }
-
-      const navDiv = document.createElement("div");
-      navDiv.id = "contenidoExclusivo";
-
-      // Botones navegación a la izquierda del título
-      const navBotones = document.createElement("div");
-      navBotones.className = "nav-botones";
-
-      const btnAnterior = document.createElement("button");
-      btnAnterior.textContent = "<";
-      btnAnterior.onclick = () => {
-        contenidoExclusivoIndex--;
-        if (contenidoExclusivoIndex < 0) contenidoExclusivoIndex = usuarioActual.contenidoExclusivo.length - 1;
-        actualizarContenidoExclusivo();
-      };
-      navBotones.appendChild(btnAnterior);
-
-      const btnSiguiente = document.createElement("button");
-      btnSiguiente.textContent = ">";
-      btnSiguiente.onclick = () => {
-        contenidoExclusivoIndex++;
-        if (contenidoExclusivoIndex >= usuarioActual.contenidoExclusivo.length) contenidoExclusivoIndex = 0;
-        actualizarContenidoExclusivo();
-      };
-      navBotones.appendChild(btnSiguiente);
-
-      navDiv.appendChild(navBotones);
-
-      // Título del artículo con link, a la derecha de botones
-      const tituloArticulo = document.createElement("span");
-      tituloArticulo.className = "titulo-articulo";
-      const linkTitulo = document.createElement("a");
-      linkTitulo.href = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].link;
-      linkTitulo.textContent = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].titulo;
-      linkTitulo.target = "_blank";
-      tituloArticulo.appendChild(linkTitulo);
-      tituloArticulo.id = "tituloArticulo";
-      navDiv.appendChild(tituloArticulo);
-
-      panelMiCuenta.appendChild(navDiv);
-
-      // Contenido debajo (link también para redundancia, igual abre en pestaña nueva)
-      const contenidoArticulo = document.createElement("div");
-      contenidoArticulo.id = "contenidoArticulo";
-      contenidoArticulo.style.color = "white";
-      contenidoArticulo.style.marginTop = "6px";
-      contenidoArticulo.innerHTML = `<a href="${usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].link}" target="_blank" style="color:#fff; text-decoration:underline;">Leer artículo completo</a>`;
-      panelMiCuenta.appendChild(contenidoArticulo);
-
-      construirBotonVolver();
-    }
-
-    function actualizarContenidoExclusivo() {
-      const tituloArticulo = document.getElementById("tituloArticulo");
-      const contenidoArticulo = document.getElementById("contenidoArticulo");
-      tituloArticulo.innerHTML = "";
-      const linkTitulo = document.createElement("a");
-      linkTitulo.href = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].link;
-      linkTitulo.textContent = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].titulo;
-      linkTitulo.target = "_blank";
-      tituloArticulo.appendChild(linkTitulo);
-      contenidoArticulo.innerHTML = `<a href="${usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].link}" target="_blank" style="color:#fff; text-decoration:underline;">Leer artículo completo</a>`;
-    }
-
-    function construirBotonVolver() {
+      // Botón volver
       btnVolver = document.createElement("button");
       btnVolver.className = "btn-panel btn-volver";
       btnVolver.textContent = "Volver";
-      btnVolver.onclick = () => {
-        if (panelEstado === "detalle" || panelEstado === "exclusivo") {
-          mostrarPanelInicio();
-        } else if (panelEstado === "inicio") {
-          ocultarPanel();
-        }
-      };
+      btnVolver.onclick = () => { mostrarPanelInicio(); };
       panelMiCuenta.appendChild(btnVolver);
+
+      if (tipo === "nombre") {
+        // Mostrar nombre completo con foto a la izquierda
+        const contenedorNombre = document.createElement("div");
+        contenedorNombre.className = "usuario-detalle";
+
+        const img = document.createElement("img");
+        img.className = "foto-usuario";
+        img.src = usuarioActual.foto || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+        img.alt = "Foto usuario";
+        contenedorNombre.appendChild(img);
+
+        const spanNombre = document.createElement("span");
+        spanNombre.textContent = `${usuarioActual.nombre} ${usuarioActual.apellido}`;
+        contenedorNombre.appendChild(spanNombre);
+
+        panelMiCuenta.appendChild(contenedorNombre);
+
+        // Datos usuario en línea horizontal
+        const datosUsuario = document.createElement("div");
+        datosUsuario.className = "usuario-datos";
+
+        // Email
+        const emailSpan = document.createElement("span");
+        emailSpan.textContent = usuarioActual.email;
+        datosUsuario.appendChild(emailSpan);
+
+        // Verificación email
+        const verifSpan = document.createElement("span");
+        verifSpan.textContent = usuarioActual.emailVerificado ? "Correo verificado" : "Correo no verificado";
+        datosUsuario.appendChild(verifSpan);
+
+        // País
+        const paisSpan = document.createElement("span");
+        paisSpan.textContent = usuarioActual.pais || "";
+        datosUsuario.appendChild(paisSpan);
+
+        panelMiCuenta.appendChild(datosUsuario);
+      }
+      else if (tipo === "metodoPago") {
+        const pagoSpan = document.createElement("span");
+        pagoSpan.textContent = `Método de pago: ${usuarioActual.medioPago}`;
+        panelMiCuenta.appendChild(pagoSpan);
+      }
+      else if (tipo === "proximosPagos") {
+        const fechasSpan = document.createElement("span");
+        fechasSpan.style.display = "flex";
+        fechasSpan.style.gap = "10px";
+        fechasSpan.style.whiteSpace = "nowrap";
+
+        const ultimo = document.createElement("span");
+        ultimo.textContent = `Último pago: ${usuarioActual.ultimoPago}`;
+
+        const proximo = document.createElement("span");
+        proximo.textContent = `Próximo pago: ${usuarioActual.proximoPago}`;
+
+        fechasSpan.appendChild(ultimo);
+        fechasSpan.appendChild(proximo);
+        panelMiCuenta.appendChild(fechasSpan);
+      }
     }
 
     function ocultarPanel() {
@@ -658,14 +646,13 @@
       panelMiCuenta.innerHTML = "";
     }
 
-    // Al cargar la página, intentar reestablecer sesión
-    window.onload = function() {
+    // Auto carga si hay usuario en localStorage
+    document.addEventListener("DOMContentLoaded", () => {
       const emailGuardado = localStorage.getItem("usuarioLogueado");
-      if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) {
+      if(emailGuardado && usuarios[emailGuardado]) {
         cargarSesion(usuarios[emailGuardado]);
       }
-    };
+    });
   </script>
-
 </body>
 </html>
