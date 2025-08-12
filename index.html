@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -19,13 +18,12 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 0 0; /* manejo de paddings según viewport más abajo */
+      padding: 0 8px;
       z-index: 9999;
       user-select: none;
       overflow: hidden;
     }
 
-    /* Contenedor centrado con ancho máximo */
     .barra-contenido {
       width: 100%;
       max-width: 1085px;
@@ -34,7 +32,6 @@
       justify-content: space-between;
       position: relative;
       height: 100%;
-      padding: 0 10px; /* espaciado base en escritorio para alinear con panel */
     }
 
     .grupo-botones {
@@ -62,7 +59,10 @@
       white-space: nowrap;
       box-sizing: border-box;
     }
-    .btn:hover { background-color: #a55a00; text-decoration: none; }
+    .btn:hover {
+      background-color: #a55a00;
+      text-decoration: none;
+    }
 
     .popup-login {
       position: absolute;
@@ -98,7 +98,10 @@
       display: none;
     }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
 
     /* PANEL MI CUENTA */
     #panelMiCuenta {
@@ -112,7 +115,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 0 10px; /* coincide con .barra-contenido para alineación */
+      padding: 0 10px;
       white-space: nowrap;
       font-size: 14px;
       overflow-x: auto;
@@ -124,8 +127,10 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
+
     #panelMiCuenta::-webkit-scrollbar { height: 6px; }
     #panelMiCuenta::-webkit-scrollbar-thumb { background: rgba(255 255 255 / 0.3); border-radius: 3px; }
+
     #panelMiCuenta.visible { opacity: 1; pointer-events: auto; }
 
     /* Botones del panel */
@@ -144,71 +149,106 @@
       text-decoration: none !important;
       height: 32px; /* Igual alto que los botones principales */
       box-sizing: border-box;
-      margin-right: 0; /* eliminamos márgenes extra en escritorio */
     }
     #panelMiCuenta .btn-panel:hover { background-color: #a55a00; }
 
-    /* clases específicas */
-    #panelMiCuenta .btn-panel.volver { margin-left: 10px; } /* margen ligero por defecto */
-
     /* Imagen usuario */
-    .foto-usuario { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 6px; flex-shrink: 0; }
+    .foto-usuario {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
 
     /* Contenedor usuario detalle */
-    .usuario-detalle { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-    .usuario-datos { display: flex; gap: 15px; font-size: 14px; color: white; white-space: nowrap; align-items: center; }
-    .usuario-datos span { display: inline-block; }
+    .usuario-detalle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    /* Datos del usuario alineados horizontalmente y con mismo tamaño y color que nombre */
+    .usuario-datos {
+      display: flex;
+      gap: 15px;
+      font-size: 14px; /* igual que el nombre */
+      color: white; /* igual que el nombre */
+      white-space: nowrap;
+      align-items: center;
+    }
+    .usuario-datos span {
+      display: inline-block;
+    }
 
     /* Contenido exclusivo */
-    .contenedor-exclusivo { display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-grow: 1; justify-content: flex-start; }
-    .flecha { background: rgba(255,255,255,0.2); border: none; color: white; font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 4px; user-select: none; flex-shrink: 0; height: 32px; display: flex; align-items: center; justify-content: center; min-width: 32px; box-sizing: border-box; }
+    .contenedor-exclusivo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      flex-grow: 1;
+
+      /* Cambié esta propiedad para que no haya espacio entre flechas y texto */
+      justify-content: flex-start;
+    }
+    /* Flechas juntos a la izquierda */
+    .flecha {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      user-select: none;
+      flex-shrink: 0;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      box-sizing: border-box;
+    }
     .flecha:hover { background: rgba(255,255,255,0.35); }
 
-    .articulo-exclusivo { min-width: 200px; padding: 6px 10px; background: rgba(255,255,255,0.15); border-radius: 4px; display: flex; align-items: center; margin-left: 0; margin-right: 0; justify-content: flex-start; }
-    .articulo-exclusivo a { color: white; text-decoration: none; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; }
-    .articulo-exclusivo a:hover { text-decoration: underline; }
+    .articulo-exclusivo {
+      min-width: 200px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      /* quité flex-grow para que no ocupe espacio extra */
+      margin-left: 0;
+      margin-right: 0;
+      /* Texto alineado a la izquierda sin overflow extra */
+      justify-content: flex-start;
+    }
+    .articulo-exclusivo a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 1;
+    }
+    .articulo-exclusivo a:hover {
+      text-decoration: underline;
+    }
 
-    /* Ajustes para que el botón 'Volver' se alinee a la derecha en móviles (se sobrescribe en escritorio) */
+    /* Adaptaciones móviles */
     @media (max-width: 600px) {
       .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
       .popup-login input { width: 140px; }
-      #panelMiCuenta { font-size: 13px; padding: 0 7px; }
+      #panelMiCuenta { font-size: 13px; padding: 0 8px; }
       #panelMiCuenta .btn-panel { padding: 5px 8px; height: 28px; }
-
-      /* versión celular: espaciado de 7px a los bordes de la pantalla */
-      .barra-contenido { padding-left: 7px; padding-right: 7px; }
-
-      /* Contenido exclusivo en móvil: el artículo ocupa todo el ancho disponible y el botón volver va a la derecha */
-      .contenedor-exclusivo { gap: 6px; }
-      .articulo-exclusivo { min-width: 0; width: calc(100% - 72px); /* deja espacio para flechas y botón volver */ }
-      #panelMiCuenta .btn-panel.volver { margin-left: auto; }
-
+      .barra-contenido { padding-left: 8px; padding-right: 8px; }
       /* Ajustes usuario-datos móvil */
       .usuario-datos { font-size: 13px; }
     }
-
-    /* Escritorio: eliminar espaciados extra en botones "Usuario" y "Contenido exclusivo" y alinear a la izquierda */
-    @media (min-width: 601px) {
-      /* Alineo los grupos con un padding izquierdo/ derecho simétrico que coincide con el panel */
-      .barra-contenido { padding-left: 10px; padding-right: 10px; }
-
-      /* Hacemos que los botones del panel estén alineados a la izquierda y sin espacios extra innecesarios */
-      #panelMiCuenta { padding-left: 10px; padding-right: 10px; }
-      #panelMiCuenta .btn-panel { margin-right: 6px; }
-
-      /* Eliminamos gap lateral en grupo de botones para que queden pegados a la izquierda como el primer usuario */
-      .grupo-botones#izquierda { padding-left: 0; }
-
-      /* Añadimos un pequeño padding-right únicamente al grupo de la derecha para que no sobresalga y quede alineado con el padding del panel */
-      .grupo-botones#derecha { padding-right: 10px; }
-
-      /* Aseguramos que el botón cerrar sesión no sobresalga demasiado hacia la derecha */
-      .grupo-botones#derecha .btn { margin-right: 0; }
-
-      /* Botón volver en panel (escritorio): pequeño margen para separarlo del contenido exclusivo */
-      #panelMiCuenta .btn-panel.volver { margin-left: 10px; }
-    }
-
   </style>
 </head>
 <body>
@@ -252,10 +292,6 @@
           { titulo: "Submarino desaparece en la Antártida tras descubrir estructuras desconocidas", url: "https://www.prenoticia.com/2025/08/submarino-desaparece-en-la-antartida.html" },
           { titulo: "Un informe reciente señala que no hace falta caminar tantos pasos como se creía para cuidar la salud", url: "https://www.prenoticia.com/2025/08/un-informe-reciente-senala-que-no-hace.html" },
           { titulo: "El cerebro del hombre es más grande, pero el de la mujer funciona con más eficiencia", url: "https://www.prenoticia.com/2025/06/el-cerebro-del-hombre-es-mas-grande.html" }
-        ],
-        // ejemplo de noticia especial asignada al usuario (puede ser tipo: 'sorteo' o 'codigo')
-        especial: [
-          { tipo: 'sorteo', titulo: 'Sorteo exclusivo: ganate una suscripción anual', url: 'https://www.prenoticia.com/sorteo-exclusivo' }
         ]
       },
       "luciacarpio20@gmail.com": {
@@ -281,23 +317,50 @@
     const derecha = document.getElementById("derecha");
     const izquierda = document.getElementById("izquierda");
 
-    function mostrarLogin() { mensajeError.style.display = "none"; popupLogin.style.display = "flex"; inputEmail.focus(); }
-    function cerrarLogin() { popupLogin.style.display = "none"; inputEmail.value = ""; mensajeError.style.display = "none"; }
+    function mostrarLogin() {
+      mensajeError.style.display = "none";
+      popupLogin.style.display = "flex";
+      inputEmail.focus();
+    }
+
+    function cerrarLogin() {
+      popupLogin.style.display = "none";
+      inputEmail.value = "";
+      mensajeError.style.display = "none";
+    }
 
     function validarEmail() {
       const email = inputEmail.value.trim().toLowerCase();
-      if (!email) { mensajeError.textContent = "Por favor, ingresá tu correo electrónico"; mensajeError.style.display = "inline-block"; return; }
+      if (!email) {
+        mensajeError.textContent = "Por favor, ingresá tu correo electrónico";
+        mensajeError.style.display = "inline-block";
+        return;
+      }
       if (usuarios[email]) {
-        if (usuarios[email].activo) { localStorage.setItem("usuarioLogueado", email); cargarSesion(usuarios[email]); cerrarLogin(); }
-        else { mensajeError.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`; mensajeError.style.display = "inline-block"; }
-      } else { mensajeError.textContent = "El correo ingresado no está suscripto."; mensajeError.style.display = "inline-block"; }
+        if (usuarios[email].activo) {
+          localStorage.setItem("usuarioLogueado", email);
+          cargarSesion(usuarios[email]);
+          cerrarLogin();
+        } else {
+          mensajeError.textContent = Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.;
+          mensajeError.style.display = "inline-block";
+        }
+      } else {
+        mensajeError.textContent = "El correo ingresado no está suscripto.";
+        mensajeError.style.display = "inline-block";
+      }
     }
 
     function cargarSesion(usuario) {
       usuarioActual = usuario;
       btnIniciarSesion.style.display = "none";
       saludoUsuario.innerHTML = "";
-      if (usuario.foto) { const img = document.createElement("img"); img.src = usuario.foto; img.className = "foto-usuario"; saludoUsuario.appendChild(img); }
+      if (usuario.foto) {
+        const img = document.createElement("img");
+        img.src = usuario.foto;
+        img.className = "foto-usuario";
+        saludoUsuario.appendChild(img);
+      }
       const primerNombre = usuario.nombre.split(" ")[0];
       saludoUsuario.appendChild(document.createTextNode(primerNombre));
       derecha.innerHTML = "";
@@ -305,13 +368,19 @@
       const btnCuenta = document.createElement("button");
       btnCuenta.textContent = "Mi cuenta";
       btnCuenta.className = "btn";
-      btnCuenta.onclick = () => { if (panelEstado === "cerrado") mostrarPanelInicio(); else if (panelEstado === "inicio") ocultarPanel(); };
+      btnCuenta.onclick = () => {
+        if (panelEstado === "cerrado") mostrarPanelInicio();
+        else if (panelEstado === "inicio") ocultarPanel();
+      };
       derecha.appendChild(btnCuenta);
 
       const btnCerrarSesion = document.createElement("button");
       btnCerrarSesion.textContent = "Cerrar sesión";
       btnCerrarSesion.className = "btn";
-      btnCerrarSesion.onclick = () => { localStorage.removeItem("usuarioLogueado"); location.reload(); };
+      btnCerrarSesion.onclick = () => {
+        localStorage.removeItem("usuarioLogueado");
+        location.reload();
+      };
       derecha.appendChild(btnCerrarSesion);
 
       ocultarPanel();
@@ -374,25 +443,11 @@
       panelEstado = "detalle";
       panelMiCuenta.innerHTML = "";
 
-      if (!usuarioActual) {
+      if (!usuarioActual || !usuarioActual.articulos) {
         panelMiCuenta.textContent = "No hay contenido exclusivo disponible.";
         construirBotonVolver();
         return;
       }
-
-      // combinamos articulos + especiales (si existen) en una lista para mostrar
-      const lista = [];
-      if (Array.isArray(usuarioActual.articulos)) usuarioActual.articulos.forEach(a => lista.push({ tipo: 'normal', titulo: a.titulo, url: a.url }));
-      if (Array.isArray(usuarioActual.especial)) usuarioActual.especial.forEach(e => lista.push({ tipo: e.tipo || 'especial', titulo: e.titulo, url: e.url }));
-
-      if (lista.length === 0) {
-        panelMiCuenta.textContent = "No hay contenido exclusivo disponible.";
-        construirBotonVolver();
-        return;
-      }
-
-      // aseguramos que articuloIndex esté dentro del rango
-      articuloIndex = articuloIndex % lista.length;
 
       const cont = document.createElement("div");
       cont.className = "contenedor-exclusivo";
@@ -401,7 +456,7 @@
       flechaIzq.className = "flecha";
       flechaIzq.textContent = "<";
       flechaIzq.onclick = () => {
-        articuloIndex = (articuloIndex - 1 + lista.length) % lista.length;
+        articuloIndex = (articuloIndex - 1 + usuarioActual.articulos.length) % usuarioActual.articulos.length;
         mostrarArticulo();
       };
 
@@ -409,7 +464,7 @@
       flechaDer.className = "flecha";
       flechaDer.textContent = ">";
       flechaDer.onclick = () => {
-        articuloIndex = (articuloIndex + 1) % lista.length;
+        articuloIndex = (articuloIndex + 1) % usuarioActual.articulos.length;
         mostrarArticulo();
       };
 
@@ -417,25 +472,26 @@
       articuloDiv.className = "articulo-exclusivo";
 
       const enlace = document.createElement("a");
-      enlace.href = lista[articuloIndex].url;
+      enlace.href = usuarioActual.articulos[articuloIndex].url;
       enlace.target = "_blank";
-      enlace.textContent = lista[articuloIndex].titulo;
+      enlace.textContent = usuarioActual.articulos[articuloIndex].titulo;
 
       articuloDiv.appendChild(enlace);
 
-      // Agrego flechas y artículo (alineado a la izquierda)
+      // Agrego primero las flechas juntas a la izquierda
       cont.appendChild(flechaIzq);
       cont.appendChild(flechaDer);
+      // Luego el artículo, todo alineado a la izquierda
       cont.appendChild(articuloDiv);
 
       panelMiCuenta.appendChild(cont);
 
-      // Botón volver a la derecha (en móvil se moverá con CSS)
+      // Botón volver a la derecha, separado con margen
       construirBotonVolver();
 
       function mostrarArticulo() {
-        enlace.href = lista[articuloIndex].url;
-        enlace.textContent = lista[articuloIndex].titulo;
+        enlace.href = usuarioActual.articulos[articuloIndex].url;
+        enlace.textContent = usuarioActual.articulos[articuloIndex].titulo;
       }
     }
 
@@ -482,18 +538,19 @@
         panelMiCuenta.appendChild(datos);
       }
       if (tipo === "metodoPago") {
-        panelMiCuenta.textContent = `Método de pago: ${usuarioActual.medioPago || "No especificado"}`;
+        panelMiCuenta.textContent = Método de pago: ${usuarioActual.medioPago || "No especificado"};
       }
       if (tipo === "proximosPagos") {
-        panelMiCuenta.innerHTML = `Último pago: <b>${usuarioActual.ultimoPago || "No disponible"}</b> &nbsp; Próximo pago: <b>${usuarioActual.proximoPago || "No disponible"}</b>`;
+        panelMiCuenta.innerHTML = Último pago: <b>${usuarioActual.ultimoPago || "No disponible"}</b> &nbsp; Próximo pago: <b>${usuarioActual.proximoPago || "No disponible"}</b>;
       }
       construirBotonVolver();
     }
 
     function construirBotonVolver() {
       const btnVolver = document.createElement("button");
-      btnVolver.className = "btn-panel volver"; // clase 'volver' para control visual
+      btnVolver.className = "btn-panel";
       btnVolver.textContent = "← Volver";
+      btnVolver.style.marginLeft = "10px"; // un poco de separación cuando está al lado del contenido exclusivo
       btnVolver.onclick = () => {
         if (panelEstado === "detalle") mostrarPanelInicio();
         else if (panelEstado === "inicio") ocultarPanel();
@@ -511,7 +568,9 @@
 
     window.onload = () => {
       const emailGuardado = localStorage.getItem("usuarioLogueado");
-      if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) { cargarSesion(usuarios[emailGuardado]); }
+      if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) {
+        cargarSesion(usuarios[emailGuardado]);
+      }
     };
   </script>
 
