@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -24,14 +25,22 @@
       overflow: hidden;
     }
 
+    /* Contenido centrado y alineado con el resto del sitio (desktop)
+       - max-width coincide con el resto de la web
+       - margin: 0 auto alinea los laterales
+       - padding lateral pequeño para evitar que quede pegado a la ventana
+    */
     .barra-contenido {
       width: 100%;
       max-width: 1085px;
+      margin: 0 auto; /* importante: alinea con el resto del contenido */
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: relative;
       height: 100%;
+      padding-left: 16px; /* ajuste para que quede alineado con otros bloques */
+      padding-right: 16px;
     }
 
     .grupo-botones {
@@ -59,10 +68,7 @@
       white-space: nowrap;
       box-sizing: border-box;
     }
-    .btn:hover {
-      background-color: #a55a00;
-      text-decoration: none;
-    }
+    .btn:hover { background-color: #a55a00; text-decoration: none; }
 
     .popup-login {
       position: absolute;
@@ -98,10 +104,7 @@
       display: none;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     /* PANEL MI CUENTA */
     #panelMiCuenta {
@@ -110,28 +113,29 @@
       left: 0;
       right: 0;
       height: 50px;
-      background-color: auto;
       color: white;
-      display: flex;
+      display: none; /* oculto por defecto: se mostrará con clase visible */
       align-items: center;
       gap: 10px;
-      padding: 0 10px;
+      padding: 0 16px;
       white-space: nowrap;
       font-size: 14px;
-      overflow-x: auto;
-      transition: opacity 0.35s ease;
+      overflow: hidden;
+      transition: opacity 0.35s ease, transform 0.25s ease;
       user-select: none;
       z-index: 10000;
-      opacity: 0;
-      pointer-events: none;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+      background: transparent; /* respetamos diseño visual actual */
     }
 
-    #panelMiCuenta::-webkit-scrollbar { height: 6px; }
-    #panelMiCuenta::-webkit-scrollbar-thumb { background: rgba(255 255 255 / 0.3); border-radius: 3px; }
+    #panelMiCuenta.visible { display: flex; opacity: 1; }
 
-    #panelMiCuenta.visible { opacity: 1; pointer-events: auto; }
+    /* Inner wrapper to control layout of content + volver button */
+    .panel-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
 
     /* Botones del panel */
     #panelMiCuenta .btn-panel {
@@ -163,24 +167,8 @@
     }
 
     /* Contenedor usuario detalle */
-    .usuario-detalle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-    /* Datos del usuario alineados horizontalmente y con mismo tamaño y color que nombre */
-    .usuario-datos {
-      display: flex;
-      gap: 15px;
-      font-size: 14px; /* igual que el nombre */
-      color: white; /* igual que el nombre */
-      white-space: nowrap;
-      align-items: center;
-    }
-    .usuario-datos span {
-      display: inline-block;
-    }
+    .usuario-detalle { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .usuario-datos { display: flex; gap: 15px; font-size: 14px; color: white; white-space: nowrap; align-items: center; }
 
     /* Contenido exclusivo */
     .contenedor-exclusivo {
@@ -189,11 +177,10 @@
       gap: 8px;
       white-space: nowrap;
       flex-grow: 1;
-
-      /* Cambié esta propiedad para que no haya espacio entre flechas y texto */
       justify-content: flex-start;
+      overflow: hidden;
     }
-    /* Flechas juntos a la izquierda */
+
     .flecha {
       background: rgba(255,255,255,0.2);
       border: none;
@@ -220,11 +207,10 @@
       border-radius: 4px;
       display: flex;
       align-items: center;
-      /* quité flex-grow para que no ocupe espacio extra */
       margin-left: 0;
       margin-right: 0;
-      /* Texto alineado a la izquierda sin overflow extra */
       justify-content: flex-start;
+      overflow: hidden;
     }
     .articulo-exclusivo a {
       color: white;
@@ -235,20 +221,72 @@
       text-overflow: ellipsis;
       flex-shrink: 1;
     }
-    .articulo-exclusivo a:hover {
-      text-decoration: underline;
+    .articulo-exclusivo a:hover { text-decoration: underline; }
+
+    /* Badge para artículos "Sorteo" / "Código" / "Exclusivo" */
+    .badge {
+      background: rgba(255,255,255,0.18);
+      color: white;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 12px;
+      margin-right: 8px;
+      flex-shrink: 0;
+      font-size: 12px;
     }
+
+    /* Botón volver a la derecha en pantalla escritorio (se mantiene la apariencia original) */
+    .back-wrapper { display: flex; align-items: center; margin-left: 10px; }
 
     /* Adaptaciones móviles */
     @media (max-width: 600px) {
       .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
       .popup-login input { width: 140px; }
-      #panelMiCuenta { font-size: 13px; padding: 0 8px; }
+      #panelMiCuenta { font-size: 13px; padding: 0 10px; }
       #panelMiCuenta .btn-panel { padding: 5px 8px; height: 28px; }
-      .barra-contenido { padding-left: 8px; padding-right: 8px; }
-      /* Ajustes usuario-datos móvil */
+      .barra-contenido { padding-left: 12px; padding-right: 12px; max-width: 100%; }
       .usuario-datos { font-size: 13px; }
+
+      /* Estructura móvil: contenido exclusivo a la izquierda y el botón volver pegado a la derecha del panel
+         además hacemos que el artículo ocupe todo el ancho disponible para que se vea correctamente en celular
+      */
+      #panelMiCuenta.visible {
+        display: flex;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .panel-inner { gap: 8px; }
+
+      .contenedor-exclusivo {
+        overflow: hidden;
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
+      .articulo-exclusivo {
+        /* Hacemos que el elemento ocupe el ancho disponible dentro del panel, respetando los botones */
+        min-width: 0;
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 6px;
+      }
+
+      .articulo-exclusivo a { white-space: normal; }
+
+      /* Forzamos que el back-wrapper se ubique a la derecha con margin-left:auto */
+      .back-wrapper { margin-left: auto; }
+
+      /* Aumentamos el touch area de las flechas en móvil */
+      .flecha { padding: 8px 10px; min-width: 40px; }
+
+      /* Si hay badge, que se muestre antes del título y no rompa el ancho */
+      .badge { margin-right: 8px; flex-shrink: 0; }
     }
+
+    /* Evitar scrollbars no deseadas en panel */
+    #panelMiCuenta::-webkit-scrollbar { height: 6px; }
+    #panelMiCuenta::-webkit-scrollbar-thumb { background: rgba(255 255 255 / 0.3); border-radius: 3px; }
   </style>
 </head>
 <body>
@@ -288,10 +326,15 @@
         pais: "Buenos Aires, Argentina",
         emailVerificado: true,
         foto: "https://pbs.twimg.com/profile_images/1907511710769930240/7oUtDTMv_400x400.jpg",
+        // articulos: además de noticias, puede contener items con 'tipo' igual a 'sorteo'| 'codigo' | 'exclusivo'
         articulos: [
           { titulo: "Submarino desaparece en la Antártida tras descubrir estructuras desconocidas", url: "https://www.prenoticia.com/2025/08/submarino-desaparece-en-la-antartida.html" },
           { titulo: "Un informe reciente señala que no hace falta caminar tantos pasos como se creía para cuidar la salud", url: "https://www.prenoticia.com/2025/08/un-informe-reciente-senala-que-no-hace.html" },
-          { titulo: "El cerebro del hombre es más grande, pero el de la mujer funciona con más eficiencia", url: "https://www.prenoticia.com/2025/06/el-cerebro-del-hombre-es-mas-grande.html" }
+          { titulo: "El cerebro del hombre es más grande, pero el de la mujer funciona con más eficiencia", url: "https://www.prenoticia.com/2025/06/el-cerebro-del-hombre-es-mas-grande.html" },
+          // Ejemplo de artículo especial: Sorteo
+          { titulo: "¡Ganá una suscripción anual! Participá del sorteo exclusivo", url: "https://www.prenoticia.com/sorteo-2025", tipo: "sorteo" },
+          // Ejemplo de artículo especial: Código
+          { titulo: "Código exclusivo: 10% de descuento en Prenoticia", url: "https://www.prenoticia.com/codigo-descuento", tipo: "codigo" }
         ]
       },
       "luciacarpio20@gmail.com": {
@@ -317,38 +360,16 @@
     const derecha = document.getElementById("derecha");
     const izquierda = document.getElementById("izquierda");
 
-    function mostrarLogin() {
-      mensajeError.style.display = "none";
-      popupLogin.style.display = "flex";
-      inputEmail.focus();
-    }
-
-    function cerrarLogin() {
-      popupLogin.style.display = "none";
-      inputEmail.value = "";
-      mensajeError.style.display = "none";
-    }
+    function mostrarLogin() { mensajeError.style.display = "none"; popupLogin.style.display = "flex"; inputEmail.focus(); }
+    function cerrarLogin() { popupLogin.style.display = "none"; inputEmail.value = ""; mensajeError.style.display = "none"; }
 
     function validarEmail() {
       const email = inputEmail.value.trim().toLowerCase();
-      if (!email) {
-        mensajeError.textContent = "Por favor, ingresá tu correo electrónico";
-        mensajeError.style.display = "inline-block";
-        return;
-      }
+      if (!email) { mensajeError.textContent = "Por favor, ingresá tu correo electrónico"; mensajeError.style.display = "inline-block"; return; }
       if (usuarios[email]) {
-        if (usuarios[email].activo) {
-          localStorage.setItem("usuarioLogueado", email);
-          cargarSesion(usuarios[email]);
-          cerrarLogin();
-        } else {
-          mensajeError.textContent = Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.;
-          mensajeError.style.display = "inline-block";
-        }
-      } else {
-        mensajeError.textContent = "El correo ingresado no está suscripto.";
-        mensajeError.style.display = "inline-block";
-      }
+        if (usuarios[email].activo) { localStorage.setItem("usuarioLogueado", email); cargarSesion(usuarios[email]); cerrarLogin(); }
+        else { mensajeError.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`; mensajeError.style.display = "inline-block"; }
+      } else { mensajeError.textContent = "El correo ingresado no está suscripto."; mensajeError.style.display = "inline-block"; }
     }
 
     function cargarSesion(usuario) {
@@ -356,10 +377,7 @@
       btnIniciarSesion.style.display = "none";
       saludoUsuario.innerHTML = "";
       if (usuario.foto) {
-        const img = document.createElement("img");
-        img.src = usuario.foto;
-        img.className = "foto-usuario";
-        saludoUsuario.appendChild(img);
+        const img = document.createElement("img"); img.src = usuario.foto; img.className = "foto-usuario"; saludoUsuario.appendChild(img);
       }
       const primerNombre = usuario.nombre.split(" ")[0];
       saludoUsuario.appendChild(document.createTextNode(primerNombre));
@@ -368,19 +386,13 @@
       const btnCuenta = document.createElement("button");
       btnCuenta.textContent = "Mi cuenta";
       btnCuenta.className = "btn";
-      btnCuenta.onclick = () => {
-        if (panelEstado === "cerrado") mostrarPanelInicio();
-        else if (panelEstado === "inicio") ocultarPanel();
-      };
+      btnCuenta.onclick = () => { if (panelEstado === "cerrado") mostrarPanelInicio(); else if (panelEstado === "inicio") ocultarPanel(); };
       derecha.appendChild(btnCuenta);
 
       const btnCerrarSesion = document.createElement("button");
       btnCerrarSesion.textContent = "Cerrar sesión";
       btnCerrarSesion.className = "btn";
-      btnCerrarSesion.onclick = () => {
-        localStorage.removeItem("usuarioLogueado");
-        location.reload();
-      };
+      btnCerrarSesion.onclick = () => { localStorage.removeItem("usuarioLogueado"); location.reload(); };
       derecha.appendChild(btnCerrarSesion);
 
       ocultarPanel();
@@ -397,29 +409,38 @@
     function construirPanelInicio() {
       panelMiCuenta.innerHTML = "";
 
+      // wrapper inner para controlar posicion del contenido y del boton volver
+      const inner = document.createElement('div');
+      inner.className = 'panel-inner';
+
+      const acciones = document.createElement('div');
+      acciones.style.display = 'flex';
+      acciones.style.gap = '8px';
+      acciones.style.alignItems = 'center';
+
       const btnNombre = document.createElement("button");
       btnNombre.className = "btn-panel";
       btnNombre.textContent = "Usuario";
       btnNombre.onclick = () => { construirDetalle("nombre"); };
-      panelMiCuenta.appendChild(btnNombre);
+      acciones.appendChild(btnNombre);
 
       const btnExclusivo = document.createElement("button");
       btnExclusivo.className = "btn-panel";
       btnExclusivo.textContent = "Contenido exclusivo";
       btnExclusivo.onclick = () => { construirExclusivo(); };
-      panelMiCuenta.appendChild(btnExclusivo);
+      acciones.appendChild(btnExclusivo);
 
       const btnMetodo = document.createElement("button");
       btnMetodo.className = "btn-panel";
       btnMetodo.textContent = "Método de pago";
       btnMetodo.onclick = () => { construirDetalle("metodoPago"); };
-      panelMiCuenta.appendChild(btnMetodo);
+      acciones.appendChild(btnMetodo);
 
       const btnFechas = document.createElement("button");
       btnFechas.className = "btn-panel";
       btnFechas.textContent = "Próximas fechas de pago";
       btnFechas.onclick = () => { construirDetalle("proximosPagos"); };
-      panelMiCuenta.appendChild(btnFechas);
+      acciones.appendChild(btnFechas);
 
       const btnBaja = document.createElement("a");
       btnBaja.className = "btn-panel";
@@ -427,16 +448,25 @@
       btnBaja.textContent = "Dar de baja suscripción";
       btnBaja.href = "https://www.prenoticia.com/baja-suscripción";
       btnBaja.target = "_blank";
-      panelMiCuenta.appendChild(btnBaja);
+      acciones.appendChild(btnBaja);
 
       const btnAyuda = document.createElement("a");
       btnAyuda.className = "btn-panel";
       btnAyuda.textContent = "Ayuda";
       btnAyuda.href = "https://www.prenoticia.com/mi-cuenta-ayuda";
       btnAyuda.target = "_blank";
-      panelMiCuenta.appendChild(btnAyuda);
+      acciones.appendChild(btnAyuda);
 
-      construirBotonVolver();
+      inner.appendChild(acciones);
+
+      // Back wrapper (visible but placed to the right via CSS: margin-left:auto on mobile)
+      const backWrap = document.createElement('div');
+      backWrap.className = 'back-wrapper';
+      inner.appendChild(backWrap);
+
+      panelMiCuenta.appendChild(inner);
+
+      construirBotonVolverInContainer(backWrap);
     }
 
     function construirExclusivo() {
@@ -449,50 +479,65 @@
         return;
       }
 
+      const inner = document.createElement('div');
+      inner.className = 'panel-inner';
+
       const cont = document.createElement("div");
       cont.className = "contenedor-exclusivo";
 
       const flechaIzq = document.createElement("button");
       flechaIzq.className = "flecha";
       flechaIzq.textContent = "<";
-      flechaIzq.onclick = () => {
-        articuloIndex = (articuloIndex - 1 + usuarioActual.articulos.length) % usuarioActual.articulos.length;
-        mostrarArticulo();
-      };
+      flechaIzq.onclick = () => { articuloIndex = (articuloIndex - 1 + usuarioActual.articulos.length) % usuarioActual.articulos.length; mostrarArticulo(); };
 
       const flechaDer = document.createElement("button");
       flechaDer.className = "flecha";
       flechaDer.textContent = ">";
-      flechaDer.onclick = () => {
-        articuloIndex = (articuloIndex + 1) % usuarioActual.articulos.length;
-        mostrarArticulo();
-      };
+      flechaDer.onclick = () => { articuloIndex = (articuloIndex + 1) % usuarioActual.articulos.length; mostrarArticulo(); };
 
       const articuloDiv = document.createElement("div");
       articuloDiv.className = "articulo-exclusivo";
 
+      // Badge (si el artículo tiene tipo: 'sorteo'|'codigo'|'exclusivo')
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+
       const enlace = document.createElement("a");
-      enlace.href = usuarioActual.articulos[articuloIndex].url;
       enlace.target = "_blank";
-      enlace.textContent = usuarioActual.articulos[articuloIndex].titulo;
 
-      articuloDiv.appendChild(enlace);
-
-      // Agrego primero las flechas juntas a la izquierda
+      // Append elements in order: flechas, articulo con badge + link
       cont.appendChild(flechaIzq);
       cont.appendChild(flechaDer);
-      // Luego el artículo, todo alineado a la izquierda
+      articuloDiv.appendChild(badge);
+      articuloDiv.appendChild(enlace);
       cont.appendChild(articuloDiv);
 
-      panelMiCuenta.appendChild(cont);
+      inner.appendChild(cont);
 
-      // Botón volver a la derecha, separado con margen
-      construirBotonVolver();
+      // Back wrapper: lo colocamos como hijo de inner para que en móvil quede a la derecha
+      const backWrap = document.createElement('div');
+      backWrap.className = 'back-wrapper';
+      inner.appendChild(backWrap);
+
+      panelMiCuenta.appendChild(inner);
+
+      construirBotonVolverInContainer(backWrap);
 
       function mostrarArticulo() {
-        enlace.href = usuarioActual.articulos[articuloIndex].url;
-        enlace.textContent = usuarioActual.articulos[articuloIndex].titulo;
+        const art = usuarioActual.articulos[articuloIndex];
+        enlace.href = art.url;
+        enlace.textContent = art.titulo;
+        // Mostrar badge según tipo
+        if (art.tipo === 'sorteo') badge.textContent = 'SORTEO';
+        else if (art.tipo === 'codigo') badge.textContent = 'CÓDIGO';
+        else if (art.tipo === 'exclusivo') badge.textContent = 'EXCLUSIVO';
+        else badge.textContent = '';
+
+        // Si no hay badge, ocultarlo visualmente pero mantener estructura
+        badge.style.display = badge.textContent ? 'inline-flex' : 'none';
       }
+
+      mostrarArticulo();
     }
 
     function construirDetalle(tipo) {
@@ -500,77 +545,74 @@
       panelMiCuenta.innerHTML = "";
       if (!usuarioActual) return;
 
+      const inner = document.createElement('div');
+      inner.className = 'panel-inner';
+
+      const contenido = document.createElement('div');
+      contenido.style.display = 'flex';
+      contenido.style.alignItems = 'center';
+      contenido.style.gap = '8px';
+
       if (tipo === "nombre") {
         const contUsuario = document.createElement("div");
         contUsuario.className = "usuario-detalle";
 
         if (usuarioActual.foto) {
-          const img = document.createElement("img");
-          img.src = usuarioActual.foto;
-          img.className = "foto-usuario";
-          contUsuario.appendChild(img);
+          const img = document.createElement("img"); img.src = usuarioActual.foto; img.className = "foto-usuario"; contUsuario.appendChild(img);
         }
 
         const nombreSpan = document.createElement("span");
         nombreSpan.textContent = usuarioActual.nombre + " " + usuarioActual.apellido;
-        nombreSpan.style.color = "white";
-        nombreSpan.style.fontSize = "14px";
+        nombreSpan.style.color = "white"; nombreSpan.style.fontSize = "14px";
         contUsuario.appendChild(nombreSpan);
 
-        panelMiCuenta.appendChild(contUsuario);
+        contenido.appendChild(contUsuario);
 
-        // Datos alineados horizontalmente y con mismo estilo que el nombre
-        const datos = document.createElement("div");
-        datos.className = "usuario-datos";
-
-        const emailSpan = document.createElement("span");
-        emailSpan.textContent = usuarioActual.email;
-        datos.appendChild(emailSpan);
-
-        const verificadoSpan = document.createElement("span");
-        verificadoSpan.textContent = usuarioActual.emailVerificado ? "✅ Email verificado" : "❌ Email no verificado";
-        datos.appendChild(verificadoSpan);
-
-        const paisSpan = document.createElement("span");
-        paisSpan.textContent = usuarioActual.pais || "";
-        datos.appendChild(paisSpan);
-
-        panelMiCuenta.appendChild(datos);
+        const datos = document.createElement("div"); datos.className = "usuario-datos";
+        const emailSpan = document.createElement("span"); emailSpan.textContent = usuarioActual.email; datos.appendChild(emailSpan);
+        const verificadoSpan = document.createElement("span"); verificadoSpan.textContent = usuarioActual.emailVerificado ? "✅ Email verificado" : "❌ Email no verificado"; datos.appendChild(verificadoSpan);
+        const paisSpan = document.createElement("span"); paisSpan.textContent = usuarioActual.pais || ""; datos.appendChild(paisSpan);
+        contenido.appendChild(datos);
       }
       if (tipo === "metodoPago") {
-        panelMiCuenta.textContent = Método de pago: ${usuarioActual.medioPago || "No especificado"};
+        contenido.textContent = `Método de pago: ${usuarioActual.medioPago || "No especificado"}`;
       }
       if (tipo === "proximosPagos") {
-        panelMiCuenta.innerHTML = Último pago: <b>${usuarioActual.ultimoPago || "No disponible"}</b> &nbsp; Próximo pago: <b>${usuarioActual.proximoPago || "No disponible"}</b>;
+        contenido.innerHTML = `Último pago: <b>${usuarioActual.ultimoPago || "No disponible"}</b> &nbsp; Próximo pago: <b>${usuarioActual.proximoPago || "No disponible"}</b>`;
       }
-      construirBotonVolver();
+
+      inner.appendChild(contenido);
+
+      const backWrap = document.createElement('div'); backWrap.className = 'back-wrapper'; inner.appendChild(backWrap);
+
+      panelMiCuenta.appendChild(inner);
+
+      construirBotonVolverInContainer(backWrap);
     }
 
-    function construirBotonVolver() {
+    function construirBotonVolverInContainer(container) {
+      container.innerHTML = '';
       const btnVolver = document.createElement("button");
       btnVolver.className = "btn-panel";
       btnVolver.textContent = "← Volver";
-      btnVolver.style.marginLeft = "10px"; // un poco de separación cuando está al lado del contenido exclusivo
-      btnVolver.onclick = () => {
-        if (panelEstado === "detalle") mostrarPanelInicio();
-        else if (panelEstado === "inicio") ocultarPanel();
-      };
+      btnVolver.onclick = () => { if (panelEstado === "detalle") mostrarPanelInicio(); else if (panelEstado === "inicio") ocultarPanel(); };
+      container.appendChild(btnVolver);
+    }
+
+    function construirBotonVolver() { // backwards-compat: si alguien llama a esta función seguirá funcionando
+      const btnVolver = document.createElement("button");
+      btnVolver.className = "btn-panel";
+      btnVolver.textContent = "← Volver";
+      btnVolver.style.marginLeft = "10px";
+      btnVolver.onclick = () => { if (panelEstado === "detalle") mostrarPanelInicio(); else if (panelEstado === "inicio") ocultarPanel(); };
       panelMiCuenta.appendChild(btnVolver);
     }
 
-    function ocultarPanel() {
-      panelMiCuenta.classList.remove("visible");
-      panelMiCuenta.innerHTML = "";
-      panelEstado = "cerrado";
-      derecha.style.display = "flex";
-      izquierda.style.display = "flex";
-    }
+    function ocultarPanel() { panelMiCuenta.classList.remove("visible"); panelMiCuenta.innerHTML = ""; panelEstado = "cerrado"; derecha.style.display = "flex"; izquierda.style.display = "flex"; }
 
     window.onload = () => {
       const emailGuardado = localStorage.getItem("usuarioLogueado");
-      if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) {
-        cargarSesion(usuarios[emailGuardado]);
-      }
+      if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) { cargarSesion(usuarios[emailGuardado]); }
     };
   </script>
 
