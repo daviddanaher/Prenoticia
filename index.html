@@ -44,17 +44,15 @@
       white-space: nowrap;
     }
 
-    /* --- Todos los botones mismo alto --- */
-    .btn, 
-    #panelMiCuenta .btn-panel {
+    .btn {
       background-color: #bb6c00;
       color: #fff;
       border: none;
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 4px;
       font-size: 14px;
       cursor: pointer;
-      height: 36px; /* mismo alto para todos */
+      height: 32px; /* Igual alto para todos los botones */
       display: flex;
       align-items: center;
       text-decoration: none;
@@ -62,8 +60,7 @@
       white-space: nowrap;
       box-sizing: border-box;
     }
-    .btn:hover,
-    #panelMiCuenta .btn-panel:hover {
+    .btn:hover {
       background-color: #a55a00;
       text-decoration: none;
     }
@@ -91,7 +88,6 @@
       border: none;
       width: 200px;
       font-size: 14px;
-      height: 24px;
     }
 
     .mensaje-error {
@@ -138,6 +134,25 @@
 
     #panelMiCuenta.visible { opacity: 1; pointer-events: auto; }
 
+    /* Botones del panel */
+    #panelMiCuenta .btn-panel {
+      background-color: #bb6c00;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.25s ease;
+      white-space: nowrap;
+      text-decoration: none !important;
+      height: 32px; /* Igual alto que los botones principales */
+      box-sizing: border-box;
+    }
+    #panelMiCuenta .btn-panel:hover { background-color: #a55a00; }
+
     /* Imagen usuario */
     .foto-usuario {
       width: 32px;
@@ -154,26 +169,18 @@
       align-items: center;
       gap: 8px;
       white-space: nowrap;
-      color: #eee;       /* color unificado */
-      font-size: 14px;   /* tamaño unificado */
     }
-    .usuario-detalle span {
-      display: inline-block;
-      color: #eee;       /* color unificado */
-      font-size: 14px;   /* tamaño unificado */
-    }
+    /* Datos del usuario alineados horizontalmente y con mismo tamaño y color que nombre */
     .usuario-datos {
       display: flex;
       gap: 15px;
-      font-size: 14px;  /* tamaño unificado */
-      color: #eee;      /* color unificado */
+      font-size: 14px; /* igual que el nombre */
+      color: white; /* igual que el nombre */
       white-space: nowrap;
       align-items: center;
     }
     .usuario-datos span {
       display: inline-block;
-      color: #eee;      /* color unificado */
-      font-size: 14px;  /* tamaño unificado */
     }
 
     /* Contenido exclusivo */
@@ -182,9 +189,10 @@
       align-items: center;
       gap: 8px;
       white-space: nowrap;
-      width: 100%;
-      justify-content: space-between; /* espacio entre flechas y noticia */
+      flex-grow: 1;
+      justify-content: space-between; /* Para que flechas queden a los extremos */
     }
+    /* Flechas siempre a los extremos */
     .flecha {
       background: rgba(255,255,255,0.2);
       border: none;
@@ -195,8 +203,15 @@
       border-radius: 4px;
       user-select: none;
       flex-shrink: 0;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      box-sizing: border-box;
     }
     .flecha:hover { background: rgba(255,255,255,0.35); }
+
     .articulo-exclusivo {
       min-width: 200px;
       padding: 6px 10px;
@@ -205,7 +220,7 @@
       display: flex;
       align-items: center;
       flex-grow: 1;
-      margin: 0 8px; /* espacio a los lados para separar de flechas */
+      margin: 0 10px; /* separación entre flechas y texto */
       overflow: hidden;
     }
     .articulo-exclusivo a {
@@ -215,6 +230,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      flex-shrink: 1;
     }
     .articulo-exclusivo a:hover {
       text-decoration: underline;
@@ -222,16 +238,13 @@
 
     /* Adaptaciones móviles */
     @media (max-width: 600px) {
-      .btn, 
-      #panelMiCuenta .btn-panel {
-        font-size: 13px; 
-        padding: 5px 8px; 
-        height: 32px; /* menor alto en móvil, igual para todos */
-      }
+      .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
       .popup-login input { width: 140px; }
       #panelMiCuenta { font-size: 13px; padding: 0 8px; }
-      #panelMiCuenta .btn-panel { padding: 5px 8px; }
+      #panelMiCuenta .btn-panel { padding: 5px 8px; height: 28px; }
       .barra-contenido { padding-left: 8px; padding-right: 8px; }
+      /* Ajustes usuario-datos móvil */
+      .usuario-datos { font-size: 13px; }
     }
   </style>
 </head>
@@ -447,7 +460,6 @@
       const articuloDiv = document.createElement("div");
       articuloDiv.className = "articulo-exclusivo";
 
-      // El texto es un link que abre en pestaña nueva
       const enlace = document.createElement("a");
       enlace.href = usuarioActual.articulos[articuloIndex].url;
       enlace.target = "_blank";
@@ -463,18 +475,20 @@
         mostrarArticulo();
       };
 
-      // Ahora las flechas quedan a los extremos y la noticia en el medio (con justify-content: space-between)
+      // Contenedor para flechas y título con distribución a los extremos
       cont.appendChild(flechaIzq);
       cont.appendChild(articuloDiv);
       cont.appendChild(flechaDer);
+
+      panelMiCuenta.appendChild(cont);
+
+      // Botón volver a la derecha, separado con margen
+      construirBotonVolver();
 
       function mostrarArticulo() {
         enlace.href = usuarioActual.articulos[articuloIndex].url;
         enlace.textContent = usuarioActual.articulos[articuloIndex].titulo;
       }
-
-      panelMiCuenta.appendChild(cont);
-      construirBotonVolver();
     }
 
     function construirDetalle(tipo) {
@@ -483,7 +497,6 @@
       if (!usuarioActual) return;
 
       if (tipo === "nombre") {
-        // Mostrar foto a la izquierda y nombre completo sin la palabra "Nombre:"
         const contUsuario = document.createElement("div");
         contUsuario.className = "usuario-detalle";
 
@@ -496,11 +509,13 @@
 
         const nombreSpan = document.createElement("span");
         nombreSpan.textContent = usuarioActual.nombre + " " + usuarioActual.apellido;
+        nombreSpan.style.color = "white";
+        nombreSpan.style.fontSize = "14px";
         contUsuario.appendChild(nombreSpan);
 
         panelMiCuenta.appendChild(contUsuario);
 
-        // Datos en línea horizontal: email, verificado, país (mismo tamaño y color)
+        // Datos alineados horizontalmente y con mismo estilo que el nombre
         const datos = document.createElement("div");
         datos.className = "usuario-datos";
 
@@ -531,6 +546,7 @@
       const btnVolver = document.createElement("button");
       btnVolver.className = "btn-panel";
       btnVolver.textContent = "← Volver";
+      btnVolver.style.marginLeft = "10px"; // un poco de separación cuando está al lado del contenido exclusivo
       btnVolver.onclick = () => {
         if (panelEstado === "detalle") mostrarPanelInicio();
         else if (panelEstado === "inicio") ocultarPanel();
