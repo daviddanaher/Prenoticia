@@ -19,7 +19,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 0 8px; /* móvil: se restará 1px más abajo en media query */
+      padding: 0 11px; /* escritorio: +3px respecto a la versión anterior (antes 8px) */
       z-index: 9999;
       user-select: none;
       overflow: hidden;
@@ -73,6 +73,13 @@
     }
     .btn:hover { background-color: #a55a00; text-decoration: none; }
 
+    /* Específicos: en escritorio aplicar margen derecho de 7px a Ayuda y Cerrar sesión */
+    .ayuda-btn, .cerrar-sesion-btn { margin-right: 7px; }
+    @media (max-width: 600px) {
+      /* En móviles no queremos ese margen extra a la derecha */
+      .ayuda-btn, .cerrar-sesion-btn { margin-right: 0; }
+    }
+
     /* Popup login */
     .popup-login {
       position: absolute;
@@ -89,13 +96,18 @@
       animation: fadeIn 0.3s ease;
       z-index: 10000;
       user-select: auto;
+      flex-wrap: wrap; /* permite adaptar el ancho del input y que el mensaje de error pase a la siguiente línea cuando sea necesario */
     }
     .popup-login input {
       padding: 6px;
       border-radius: 4px;
       border: none;
-      width: 200px;
       font-size: 14px;
+      /* hacer el campo de correo más largo pero adaptable cuando aparezcan mensajes de error */
+      flex: 1 1 320px; /* crecer/encoger según espacio; base 320px en escritorio */
+      min-width: 180px;
+      max-width: 520px;
+      box-sizing: border-box;
     }
     .mensaje-error {
       color: white;
@@ -104,6 +116,8 @@
       border-radius: 4px;
       font-size: 13px;
       display: none;
+      flex: 0 1 auto;
+      margin-top: 6px; /* cuando baja a nueva línea, separarlo un poco */
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -118,7 +132,7 @@
       display: none; /* oculto por defecto */
       align-items: center;
       gap: 10px;
-      padding: 0 16px;
+      padding: 0 0; /* escritorio: sin espaciados laterales cuando se muestra Mi cuenta (cambio solicitado) */
       white-space: nowrap;
       font-size: 14px;
       overflow: hidden; /* por defecto oculto; las secciones internas controlan scroll */
@@ -176,7 +190,9 @@
     .usuario-datos { display: flex; gap: 15px; font-size: 14px; color: white; white-space: nowrap; align-items: center; }
 
     .usuario-texto { font-size: 14px; color: white; display: flex; align-items: center; gap: 6px; }
-    .nombre-bold { font-weight: 700; margin-right: 4px; }
+    /* nueva clase para wrapper de nombre y apellido: quitar espacio entre ellos */
+    .nombre-apellido-wrapper { gap: 0; display: flex; align-items: center; }
+    .nombre-bold { font-weight: 700; margin-right: 0; } /* eliminar margen derecho adicional */
     .apellido-bold { font-weight: 700; }
     .usuario-resto { font-weight: 400; } /* resto no en negrita */
 
@@ -257,8 +273,8 @@
       .barra-flotante { padding: 0 7px; } /* antes 8px -> ahora 7px */
 
       .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
-      .popup-login input { width: 140px; }
-      #panelMiCuenta { font-size: 13px; padding: 0 10px; }
+      .popup-login input { flex-basis: 220px; min-width: 120px; }
+      #panelMiCuenta { font-size: 13px; padding: 0 10px; } /* en móvil mantenemos padding lateral */
       #panelMiCuenta .btn-panel { padding: 5px 8px; height: 28px; }
       .barra-contenido { padding-left: 11px; padding-right: 11px; } /* antes 12px -> ahora 11px (1px menos) */
       .usuario-datos { font-size: 13px; }
@@ -316,7 +332,7 @@
 
       <div class="grupo-botones" id="derecha" style="justify-content:flex-end;">
         <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_blank">Suscribirme</a>
-        <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank">Ayuda</a>
+        <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn ayuda-btn" target="_blank">Ayuda</a>
       </div>
 
       <!-- Panel Mi Cuenta (se inyecta por JS) -->
@@ -411,7 +427,7 @@
 
       const btnCerrarSesion = document.createElement("button");
       btnCerrarSesion.textContent = "Cerrar sesión";
-      btnCerrarSesion.className = "btn";
+      btnCerrarSesion.className = "btn cerrar-sesion-btn"; /* clase añadida para margen derecho en escritorio */
       btnCerrarSesion.onclick = () => { localStorage.removeItem("usuarioLogueado"); location.reload(); };
       derecha.appendChild(btnCerrarSesion);
 
@@ -471,7 +487,7 @@
       acciones.appendChild(btnBaja);
 
       const btnAyuda = document.createElement("a");
-      btnAyuda.className = "btn-panel";
+      btnAyuda.className = "btn-panel ayuda-btn"; /* clase añadida para margen derecho en escritorio */
       btnAyuda.textContent = "Ayuda";
       btnAyuda.href = "https://www.prenoticia.com/mi-cuenta-ayuda";
       btnAyuda.target = "_blank";
@@ -577,7 +593,7 @@
         /* NOMBRE y APELLIDO en negrita (separados) + resto no en negrita,
            todos alineados y con mismo tamaño de letra, como solicitaste. */
         const nombreApellidoWrapper = document.createElement('div');
-        nombreApellidoWrapper.className = 'usuario-texto';
+        nombreApellidoWrapper.className = 'usuario-texto nombre-apellido-wrapper'; /* wrapper con gap:0 para eliminar espacio entre nombre y apellido */
 
         const nombreSpan = document.createElement('span');
         nombreSpan.className = 'nombre-bold';
