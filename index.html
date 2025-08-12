@@ -25,21 +25,16 @@
       overflow: hidden;
     }
 
-    /* Contenido centrado y alineado con el resto del sitio (desktop)
-       - max-width coincide con el resto de la web
-       - margin: 0 auto alinea los laterales
-       - padding lateral pequeño para evitar que quede pegado a la ventana
-    */
     .barra-contenido {
       width: 100%;
       max-width: 1085px;
-      margin: 0 auto; /* importante: alinea con el resto del contenido */
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: relative;
       height: 100%;
-      padding-left: 16px; /* ajuste para que quede alineado con otros bloques */
+      padding-left: 16px;
       padding-right: 16px;
     }
 
@@ -60,7 +55,7 @@
       border-radius: 4px;
       font-size: 14px;
       cursor: pointer;
-      height: 32px; /* Igual alto para todos los botones */
+      height: 32px;
       display: flex;
       align-items: center;
       text-decoration: none;
@@ -70,29 +65,55 @@
     }
     .btn:hover { background-color: #a55a00; text-decoration: none; }
 
+    /* POPUP LOGIN: centrado en desktop, full width en móvil */
     .popup-login {
       position: absolute;
-      top: 50px;
-      left: 0;
-      right: 0;
-      height: 50px;
-      background-color: #f68e03;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 280px;
+      max-width: 420px;
+      width: auto;
       display: none;
       align-items: center;
-      justify-content: center;
       gap: 8px;
-      padding: 0 10px;
-      animation: fadeIn 0.3s ease;
+      padding: 10px;
+      background-color: #f68e03;
+      border-radius: 6px;
+      animation: fadeIn 0.25s ease;
       z-index: 10000;
       user-select: auto;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    .login-inner {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
     }
 
     .popup-login input {
-      padding: 6px;
+      padding: 8px;
       border-radius: 4px;
       border: none;
-      width: 200px;
+      width: 100%;
       font-size: 14px;
+    }
+
+    .popup-login .btn {
+      flex-shrink: 0;
+    }
+
+    .popup-login .btn-cerrar {
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 16px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .mensaje-error {
@@ -102,9 +123,10 @@
       border-radius: 4px;
       font-size: 13px;
       display: none;
+      margin-left: 8px;
     }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
     /* PANEL MI CUENTA */
     #panelMiCuenta {
@@ -114,22 +136,20 @@
       right: 0;
       height: 50px;
       color: white;
-      display: none; /* oculto por defecto: se mostrará con clase visible */
+      display: none;
       align-items: center;
       gap: 10px;
       padding: 0 16px;
-      white-space: nowrap;
       font-size: 14px;
       overflow: hidden;
       transition: opacity 0.35s ease, transform 0.25s ease;
       user-select: none;
       z-index: 10000;
-      background: transparent; /* respetamos diseño visual actual */
+      background: transparent;
     }
 
     #panelMiCuenta.visible { display: flex; opacity: 1; }
 
-    /* Inner wrapper to control layout of content + volver button */
     .panel-inner {
       display: flex;
       align-items: center;
@@ -137,7 +157,19 @@
       width: 100%;
     }
 
-    /* Botones del panel */
+    /* Area de acciones que puede scrollear lateralmente en móvil (excepto cuando mostramos exclusivo) */
+    .acciones-scroll {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      white-space: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+    .acciones-scroll::-webkit-scrollbar { height: 6px; }
+    .acciones-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
     #panelMiCuenta .btn-panel {
       background-color: #bb6c00;
       color: #fff;
@@ -151,12 +183,11 @@
       transition: background-color 0.25s ease;
       white-space: nowrap;
       text-decoration: none !important;
-      height: 32px; /* Igual alto que los botones principales */
+      height: 32px;
       box-sizing: border-box;
     }
     #panelMiCuenta .btn-panel:hover { background-color: #a55a00; }
 
-    /* Imagen usuario */
     .foto-usuario {
       width: 32px;
       height: 32px;
@@ -166,11 +197,21 @@
       flex-shrink: 0;
     }
 
-    /* Contenedor usuario detalle */
     .usuario-detalle { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-    .usuario-datos { display: flex; gap: 15px; font-size: 14px; color: white; white-space: nowrap; align-items: center; }
+    .usuario-datos {
+      display: flex;
+      gap: 12px;
+      font-size: 14px;
+      color: white;
+      white-space: nowrap;
+      align-items: center;
+      align-content: center;
+    }
+    /* Tipos de peso: nombre y apellido en negrita, resto normal */
+    .usuario-nombre { font-weight: 700; }
+    .usuario-apellido { font-weight: 700; margin-left: 4px; }
+    .usuario-datos span { font-weight: 400; }
 
-    /* Contenido exclusivo */
     .contenedor-exclusivo {
       display: flex;
       align-items: center;
@@ -178,7 +219,7 @@
       white-space: nowrap;
       flex-grow: 1;
       justify-content: flex-start;
-      overflow: hidden;
+      overflow: hidden; /* el contenedor principal no hace scroll; las flechas controlan el cambio */
     }
 
     .flecha {
@@ -223,7 +264,6 @@
     }
     .articulo-exclusivo a:hover { text-decoration: underline; }
 
-    /* Badge para artículos "Sorteo" / "Código" / "Exclusivo" */
     .badge {
       background: rgba(255,255,255,0.18);
       color: white;
@@ -235,52 +275,49 @@
       font-size: 12px;
     }
 
-    /* Botón volver a la derecha en pantalla escritorio (se mantiene la apariencia original) */
     .back-wrapper { display: flex; align-items: center; margin-left: 10px; }
 
     /* Adaptaciones móviles */
     @media (max-width: 600px) {
       .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
-      .popup-login input { width: 140px; }
       #panelMiCuenta { font-size: 13px; padding: 0 10px; }
       #panelMiCuenta .btn-panel { padding: 5px 8px; height: 28px; }
+
       .barra-contenido { padding-left: 12px; padding-right: 12px; max-width: 100%; }
-      .usuario-datos { font-size: 13px; }
 
-      /* Estructura móvil: contenido exclusivo a la izquierda y el botón volver pegado a la derecha del panel
-         además hacemos que el artículo ocupe todo el ancho disponible para que se vea correctamente en celular
-      */
-      #panelMiCuenta.visible {
-        display: flex;
-        padding-left: 10px;
-        padding-right: 10px;
+      /* Popup login: en móvil ocupa todo el ancho y cada elemento es full width vertical */
+      .popup-login {
+        position: absolute;
+        left: 0;
+        right: 0;
+        transform: none;
+        top: 50px;
+        padding: 10px;
+        border-radius: 0;
+        max-width: none;
+        width: 100%;
       }
+      .login-inner { flex-direction: column; align-items: stretch; gap: 8px; }
+      .login-inner > * { width: 100%; }
 
-      .panel-inner { gap: 8px; }
+      /* Hacemos que las acciones en el panel se puedan scrollear horizontalmente */
+      .acciones-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; }
+      .acciones-scroll { width: calc(100% - 80px); } /* dejamos espacio para el back-wrapper en móvil */
 
-      .contenedor-exclusivo {
-        overflow: hidden;
-        min-width: 0;
-        flex: 1 1 auto;
-      }
+      /* Contenido exclusivo: que no haga scroll horizontal (usa flechas) */
+      .contenedor-exclusivo { overflow: visible; min-width: 0; flex: 1 1 auto; }
 
       .articulo-exclusivo {
-        /* Hacemos que el elemento ocupe el ancho disponible dentro del panel, respetando los botones */
         min-width: 0;
         width: 100%;
         padding: 8px 10px;
         border-radius: 6px;
       }
-
       .articulo-exclusivo a { white-space: normal; }
 
-      /* Forzamos que el back-wrapper se ubique a la derecha con margin-left:auto */
       .back-wrapper { margin-left: auto; }
 
-      /* Aumentamos el touch area de las flechas en móvil */
       .flecha { padding: 8px 10px; min-width: 40px; }
-
-      /* Si hay badge, que se muestre antes del título y no rompa el ancho */
       .badge { margin-right: 8px; flex-shrink: 0; }
     }
 
@@ -304,11 +341,13 @@
 
       <div id="panelMiCuenta"></div>
 
-      <div class="popup-login" id="popupLogin">
-        <input type="email" id="inputEmail" placeholder="Tu correo"/>
-        <button class="btn" onclick="validarEmail()">Ingresar</button>
-        <button class="btn" onclick="cerrarLogin()">✕</button>
-        <span class="mensaje-error" id="mensajeError"></span>
+      <div class="popup-login" id="popupLogin" role="dialog" aria-hidden="true" aria-label="Ingreso">
+        <div class="login-inner">
+          <input type="email" id="inputEmail" placeholder="Tu correo" aria-label="Correo electrónico"/>
+          <button class="btn" id="btnIngresar" onclick="validarEmail()">Ingresar</button>
+          <button class="btn btn-cerrar" id="btnCerrarLogin" onclick="cerrarLogin()">✕</button>
+          <span class="mensaje-error" id="mensajeError" role="status" aria-live="polite"></span>
+        </div>
       </div>
     </div>
   </div>
@@ -326,14 +365,11 @@
         pais: "Buenos Aires, Argentina",
         emailVerificado: true,
         foto: "https://pbs.twimg.com/profile_images/1907511710769930240/7oUtDTMv_400x400.jpg",
-        // articulos: además de noticias, puede contener items con 'tipo' igual a 'sorteo'| 'codigo' | 'exclusivo'
         articulos: [
           { titulo: "Submarino desaparece en la Antártida tras descubrir estructuras desconocidas", url: "https://www.prenoticia.com/2025/08/submarino-desaparece-en-la-antartida.html" },
           { titulo: "Un informe reciente señala que no hace falta caminar tantos pasos como se creía para cuidar la salud", url: "https://www.prenoticia.com/2025/08/un-informe-reciente-senala-que-no-hace.html" },
           { titulo: "El cerebro del hombre es más grande, pero el de la mujer funciona con más eficiencia", url: "https://www.prenoticia.com/2025/06/el-cerebro-del-hombre-es-mas-grande.html" },
-          // Ejemplo de artículo especial: Sorteo
           { titulo: "¡Ganá una suscripción anual! Participá del sorteo exclusivo", url: "https://www.prenoticia.com/sorteo-2025", tipo: "sorteo" },
-          // Ejemplo de artículo especial: Código
           { titulo: "Código exclusivo: 10% de descuento en Prenoticia", url: "https://www.prenoticia.com/codigo-descuento", tipo: "codigo" }
         ]
       },
@@ -359,17 +395,42 @@
     const panelMiCuenta = document.getElementById("panelMiCuenta");
     const derecha = document.getElementById("derecha");
     const izquierda = document.getElementById("izquierda");
+    const btnCerrarLogin = document.getElementById("btnCerrarLogin");
 
-    function mostrarLogin() { mensajeError.style.display = "none"; popupLogin.style.display = "flex"; inputEmail.focus(); }
-    function cerrarLogin() { popupLogin.style.display = "none"; inputEmail.value = ""; mensajeError.style.display = "none"; }
+    function mostrarLogin() {
+      mensajeError.style.display = "none";
+      popupLogin.style.display = "flex";
+      popupLogin.setAttribute('aria-hidden','false');
+      // foco en input (mejor experiencia móvil)
+      setTimeout(()=> inputEmail.focus(), 50);
+    }
+    function cerrarLogin() {
+      popupLogin.style.display = "none";
+      popupLogin.setAttribute('aria-hidden','true');
+      inputEmail.value = "";
+      mensajeError.style.display = "none";
+    }
 
     function validarEmail() {
       const email = inputEmail.value.trim().toLowerCase();
-      if (!email) { mensajeError.textContent = "Por favor, ingresá tu correo electrónico"; mensajeError.style.display = "inline-block"; return; }
+      if (!email) {
+        mensajeError.textContent = "Por favor, ingresá tu correo electrónico";
+        mensajeError.style.display = "inline-block";
+        return;
+      }
       if (usuarios[email]) {
-        if (usuarios[email].activo) { localStorage.setItem("usuarioLogueado", email); cargarSesion(usuarios[email]); cerrarLogin(); }
-        else { mensajeError.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`; mensajeError.style.display = "inline-block"; }
-      } else { mensajeError.textContent = "El correo ingresado no está suscripto."; mensajeError.style.display = "inline-block"; }
+        if (usuarios[email].activo) {
+          localStorage.setItem("usuarioLogueado", email);
+          cargarSesion(usuarios[email]);
+          cerrarLogin();
+        } else {
+          mensajeError.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`;
+          mensajeError.style.display = "inline-block";
+        }
+      } else {
+        mensajeError.textContent = "El correo ingresado no está suscripto.";
+        mensajeError.style.display = "inline-block";
+      }
     }
 
     function cargarSesion(usuario) {
@@ -409,14 +470,12 @@
     function construirPanelInicio() {
       panelMiCuenta.innerHTML = "";
 
-      // wrapper inner para controlar posicion del contenido y del boton volver
       const inner = document.createElement('div');
       inner.className = 'panel-inner';
 
+      // contenedor de acciones que puede scrollear en móvil
       const acciones = document.createElement('div');
-      acciones.style.display = 'flex';
-      acciones.style.gap = '8px';
-      acciones.style.alignItems = 'center';
+      acciones.className = 'acciones-scroll';
 
       const btnNombre = document.createElement("button");
       btnNombre.className = "btn-panel";
@@ -459,7 +518,6 @@
 
       inner.appendChild(acciones);
 
-      // Back wrapper (visible but placed to the right via CSS: margin-left:auto on mobile)
       const backWrap = document.createElement('div');
       backWrap.className = 'back-wrapper';
       inner.appendChild(backWrap);
@@ -498,14 +556,13 @@
       const articuloDiv = document.createElement("div");
       articuloDiv.className = "articulo-exclusivo";
 
-      // Badge (si el artículo tiene tipo: 'sorteo'|'codigo'|'exclusivo')
       const badge = document.createElement('span');
       badge.className = 'badge';
 
       const enlace = document.createElement("a");
       enlace.target = "_blank";
 
-      // Append elements in order: flechas, articulo con badge + link
+      // orden: flechas luego articulo
       cont.appendChild(flechaIzq);
       cont.appendChild(flechaDer);
       articuloDiv.appendChild(badge);
@@ -514,7 +571,6 @@
 
       inner.appendChild(cont);
 
-      // Back wrapper: lo colocamos como hijo de inner para que en móvil quede a la derecha
       const backWrap = document.createElement('div');
       backWrap.className = 'back-wrapper';
       inner.appendChild(backWrap);
@@ -527,13 +583,10 @@
         const art = usuarioActual.articulos[articuloIndex];
         enlace.href = art.url;
         enlace.textContent = art.titulo;
-        // Mostrar badge según tipo
         if (art.tipo === 'sorteo') badge.textContent = 'SORTEO';
         else if (art.tipo === 'codigo') badge.textContent = 'CÓDIGO';
         else if (art.tipo === 'exclusivo') badge.textContent = 'EXCLUSIVO';
         else badge.textContent = '';
-
-        // Si no hay badge, ocultarlo visualmente pero mantener estructura
         badge.style.display = badge.textContent ? 'inline-flex' : 'none';
       }
 
@@ -561,24 +614,58 @@
           const img = document.createElement("img"); img.src = usuarioActual.foto; img.className = "foto-usuario"; contUsuario.appendChild(img);
         }
 
+        // Nombre y apellido separados para poder aplicar negrita solo a ellos
+        const nombreWrap = document.createElement("div");
+        nombreWrap.style.display = "flex";
+        nombreWrap.style.alignItems = "center";
+        nombreWrap.style.gap = "4px";
+
         const nombreSpan = document.createElement("span");
-        nombreSpan.textContent = usuarioActual.nombre + " " + usuarioActual.apellido;
-        nombreSpan.style.color = "white"; nombreSpan.style.fontSize = "14px";
-        contUsuario.appendChild(nombreSpan);
+        nombreSpan.className = "usuario-nombre";
+        nombreSpan.textContent = usuarioActual.nombre;
+
+        const apellidoSpan = document.createElement("span");
+        apellidoSpan.className = "usuario-apellido";
+        apellidoSpan.textContent = usuarioActual.apellido;
+
+        nombreWrap.appendChild(nombreSpan);
+        nombreWrap.appendChild(apellidoSpan);
+
+        contUsuario.appendChild(nombreWrap);
 
         contenido.appendChild(contUsuario);
 
-        const datos = document.createElement("div"); datos.className = "usuario-datos";
-        const emailSpan = document.createElement("span"); emailSpan.textContent = usuarioActual.email; datos.appendChild(emailSpan);
-        const verificadoSpan = document.createElement("span"); verificadoSpan.textContent = usuarioActual.emailVerificado ? "✅ Email verificado" : "❌ Email no verificado"; datos.appendChild(verificadoSpan);
-        const paisSpan = document.createElement("span"); paisSpan.textContent = usuarioActual.pais || ""; datos.appendChild(paisSpan);
+        // Datos: email, verificación, país — mismos tamaños, no negrita
+        const datos = document.createElement("div");
+        datos.className = "usuario-datos";
+
+        const emailSpan = document.createElement("span");
+        emailSpan.textContent = usuarioActual.email || "";
+        datos.appendChild(emailSpan);
+
+        const verificadoSpan = document.createElement("span");
+        verificadoSpan.textContent = usuarioActual.emailVerificado ? "✅ Email verificado" : "❌ Email no verificado";
+        datos.appendChild(verificadoSpan);
+
+        const paisSpan = document.createElement("span");
+        paisSpan.textContent = usuarioActual.pais || "";
+        datos.appendChild(paisSpan);
+
         contenido.appendChild(datos);
       }
+
       if (tipo === "metodoPago") {
-        contenido.textContent = `Método de pago: ${usuarioActual.medioPago || "No especificado"}`;
+        const texto = document.createElement('div');
+        texto.style.fontSize = '14px';
+        texto.style.fontWeight = '400';
+        texto.textContent = `Método de pago: ${usuarioActual.medioPago || "No especificado"}`;
+        contenido.appendChild(texto);
       }
+
       if (tipo === "proximosPagos") {
-        contenido.innerHTML = `Último pago: <b>${usuarioActual.ultimoPago || "No disponible"}</b> &nbsp; Próximo pago: <b>${usuarioActual.proximoPago || "No disponible"}</b>`;
+        const texto = document.createElement('div');
+        texto.innerHTML = `Último pago: <b>${usuarioActual.ultimoPago || "No disponible"}</b> &nbsp; Próximo pago: <b>${usuarioActual.proximoPago || "No disponible"}</b>`;
+        contenido.appendChild(texto);
       }
 
       inner.appendChild(contenido);
@@ -599,7 +686,7 @@
       container.appendChild(btnVolver);
     }
 
-    function construirBotonVolver() { // backwards-compat: si alguien llama a esta función seguirá funcionando
+    function construirBotonVolver() {
       const btnVolver = document.createElement("button");
       btnVolver.className = "btn-panel";
       btnVolver.textContent = "← Volver";
@@ -608,11 +695,27 @@
       panelMiCuenta.appendChild(btnVolver);
     }
 
-    function ocultarPanel() { panelMiCuenta.classList.remove("visible"); panelMiCuenta.innerHTML = ""; panelEstado = "cerrado"; derecha.style.display = "flex"; izquierda.style.display = "flex"; }
+    function ocultarPanel() {
+      panelMiCuenta.classList.remove("visible");
+      panelMiCuenta.innerHTML = "";
+      panelEstado = "cerrado";
+      derecha.style.display = "flex";
+      izquierda.style.display = "flex";
+    }
+
+    // Tecla ESC cierra popup o panel
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') {
+        if (popupLogin.style.display === 'flex') cerrarLogin();
+        else if (panelMiCuenta.classList.contains('visible')) ocultarPanel();
+      }
+    });
 
     window.onload = () => {
       const emailGuardado = localStorage.getItem("usuarioLogueado");
-      if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) { cargarSesion(usuarios[emailGuardado]); }
+      if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) {
+        cargarSesion(usuarios[emailGuardado]);
+      }
     };
   </script>
 
