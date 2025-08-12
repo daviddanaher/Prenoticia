@@ -1,9 +1,9 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Barra Flotante con Panel Mi Cuenta</title>
+  <title>Barra Flotante con Panel Mi Cuenta (Actualizado)</title>
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; font-family: Arial, sans-serif; background: #fefefe; }
@@ -19,7 +19,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 0 8px;
+      padding: 0; /* eliminado espaciado lateral en escritorio (pedido) */
       z-index: 9999;
       user-select: none;
       overflow: hidden;
@@ -33,8 +33,11 @@
       justify-content: space-between;
       position: relative;
       height: 100%;
+      margin: 0 0; /* centrado por el contenedor padre */
+      padding: 0; /* sin padding lateral en escritorio */
     }
 
+    /* Grupos de botones */
     .grupo-botones {
       display: flex;
       align-items: center;
@@ -42,30 +45,13 @@
       height: 100%;
       flex-wrap: nowrap;
       white-space: nowrap;
+      margin: 0; /* eliminamos espaciados laterales en escritorio */
     }
 
-    /* === Ajustes versión escritorio === */
+    /* En escritorio agregamos un leve espaciado a la derecha para alinear con el botón volver */
     @media (min-width: 601px) {
-      /* Izquierda sin padding extra para alinear al usuario */
-      #izquierda {
-        padding-left: 0 !important;
-        margin-left: 0 !important;
-      }
-      /* Derecha con leve padding para que boton cerrar sesión y ayuda queden alineados con Volver */
-      #derecha {
-        padding-right: 10px; /* espacio para alinear */
-        margin-right: 0 !important;
-      }
-      /* Quitar gaps innecesarios para botones 'Mi cuenta' y 'Suscribirme' para que queden pegados a la izquierda */
-      #derecha > .btn, #izquierda > .btn {
-        margin-left: 0 !important;
-        padding-left: 8px;
-        padding-right: 8px;
-      }
-      /* Asegurar botón volver con margin-left para que coincida con el padding right de #derecha */
-      #panelMiCuenta .btn-panel {
-        margin-left: 10px;
-      }
+      #derecha { padding-right: 8px; }
+      #izquierda { padding-left: 8px; }
     }
 
     .btn {
@@ -84,10 +70,7 @@
       white-space: nowrap;
       box-sizing: border-box;
     }
-    .btn:hover {
-      background-color: #a55a00;
-      text-decoration: none;
-    }
+    .btn:hover { background-color: #a55a00; text-decoration: none; }
 
     .popup-login {
       position: absolute;
@@ -123,10 +106,7 @@
       display: none;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     /* PANEL MI CUENTA */
     #panelMiCuenta {
@@ -135,7 +115,7 @@
       left: 0;
       right: 0;
       height: 50px;
-      background-color: auto;
+      background-color: transparent;
       color: white;
       display: flex;
       align-items: center;
@@ -155,7 +135,6 @@
 
     #panelMiCuenta::-webkit-scrollbar { height: 6px; }
     #panelMiCuenta::-webkit-scrollbar-thumb { background: rgba(255 255 255 / 0.3); border-radius: 3px; }
-
     #panelMiCuenta.visible { opacity: 1; pointer-events: auto; }
 
     /* Botones del panel */
@@ -178,45 +157,16 @@
     #panelMiCuenta .btn-panel:hover { background-color: #a55a00; }
 
     /* Imagen usuario */
-    .foto-usuario {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 6px;
-      flex-shrink: 0;
-    }
+    .foto-usuario { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 6px; flex-shrink: 0; }
 
     /* Contenedor usuario detalle */
-    .usuario-detalle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-    /* Datos del usuario alineados horizontalmente y con mismo tamaño y color que nombre */
-    .usuario-datos {
-      display: flex;
-      gap: 15px;
-      font-size: 14px; /* igual que el nombre */
-      color: white; /* igual que el nombre */
-      white-space: nowrap;
-      align-items: center;
-    }
-    .usuario-datos span {
-      display: inline-block;
-    }
+    .usuario-detalle { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .usuario-datos { display: flex; gap: 15px; font-size: 14px; color: white; white-space: nowrap; align-items: center; }
+    .usuario-datos span { display: inline-block; }
 
     /* Contenido exclusivo */
-    .contenedor-exclusivo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-      flex-grow: 1;
-      justify-content: flex-start;
-    }
-    /* Flechas juntos a la izquierda */
+    .contenedor-exclusivo { display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-grow: 1; justify-content: flex-start; }
+
     .flecha {
       background: rgba(255,255,255,0.2);
       border: none;
@@ -246,78 +196,48 @@
       margin-left: 0;
       margin-right: 0;
       justify-content: flex-start;
+      max-width: 520px; /* para tener límite en escritorio */
     }
-    .articulo-exclusivo a {
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      flex-shrink: 1;
-    }
-    .articulo-exclusivo a:hover {
-      text-decoration: underline;
-    }
+    .articulo-exclusivo a { color: white; text-decoration: none; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; }
+    .articulo-exclusivo a:hover { text-decoration: underline; }
 
-    /* Estilo para sección de código promo */
-    .codigo-premio {
-      background: rgba(255, 255, 255, 0.25);
-      border-radius: 4px;
-      padding: 6px 10px;
+    /* Promo (diseño parecido a noticia, con scroll interno si hace falta) */
+    .promo-exclusiva {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 250px;
-      font-weight: 600;
-      color: white;
-      user-select: none;
-      justify-content: space-between;
-    }
-    .codigo-premio span.texto {
-      flex-grow: 1;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .codigo-premio button.copiar-btn {
-      background: #bb6c00;
-      border: none;
-      color: white;
-      padding: 4px 8px;
+      flex-direction: column;
+      gap: 6px;
+      max-width: 520px;
+      padding: 8px;
       border-radius: 4px;
-      cursor: pointer;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-    .codigo-premio button.copiar-btn:hover {
-      background: #a55a00;
-    }
-    .mensaje-copiado {
-      font-size: 12px;
-      color: #ccffcc;
-      margin-left: 10px;
-      user-select: none;
-    }
-    .pregunta-utilizado {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
       font-size: 14px;
-      color: white;
-      margin-right: 10px;
-      user-select: none;
-      white-space: normal;
-      max-width: 150px;
+      overflow: hidden;
     }
-    .cerrar-pregunta {
-      background: transparent;
-      border: none;
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-      line-height: 1;
-      padding: 0 6px;
+    .promo-texto {
+      max-height: 56px; /* muestra parte del texto y permite scroll */
+      overflow: auto;
+      line-height: 1.2em;
+    }
+    .promo-codigo { font-weight: 700; letter-spacing: 1px; }
+    .btn-copiar { align-self: start; padding: 6px 10px; border-radius: 4px; background: #bb6c00; color: #fff; border: none; cursor: pointer; }
+
+    /* Mensaje "codigo copiado" */
+    .toast-copiado {
+      position: absolute;
+      bottom: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      display: none;
+      z-index: 12000;
     }
 
-    /* Adaptaciones móviles */
+    /* Ajustes móviles */
     @media (max-width: 600px) {
       .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
       .popup-login input { width: 140px; }
@@ -325,16 +245,14 @@
       #panelMiCuenta .btn-panel { padding: 5px 8px; height: 28px; }
       .barra-contenido { padding-left: 8px; padding-right: 8px; }
       .usuario-datos { font-size: 13px; }
-      /* Contenido exclusivo móvil: ocupa todo el ancho */
-      .contenedor-exclusivo {
-        width: 100vw;
-        overflow-x: auto;
-        justify-content: flex-start;
-      }
-      /* El botón volver se ubica a la derecha pegado */
-      #panelMiCuenta .btn-panel {
-        margin-left: auto !important;
-      }
+
+      /* En celular: el contenido exclusivo ocupa TODO el ancho visible y el botón volver se muestra a la derecha */
+      .contenedor-exclusivo { width: 100%; gap: 8px; }
+      .articulo-exclusivo { min-width: auto; width: calc(100% - 56px); max-width: none; }
+      .promo-exclusiva { width: calc(100% - 56px); max-width: none; }
+
+      /* el botón volver se mantiene visible y a la derecha, sin ocupar ancho extra */
+      #panelMiCuenta .btn-panel.volver-movil { margin-left: auto; }
     }
   </style>
 </head>
@@ -346,9 +264,10 @@
         <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()">Iniciar sesión</button>
         <span id="saludoUsuario" style="color:white; font-weight:bold; display:flex; align-items:center;"></span>
       </div>
+
       <div class="grupo-botones" id="derecha">
         <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_blank">Suscribirme</a>
-        <button class="btn" id="btnMiCuentaAyuda" onclick="abrirAyuda()">Ayuda</button>
+        <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank">Ayuda</a>
       </div>
 
       <div id="panelMiCuenta"></div>
@@ -362,409 +281,384 @@
     </div>
   </div>
 
-<script>
-  const usuarios = {
-    "mauricioacostacom@gmail.com": {
-      activo: true,
-      nombre: "Mauricio David",
-      apellido: "Acosta Danaher",
-      email: "mauricioacostacom@gmail.com",
-      medioPago: "Mercado Pago",
-      ultimoPago: "31 de julio de 2025",
-      proximoPago: "31 de septiembre de 2025",
-      pais: "Buenos Aires, Argentina",
-      emailVerificado: true,
-      foto: "https://pbs.twimg.com/profile_images/1907511710769930240/7oUtDTMv_400x400.jpg",
-      articulos: [
-        { titulo: "Submarino desaparece en la Antártida tras descubrir estructuras desconocidas", url: "https://www.prenoticia.com/2025/08/submarino-desaparece-en-la-antartida.html" },
-        { titulo: "Un informe reciente señala que no hace falta caminar tantos pasos como se creía para cuidar la salud", url: "https://www.prenoticia.com/2025/08/un-informe-reciente-senala-que-no-hace.html" },
-        { titulo: "El cerebro del hombre es más grande, pero el de la mujer funciona con más eficiencia", url: "https://www.prenoticia.com/2025/06/el-cerebro-del-hombre-es-mas-grande.html" }
-      ],
-      // Nuevo campo código premio para demo
-      codigoPremio: {
-        codigo: "p4ADS5DAS5",
-        texto: 'Premio de bienvenida "p4ADS5DAS5". Obtené 25% de descuento en tu viaje en Uber',
-        utilizado: false
+  <script>
+    const usuarios = {
+      "mauricioacostacom@gmail.com": {
+        activo: true,
+        nombre: "Mauricio David",
+        apellido: "Acosta Danaher",
+        email: "mauricioacostacom@gmail.com",
+        medioPago: "Mercado Pago",
+        ultimoPago: "31 de julio de 2025",
+        proximoPago: "31 de septiembre de 2025",
+        pais: "Buenos Aires, Argentina",
+        emailVerificado: true,
+        foto: "https://pbs.twimg.com/profile_images/1907511710769930240/7oUtDTMv_400x400.jpg",
+        articulos: [
+          { tipo: 'nota', titulo: "Submarino desaparece en la Antártida tras descubrir estructuras desconocidas", url: "https://www.prenoticia.com/2025/08/submarino-desaparece-en-la-antartida.html" },
+          { tipo: 'nota', titulo: "Un informe reciente señala que no hace falta caminar tantos pasos como se creía para cuidar la salud", url: "https://www.prenoticia.com/2025/08/un-informe-reciente-senala-que-no-hace.html" },
+          { tipo: 'nota', titulo: "El cerebro del hombre es más grande, pero el de la mujer funciona con más eficiencia", url: "https://www.prenoticia.com/2025/06/el-cerebro-del-hombre-es-mas-grande.html" }
+        ],
+        promos: [
+          {
+            id: 'promo-welcome-01',
+            titulo: 'Premio de bienvenida: 25% de descuento en tu viaje en Uber',
+            codigo: 'AS5D4A5SD',
+            descripcion: '¡Felicidades! Este es tu premio de bienvenida. Aplica un 25% de descuento en tu próximo viaje en Uber. Código válido por un uso. Revisa términos y condiciones en la app de Uber.'
+          }
+        ]
+      },
+      "luciacarpio20@gmail.com": {
+        activo: false,
+        nombre: "Maria",
+        apellido: "Carpio Peralta",
+        email: "luciacarpio20@gmail.com",
+        deuda: "$1.000",
+        foto: "",
+        articulos: [],
+        promos: []
       }
-    },
-    "luciacarpio20@gmail.com": {
-      activo: false,
-      nombre: "Maria",
-      apellido: "Carpio Peralta",
-      email: "luciacarpio20@gmail.com",
-      deuda: "$1.000",
-      foto: ""
-    }
-  };
-
-  let panelEstado = "cerrado";
-  let usuarioActual = null;
-  let articuloIndex = 0;
-  let codigoVisible = true; // controla si mostrar el premio
-  const btnIniciarSesion = document.getElementById("btnIniciarSesion");
-  const saludoUsuario = document.getElementById("saludoUsuario");
-  const popupLogin = document.getElementById("popupLogin");
-  const mensajeError = document.getElementById("mensajeError");
-  const inputEmail = document.getElementById("inputEmail");
-  const panelMiCuenta = document.getElementById("panelMiCuenta");
-  const derecha = document.getElementById("derecha");
-  const izquierda = document.getElementById("izquierda");
-
-  function mostrarLogin() {
-    mensajeError.style.display = "none";
-    popupLogin.style.display = "flex";
-    inputEmail.focus();
-  }
-
-  function cerrarLogin() {
-    popupLogin.style.display = "none";
-    inputEmail.value = "";
-    mensajeError.style.display = "none";
-  }
-
-  function validarEmail() {
-    const email = inputEmail.value.trim().toLowerCase();
-    if (!email) {
-      mensajeError.textContent = "Por favor, ingresá tu correo electrónico";
-      mensajeError.style.display = "inline-block";
-      return;
-    }
-    if (usuarios[email]) {
-      if (usuarios[email].activo) {
-        localStorage.setItem("usuarioLogueado", email);
-        cargarSesion(usuarios[email]);
-        cerrarLogin();
-      } else {
-        mensajeError.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`;
-        mensajeError.style.display = "inline-block";
-      }
-    } else {
-      mensajeError.textContent = "El correo ingresado no está suscripto.";
-      mensajeError.style.display = "inline-block";
-    }
-  }
-
-  function cargarSesion(usuario) {
-    usuarioActual = usuario;
-    btnIniciarSesion.style.display = "none";
-    saludoUsuario.innerHTML = "";
-    if (usuario.foto) {
-      const img = document.createElement("img");
-      img.src = usuario.foto;
-      img.className = "foto-usuario";
-      saludoUsuario.appendChild(img);
-    }
-    const primerNombre = usuario.nombre.split(" ")[0];
-    saludoUsuario.appendChild(document.createTextNode(primerNombre));
-    derecha.innerHTML = "";
-
-    const btnCuenta = document.createElement("button");
-    btnCuenta.textContent = "Mi cuenta";
-    btnCuenta.className = "btn";
-    btnCuenta.onclick = () => {
-      if (panelEstado === "cerrado") mostrarPanelInicio();
-      else if (panelEstado === "inicio") ocultarPanel();
     };
-    derecha.appendChild(btnCuenta);
 
-    const btnCerrarSesion = document.createElement("button");
-    btnCerrarSesion.textContent = "Cerrar sesión";
-    btnCerrarSesion.className = "btn";
-    btnCerrarSesion.onclick = () => {
-      localStorage.removeItem("usuarioLogueado");
-      location.reload();
-    };
-    derecha.appendChild(btnCerrarSesion);
+    let panelEstado = "cerrado";
+    let usuarioActual = null;
+    let articuloIndex = 0;
+    let listaExclusivos = []; // combinación de notas + promos para el render
 
-    ocultarPanel();
-  }
+    const btnIniciarSesion = document.getElementById("btnIniciarSesion");
+    const saludoUsuario = document.getElementById("saludoUsuario");
+    const popupLogin = document.getElementById("popupLogin");
+    const mensajeError = document.getElementById("mensajeError");
+    const inputEmail = document.getElementById("inputEmail");
+    const panelMiCuenta = document.getElementById("panelMiCuenta");
+    const derecha = document.getElementById("derecha");
+    const izquierda = document.getElementById("izquierda");
 
-  function abrirAyuda() {
-    window.open("https://www.prenoticia.com/mi-cuenta-ayuda", "_blank");
-  }
+    function mostrarLogin() { mensajeError.style.display = "none"; popupLogin.style.display = "flex"; inputEmail.focus(); }
+    function cerrarLogin() { popupLogin.style.display = "none"; inputEmail.value = ""; mensajeError.style.display = "none"; }
 
-  function mostrarPanelInicio() {
-    panelEstado = "inicio";
-    construirPanelInicio();
-    derecha.style.display = "none";
-    izquierda.style.display = "none";
-    panelMiCuenta.classList.add("visible");
-  }
+    function validarEmail() {
+      const email = inputEmail.value.trim().toLowerCase();
+      if (!email) { mensajeError.textContent = "Por favor, ingresá tu correo electrónico"; mensajeError.style.display = "inline-block"; return; }
+      if (usuarios[email]) {
+        if (usuarios[email].activo) { localStorage.setItem("usuarioLogueado", email); cargarSesion(usuarios[email]); cerrarLogin(); }
+        else { mensajeError.textContent = `Tu cuenta registra una deuda impaga de ${usuarios[email].deuda}.`; mensajeError.style.display = "inline-block"; }
+      } else { mensajeError.textContent = "El correo ingresado no está suscripto."; mensajeError.style.display = "inline-block"; }
+    }
 
-  function construirPanelInicio() {
-    panelMiCuenta.innerHTML = "";
+    function cargarSesion(usuario) {
+      usuarioActual = usuario;
+      btnIniciarSesion.style.display = "none";
+      saludoUsuario.innerHTML = "";
+      if (usuario.foto) { const img = document.createElement("img"); img.src = usuario.foto; img.className = "foto-usuario"; saludoUsuario.appendChild(img); }
+      const primerNombre = usuario.nombre.split(" ")[0];
+      saludoUsuario.appendChild(document.createTextNode(primerNombre));
+      derecha.innerHTML = "";
 
-    const btnNombre = document.createElement("button");
-    btnNombre.className = "btn-panel";
-    btnNombre.textContent = "Usuario";
-    btnNombre.onclick = () => { construirDetalle("nombre"); };
-    panelMiCuenta.appendChild(btnNombre);
+      const btnCuenta = document.createElement("button");
+      btnCuenta.textContent = "Mi cuenta";
+      btnCuenta.className = "btn";
+      btnCuenta.onclick = () => { if (panelEstado === "cerrado") mostrarPanelInicio(); else if (panelEstado === "inicio") ocultarPanel(); };
+      derecha.appendChild(btnCuenta);
 
-    const btnExclusivo = document.createElement("button");
-    btnExclusivo.className = "btn-panel";
-    btnExclusivo.textContent = "Contenido exclusivo";
-    btnExclusivo.onclick = () => { construirExclusivo(); };
-    panelMiCuenta.appendChild(btnExclusivo);
+      const btnCerrarSesion = document.createElement("button");
+      btnCerrarSesion.textContent = "Cerrar sesión";
+      btnCerrarSesion.className = "btn";
+      btnCerrarSesion.onclick = () => { localStorage.removeItem("usuarioLogueado"); location.reload(); };
+      derecha.appendChild(btnCerrarSesion);
 
-    const btnMetodo = document.createElement("button");
-    btnMetodo.className = "btn-panel";
-    btnMetodo.textContent = "Método de pago";
-    btnMetodo.onclick = () => { construirDetalle("metodoPago"); };
-    panelMiCuenta.appendChild(btnMetodo);
+      ocultarPanel();
+    }
 
-    const btnFechas = document.createElement("button");
-    btnFechas.className = "btn-panel";
-    btnFechas.textContent = "Próximas fechas de pago";
-    btnFechas.onclick = () => { construirDetalle("proximosPagos"); };
-    panelMiCuenta.appendChild(btnFechas);
+    function mostrarPanelInicio() {
+      panelEstado = "inicio";
+      construirPanelInicio();
+      derecha.style.display = "none";
+      izquierda.style.display = "none";
+      panelMiCuenta.classList.add("visible");
+    }
 
-    const btnBaja = document.createElement("a");
-    btnBaja.className = "btn-panel";
-    btnBaja.style.textDecoration = "none";
-    btnBaja.textContent = "Dar de baja suscripción";
-    btnBaja.href = "https://www.prenoticia.com/baja-suscripción";
-    btnBaja.target = "_blank";
-    panelMiCuenta.appendChild(btnBaja);
+    function construirPanelInicio() {
+      panelMiCuenta.innerHTML = "";
 
-    const btnAyuda = document.createElement("a");
-    btnAyuda.className = "btn-panel";
-    btnAyuda.textContent = "Ayuda";
-    btnAyuda.href = "https://www.prenoticia.com/mi-cuenta-ayuda";
-    btnAyuda.target = "_blank";
-    panelMiCuenta.appendChild(btnAyuda);
+      const btnNombre = document.createElement("button");
+      btnNombre.className = "btn-panel";
+      btnNombre.textContent = "Usuario";
+      btnNombre.onclick = () => { construirDetalle("nombre"); };
+      panelMiCuenta.appendChild(btnNombre);
 
-    construirBotonVolver();
-  }
+      const btnExclusivo = document.createElement("button");
+      btnExclusivo.className = "btn-panel";
+      btnExclusivo.textContent = "Contenido exclusivo";
+      btnExclusivo.onclick = () => { construirExclusivo(); };
+      panelMiCuenta.appendChild(btnExclusivo);
 
-  function construirExclusivo() {
-    panelEstado = "detalle";
-    panelMiCuenta.innerHTML = "";
+      const btnMetodo = document.createElement("button");
+      btnMetodo.className = "btn-panel";
+      btnMetodo.textContent = "Método de pago";
+      btnMetodo.onclick = () => { construirDetalle("metodoPago"); };
+      panelMiCuenta.appendChild(btnMetodo);
 
-    if (!usuarioActual) {
-      panelMiCuenta.textContent = "No hay contenido exclusivo disponible.";
+      const btnFechas = document.createElement("button");
+      btnFechas.className = "btn-panel";
+      btnFechas.textContent = "Próximas fechas de pago";
+      btnFechas.onclick = () => { construirDetalle("proximosPagos"); };
+      panelMiCuenta.appendChild(btnFechas);
+
+      const btnBaja = document.createElement("a");
+      btnBaja.className = "btn-panel";
+      btnBaja.style.textDecoration = "none";
+      btnBaja.textContent = "Dar de baja suscripción";
+      btnBaja.href = "https://www.prenoticia.com/baja-suscripción";
+      btnBaja.target = "_blank";
+      panelMiCuenta.appendChild(btnBaja);
+
+      const btnAyuda = document.createElement("a");
+      btnAyuda.className = "btn-panel";
+      btnAyuda.textContent = "Ayuda";
+      btnAyuda.href = "https://www.prenoticia.com/mi-cuenta-ayuda";
+      btnAyuda.target = "_blank";
+      panelMiCuenta.appendChild(btnAyuda);
+
       construirBotonVolver();
-      return;
     }
 
-    const cont = document.createElement("div");
-    cont.className = "contenedor-exclusivo";
+    function construirExclusivo() {
+      panelEstado = "detalle";
+      panelMiCuenta.innerHTML = "";
 
-    const flechaIzq = document.createElement("button");
-    flechaIzq.className = "flecha";
-    flechaIzq.textContent = "<";
-    flechaIzq.onclick = () => {
-      articuloIndex = (articuloIndex - 1 + getTotalItems()) % getTotalItems();
-      mostrarArticuloOcodigo();
-    };
+      if (!usuarioActual) { panelMiCuenta.textContent = "No hay contenido exclusivo disponible."; construirBotonVolver(); return; }
 
-    const flechaDer = document.createElement("button");
-    flechaDer.className = "flecha";
-    flechaDer.textContent = ">";
-    flechaDer.onclick = () => {
-      articuloIndex = (articuloIndex + 1) % getTotalItems();
-      mostrarArticuloOcodigo();
-    };
-
-    const contenidoDiv = document.createElement("div");
-    contenidoDiv.className = "articulo-exclusivo";
-
-    cont.appendChild(flechaIzq);
-    cont.appendChild(flechaDer);
-    cont.appendChild(contenidoDiv);
-
-    panelMiCuenta.appendChild(cont);
-    construirBotonVolver();
-
-    // Función para contar total de items: noticias + posible código premio visible
-    function getTotalItems() {
-      let total = usuarioActual.articulos ? usuarioActual.articulos.length : 0;
-      if (usuarioActual.codigoPremio && codigoVisible && !usuarioActual.codigoPremio.utilizado) total++;
-      return total;
-    }
-
-    function mostrarArticuloOcodigo() {
-      contenidoDiv.innerHTML = ""; // limpio
-
-      let isCodigo = false;
-      let item = null;
-
-      const totalNoticias = usuarioActual.articulos ? usuarioActual.articulos.length : 0;
-
-      // Si existe código premio visible y no usado
-      if (usuarioActual.codigoPremio && codigoVisible && !usuarioActual.codigoPremio.utilizado) {
-        if (articuloIndex === totalNoticias) {
-          isCodigo = true;
-          item = usuarioActual.codigoPremio;
-        } else {
-          item = usuarioActual.articulos[articuloIndex];
-        }
-      } else {
-        item = usuarioActual.articulos[articuloIndex];
+      // Construyo lista combinada: notas primero, luego promos (pero mantenible para scroll / rotación)
+      listaExclusivos = [];
+      if (usuarioActual.articulos && usuarioActual.articulos.length) {
+        usuarioActual.articulos.forEach(a => listaExclusivos.push({ tipo: a.tipo || 'nota', titulo: a.titulo, url: a.url }));
+      }
+      if (usuarioActual.promos && usuarioActual.promos.length) {
+        usuarioActual.promos.forEach(p => listaExclusivos.push({ tipo: 'promo', id: p.id, titulo: p.titulo, codigo: p.codigo, descripcion: p.descripcion }));
       }
 
-      if (isCodigo) {
-        // Mostrar sección código premio
-        const divCodigo = document.createElement("div");
-        divCodigo.className = "codigo-premio";
-
-        const textoSpan = document.createElement("span");
-        textoSpan.className = "texto";
-        textoSpan.textContent = item.texto;
-
-        const btnCopiar = document.createElement("button");
-        btnCopiar.className = "copiar-btn";
-        btnCopiar.textContent = "Copiar código";
-        btnCopiar.onclick = () => {
-          navigator.clipboard.writeText(item.codigo).then(() => {
-            mostrarMensajeCopiado(btnCopiar);
-          }).catch(() => {
-            alert("No se pudo copiar el código.");
-          });
-        };
-
-        divCodigo.appendChild(textoSpan);
-        divCodigo.appendChild(btnCopiar);
-
-        // Pregunta si ya usó el código, aparece después de copiar o si ya vino antes
-        const preguntaUsado = document.createElement("div");
-        preguntaUsado.style.display = "none";
-        preguntaUsado.style.alignItems = "center";
-        preguntaUsado.style.marginLeft = "10px";
-        preguntaUsado.style.flexShrink = "0";
-
-        const textoPregunta = document.createElement("span");
-        textoPregunta.className = "pregunta-utilizado";
-        textoPregunta.textContent = "¿Ya utilizaste tu código o premio?";
-
-        const btnCerrarPregunta = document.createElement("button");
-        btnCerrarPregunta.className = "cerrar-pregunta";
-        btnCerrarPregunta.innerHTML = "&times;";
-        btnCerrarPregunta.title = "Cerrar pregunta";
-        btnCerrarPregunta.onclick = () => {
-          preguntaUsado.style.display = "none";
-          codigoVisible = false; // No mostrar más
-          articuloIndex = 0; // Volver al primer artículo
-          mostrarArticuloOcodigo();
-        };
-
-        preguntaUsado.appendChild(textoPregunta);
-        preguntaUsado.appendChild(btnCerrarPregunta);
-
-        // Si el usuario cerró antes esta pregunta, no mostrarla más
-        if (localStorage.getItem("codigoPremioUsado") === "true") {
-          codigoVisible = false;
-          articuloIndex = 0;
-          mostrarArticuloOcodigo();
-          return;
-        }
-
-        divCodigo.appendChild(preguntaUsado);
-
-        // Al copiar código mostramos pregunta
-        function mostrarMensajeCopiado(btn) {
-          const mensaje = document.createElement("span");
-          mensaje.className = "mensaje-copiado";
-          mensaje.textContent = "Código copiado ✔";
-          btn.parentNode.insertBefore(mensaje, btn.nextSibling);
-          btn.disabled = true;
-          preguntaUsado.style.display = "flex";
-
-          // Guardar que se mostró la pregunta para no volver a mostrar si cierra
-          localStorage.setItem("codigoPremioUsado", "false");
-        }
-
-        contenidoDiv.appendChild(divCodigo);
-
-      } else {
-        // Mostrar artículo normal
-        const enlace = document.createElement("a");
-        enlace.href = item.url;
-        enlace.target = "_blank";
-        enlace.textContent = item.titulo;
-        contenidoDiv.appendChild(enlace);
-      }
-    }
-
-    mostrarArticuloOcodigo();
-  }
-
-  function construirDetalle(tipo) {
-    panelEstado = "detalle";
-    panelMiCuenta.innerHTML = "";
-    if (!usuarioActual) return;
-
-    if (tipo === "nombre") {
-      const contUsuario = document.createElement("div");
-      contUsuario.className = "usuario-detalle";
-
-      if (usuarioActual.foto) {
-        const img = document.createElement("img");
-        img.src = usuarioActual.foto;
-        img.className = "foto-usuario";
-        contUsuario.appendChild(img);
+      if (listaExclusivos.length === 0) {
+        panelMiCuenta.textContent = "No hay contenido exclusivo disponible.";
+        construirBotonVolver();
+        return;
       }
 
-      const nombreSpan = document.createElement("span");
-      nombreSpan.textContent = usuarioActual.nombre + " " + usuarioActual.apellido;
-      nombreSpan.style.color = "white";
-      nombreSpan.style.fontSize = "14px";
-      contUsuario.appendChild(nombreSpan);
+      const cont = document.createElement("div");
+      cont.className = "contenedor-exclusivo";
 
-      panelMiCuenta.appendChild(contUsuario);
+      const flechaIzq = document.createElement("button");
+      flechaIzq.className = "flecha";
+      flechaIzq.textContent = "<";
+      flechaIzq.onclick = () => { articuloIndex = (articuloIndex - 1 + listaExclusivos.length) % listaExclusivos.length; mostrarArticulo(); };
 
-      const datos = document.createElement("div");
-      datos.className = "usuario-datos";
+      const flechaDer = document.createElement("button");
+      flechaDer.className = "flecha";
+      flechaDer.textContent = ">";
+      flechaDer.onclick = () => { articuloIndex = (articuloIndex + 1) % listaExclusivos.length; mostrarArticulo(); };
 
-      const emailSpan = document.createElement("span");
-      emailSpan.textContent = usuarioActual.email;
-      datos.appendChild(emailSpan);
+      cont.appendChild(flechaIzq);
+      cont.appendChild(flechaDer);
 
-      const verificadoSpan = document.createElement("span");
-      verificadoSpan.textContent = usuarioActual.emailVerificado ? "✅ Email verificado" : "❌ Email no verificado";
-      datos.appendChild(verificadoSpan);
+      // Contenedor dinámico donde se mostrará nota o promo
+      const articuloDiv = document.createElement("div");
+      articuloDiv.className = "articulo-exclusivo";
+      cont.appendChild(articuloDiv);
 
-      const paisSpan = document.createElement("span");
-      paisSpan.textContent = usuarioActual.pais || "";
-      datos.appendChild(paisSpan);
+      panelMiCuenta.appendChild(cont);
 
-      panelMiCuenta.appendChild(datos);
+      // botón volver en extremo derecho (con leve margin-left para alinear con boton cerrar sesion)
+      construirBotonVolver();
+
+      function mostrarArticulo() {
+        articuloDiv.innerHTML = "";
+        const item = listaExclusivos[articuloIndex];
+        if (!item) return;
+
+        if (item.tipo === 'nota') {
+          const enlace = document.createElement('a');
+          enlace.href = item.url || '#';
+          enlace.target = '_blank';
+          enlace.textContent = item.titulo || 'Noticia';
+          articuloDiv.appendChild(enlace);
+        }
+
+        if (item.tipo === 'promo') {
+          // Verifico si el usuario ya dismissó la pregunta de uso para este codigo
+          const dismissedKey = `${usuarioActual.email}_promo_dismissed_${item.id}`;
+          const usedKey = `${usuarioActual.email}_promo_copied_${item.id}`;
+
+          const promoWrap = document.createElement('div');
+          promoWrap.className = 'promo-exclusiva';
+
+          const titulo = document.createElement('div');
+          titulo.textContent = item.titulo;
+          titulo.style.fontWeight = '700';
+          promoWrap.appendChild(titulo);
+
+          const texto = document.createElement('div');
+          texto.className = 'promo-texto';
+          texto.textContent = item.descripcion + '\n\nCódigo: ' + item.codigo;
+          promoWrap.appendChild(texto);
+
+          const fila = document.createElement('div');
+          fila.style.display = 'flex';
+          fila.style.gap = '8px';
+          fila.style.alignItems = 'center';
+
+          const codigoSpan = document.createElement('div');
+          codigoSpan.className = 'promo-codigo';
+          codigoSpan.textContent = item.codigo;
+          fila.appendChild(codigoSpan);
+
+          const btnCopiar = document.createElement('button');
+          btnCopiar.className = 'btn-copiar';
+          btnCopiar.textContent = 'Copiar código';
+          btnCopiar.onclick = async () => {
+            try {
+              await navigator.clipboard.writeText(item.codigo);
+              mostrarToast('Código copiado');
+              localStorage.setItem(usedKey, 'true');
+            } catch (e) {
+              // fallback
+              const textarea = document.createElement('textarea');
+              textarea.value = item.codigo;
+              document.body.appendChild(textarea);
+              textarea.select();
+              try { document.execCommand('copy'); mostrarToast('Código copiado'); localStorage.setItem(usedKey, 'true'); } catch (err) { alert('No se pudo copiar el código automáticamente. Seleccioná y copialo manualmente.'); }
+              textarea.remove();
+            }
+            // Después de copiar, la próxima vez que abra el promo se le consultará si lo usó
+          };
+          fila.appendChild(btnCopiar);
+
+          promoWrap.appendChild(fila);
+
+          // Si ya copió alguna vez, mostrar la pregunta "¿Ya utilizaste tu código o premio?" con opción X
+          const yaUso = localStorage.getItem(usedKey) === 'true';
+          const dismiss = localStorage.getItem(dismissedKey) === 'true';
+
+          if (yaUso && !dismiss) {
+            const pregunta = document.createElement('div');
+            pregunta.style.display = 'flex';
+            pregunta.style.justifyContent = 'space-between';
+            pregunta.style.alignItems = 'center';
+            pregunta.style.marginTop = '6px';
+
+            const preguntaText = document.createElement('div');
+            preguntaText.textContent = '¿Ya utilizaste tu código o premio?';
+            pregunta.appendChild(preguntaText);
+
+            const botonCerrar = document.createElement('button');
+            botonCerrar.textContent = 'X';
+            botonCerrar.style.background = 'transparent';
+            botonCerrar.style.border = '1px solid rgba(255,255,255,0.15)';
+            botonCerrar.style.color = '#fff';
+            botonCerrar.style.borderRadius = '50%';
+            botonCerrar.style.width = '28px';
+            botonCerrar.style.height = '28px';
+            botonCerrar.onclick = () => {
+              localStorage.setItem(dismissedKey, 'true');
+              // si la cierra, que no vuelva a aparecer
+              mostrarArticulo();
+            };
+            pregunta.appendChild(botonCerrar);
+
+            promoWrap.appendChild(pregunta);
+          }
+
+          articuloDiv.appendChild(promoWrap);
+
+          // toast para copiado (dentro del panel)
+          let toast = panelMiCuenta.querySelector('.toast-copiado');
+          if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast-copiado';
+            toast.textContent = 'Código copiado';
+            panelMiCuenta.appendChild(toast);
+          }
+
+          function mostrarToast(texto) {
+            toast.textContent = texto;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 1800);
+          }
+        }
+
+      }
+
+      // muestro el primer elemento
+      articuloIndex = articuloIndex % listaExclusivos.length;
+      mostrarArticulo();
     }
-    if (tipo === "metodoPago") {
-      panelMiCuenta.textContent = `Método de pago: ${usuarioActual.medioPago || "No especificado"}`;
-    }
-    if (tipo === "proximosPagos") {
-      panelMiCuenta.innerHTML = `Último pago: <b>${usuarioActual.ultimoPago || "No disponible"}</b> &nbsp; Próximo pago: <b>${usuarioActual.proximoPago || "No disponible"}</b>`;
-    }
-    construirBotonVolver();
-  }
 
-  function construirBotonVolver() {
-    const btnVolver = document.createElement("button");
-    btnVolver.className = "btn-panel";
-    btnVolver.textContent = "← Volver";
-    btnVolver.style.marginLeft = "10px";
-    btnVolver.onclick = () => {
-      if (panelEstado === "detalle") mostrarPanelInicio();
-      else if (panelEstado === "inicio") ocultarPanel();
+    function construirDetalle(tipo) {
+      panelEstado = "detalle";
+      panelMiCuenta.innerHTML = "";
+      if (!usuarioActual) return;
+
+      if (tipo === "nombre") {
+        const contUsuario = document.createElement("div");
+        contUsuario.className = "usuario-detalle";
+
+        if (usuarioActual.foto) { const img = document.createElement("img"); img.src = usuarioActual.foto; img.className = "foto-usuario"; contUsuario.appendChild(img); }
+
+        const nombreSpan = document.createElement("span");
+        nombreSpan.textContent = usuarioActual.nombre + " " + usuarioActual.apellido;
+        nombreSpan.style.color = "white";
+        nombreSpan.style.fontSize = "14px";
+        contUsuario.appendChild(nombreSpan);
+
+        panelMiCuenta.appendChild(contUsuario);
+
+        const datos = document.createElement("div");
+        datos.className = "usuario-datos";
+
+        const emailSpan = document.createElement("span");
+        emailSpan.textContent = usuarioActual.email;
+        datos.appendChild(emailSpan);
+
+        const verificadoSpan = document.createElement("span");
+        verificadoSpan.textContent = usuarioActual.emailVerificado ? "✅ Email verificado" : "❌ Email no verificado";
+        datos.appendChild(verificadoSpan);
+
+        const paisSpan = document.createElement("span");
+        paisSpan.textContent = usuarioActual.pais || "";
+        datos.appendChild(paisSpan);
+
+        panelMiCuenta.appendChild(datos);
+      }
+      if (tipo === "metodoPago") { panelMiCuenta.textContent = `Método de pago: ${usuarioActual.medioPago || "No especificado"}`; }
+      if (tipo === "proximosPagos") { panelMiCuenta.innerHTML = `Último pago: <b>${usuarioActual.ultimoPago || "No disponible"}</b> &nbsp; Próximo pago: <b>${usuarioActual.proximoPago || "No disponible"}</b>`; }
+      construirBotonVolver();
+    }
+
+    function construirBotonVolver() {
+      const btnVolver = document.createElement("button");
+      btnVolver.className = "btn-panel";
+      btnVolver.textContent = "← Volver";
+      btnVolver.style.marginLeft = "10px"; // separación para alineado con cerrar sesión
+      // en movil queremos que vuelva a la derecha visualmente
+      btnVolver.classList.add('volver-movil');
+      btnVolver.onclick = () => {
+        if (panelEstado === "detalle") mostrarPanelInicio(); else if (panelEstado === "inicio") ocultarPanel();
+      };
+      panelMiCuenta.appendChild(btnVolver);
+    }
+
+    function ocultarPanel() {
+      panelMiCuenta.classList.remove("visible");
+      panelMiCuenta.innerHTML = "";
+      panelEstado = "cerrado";
+      derecha.style.display = "flex";
+      izquierda.style.display = "flex";
+    }
+
+    window.onload = () => {
+      const emailGuardado = localStorage.getItem("usuarioLogueado");
+      if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) { cargarSesion(usuarios[emailGuardado]); }
     };
-    panelMiCuenta.appendChild(btnVolver);
-  }
-
-  function ocultarPanel() {
-    panelMiCuenta.classList.remove("visible");
-    panelMiCuenta.innerHTML = "";
-    panelEstado = "cerrado";
-    derecha.style.display = "flex";
-    izquierda.style.display = "flex";
-  }
-
-  window.onload = () => {
-    const emailGuardado = localStorage.getItem("usuarioLogueado");
-    if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) {
-      cargarSesion(usuarios[emailGuardado]);
-    }
-  };
-</script>
+  </script>
 
 </body>
 </html>
