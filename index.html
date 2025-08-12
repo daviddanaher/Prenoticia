@@ -206,6 +206,19 @@
       font-weight: bold;
     }
 
+    /* Contenedor detalles usuario completo */
+    .usuario-datos {
+      display: flex;
+      flex-direction: column;
+      font-weight: normal;
+      font-size: 13px;
+      color: #ddd;
+      margin-left: 42px; /* para evitar superposición con foto flotante */
+    }
+    .usuario-datos span {
+      margin: 1px 0;
+    }
+
     /* Sección exclusivo */
     #contenidoExclusivo {
       display: flex;
@@ -238,6 +251,13 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    #contenidoExclusivo .titulo-articulo a {
+      color: white;
+      text-decoration: none;
+    }
+    #contenidoExclusivo .titulo-articulo a:hover {
+      text-decoration: underline;
+    }
 
     /* Botón Volver a la derecha */
     #panelMiCuenta .btn-volver {
@@ -264,6 +284,9 @@
       .barra-contenido {
         padding-left: 4px; /* reducido 1px de 5px */
         padding-right: 4px;
+      }
+      .usuario-datos {
+        margin-left: 38px;
       }
     }
   </style>
@@ -474,18 +497,12 @@
       btnAyuda.href = "https://www.prenoticia.com/mi-cuenta-ayuda";
       btnAyuda.target = "_blank";
       panelMiCuenta.appendChild(btnAyuda);
-
-      // Botón Contenido exclusivo a la derecha del botón Usuario
-      const btnContenidoExclusivo = document.createElement("button");
-      btnContenidoExclusivo.className = "btn-panel";
-      btnContenidoExclusivo.textContent = "Contenido exclusivo";
-      btnContenidoExclusivo.onclick = () => { construirContenidoExclusivo(); };
-      panelMiCuenta.insertBefore(btnContenidoExclusivo, btnMetodo); // justo a la derecha de Usuario
     }
 
     function construirDetalle(tipo) {
       panelEstado = "detalle";
       panelMiCuenta.innerHTML = "";
+
       if (!usuarioActual) return;
 
       if (tipo === "nombre") {
@@ -499,10 +516,38 @@
           contenedor.appendChild(img);
         }
 
+        // Mostrar nombre completo directamente (sin "Nombre:" o etiqueta)
         const nombreTexto = document.createElement("span");
-        nombreTexto.textContent = `${usuarioActual.nombre} ${usuarioActual.apellido}`;
+        nombreTexto.textContent = usuarioActual.nombre + " " + usuarioActual.apellido;
         contenedor.appendChild(nombreTexto);
         panelMiCuenta.appendChild(contenedor);
+
+        // Mostrar datos completos abajo sin eliminar nada
+        const datosUsuario = document.createElement("div");
+        datosUsuario.className = "usuario-datos";
+
+        const emailSpan = document.createElement("span");
+        emailSpan.textContent = "Correo: " + usuarioActual.email;
+        datosUsuario.appendChild(emailSpan);
+
+        const emailVerificadoSpan = document.createElement("span");
+        emailVerificadoSpan.textContent = "Correo verificado: " + (usuarioActual.emailVerificado ? "Sí" : "No");
+        datosUsuario.appendChild(emailVerificadoSpan);
+
+        if (usuarioActual.pais) {
+          const paisSpan = document.createElement("span");
+          paisSpan.textContent = "País: " + usuarioActual.pais;
+          datosUsuario.appendChild(paisSpan);
+        }
+
+        if (usuarioActual.deuda) {
+          const deudaSpan = document.createElement("span");
+          deudaSpan.textContent = "Deuda: " + usuarioActual.deuda;
+          datosUsuario.appendChild(deudaSpan);
+        }
+
+        panelMiCuenta.appendChild(datosUsuario);
+
       } else if (tipo === "metodoPago") {
         const metodo = document.createElement("span");
         metodo.textContent = usuarioActual.medioPago || "No registrado";
@@ -555,16 +600,20 @@
 
       navDiv.appendChild(navBotones);
 
-      // Título del artículo al lado derecho de botones
+      // Título del artículo con link, a la derecha de botones
       const tituloArticulo = document.createElement("span");
       tituloArticulo.className = "titulo-articulo";
-      tituloArticulo.textContent = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].titulo;
+      const linkTitulo = document.createElement("a");
+      linkTitulo.href = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].link;
+      linkTitulo.textContent = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].titulo;
+      linkTitulo.target = "_blank";
+      tituloArticulo.appendChild(linkTitulo);
       tituloArticulo.id = "tituloArticulo";
       navDiv.appendChild(tituloArticulo);
 
       panelMiCuenta.appendChild(navDiv);
 
-      // Contenido del artículo debajo
+      // Contenido debajo (link también para redundancia, igual abre en pestaña nueva)
       const contenidoArticulo = document.createElement("div");
       contenidoArticulo.id = "contenidoArticulo";
       contenidoArticulo.style.color = "white";
@@ -578,7 +627,12 @@
     function actualizarContenidoExclusivo() {
       const tituloArticulo = document.getElementById("tituloArticulo");
       const contenidoArticulo = document.getElementById("contenidoArticulo");
-      tituloArticulo.textContent = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].titulo;
+      tituloArticulo.innerHTML = "";
+      const linkTitulo = document.createElement("a");
+      linkTitulo.href = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].link;
+      linkTitulo.textContent = usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].titulo;
+      linkTitulo.target = "_blank";
+      tituloArticulo.appendChild(linkTitulo);
       contenidoArticulo.innerHTML = `<a href="${usuarioActual.contenidoExclusivo[contenidoExclusivoIndex].link}" target="_blank" style="color:#fff; text-decoration:underline;">Leer artículo completo</a>`;
     }
 
