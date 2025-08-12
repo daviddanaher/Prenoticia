@@ -6,6 +6,7 @@
   <title>Barra Flotante con Panel Mi Cuenta</title>
   <style>
     * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body { margin: 0; font-family: Arial, sans-serif; background: #fefefe; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 
     /* Barra flotante */
@@ -22,24 +23,27 @@
       padding: 0 8px;
       z-index: 9999;
       user-select: none;
-      overflow: hidden;
+      overflow: visible;
     }
 
-    /* Contenido de la barra: en desktop quitamos márgenes laterales según pedido */
+    /* Barra-contenido: en escritorio quitamos márgenes laterales según pedido (sin max-width ni margin auto) */
     .barra-contenido {
       width: 100%;
-      max-width: 100%; /* quitar márgenes en versión escritorio (ya no limitamos ancho) */
-      margin: 0 auto;
+      max-width: none; /* quitamos el max-width que generaba márgenes incómodos en escritorio */
+      margin: 0; /* sin centrado automático para quitar márgenes laterales */
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: relative;
       height: 100%;
-      padding-left: 0; /* quitamos márgenes laterales en desktop */
+      padding-left: 0; /* en escritorio no queremos espacios laterales */
       padding-right: 0;
+      gap: 8px;
     }
 
-    /* Grupo que puede necesitar scroll horizontal (botones, etc.) */
+    /* Grupos y botones: permitimos scroll horizontal cuando el contenido supera el ancho
+       (excepto el contenedor-exclusivo que se controla con flechas; ver comentarios JS/CSS)
+    */
     .grupo-botones {
       display: flex;
       align-items: center;
@@ -47,11 +51,17 @@
       height: 100%;
       flex-wrap: nowrap;
       white-space: nowrap;
-      overflow-x: auto; /* permitir scroll horizontal cuando el contenido exceda el ancho */
-      -webkit-overflow-scrolling: touch;
+      flex-shrink: 0;
     }
 
-    /* Estilo de los botones */
+    /* Añadimos una clase utilitaria scrollable que activa overflow-x auto y permite touch scroll */
+    .scrollable {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      -ms-overflow-style: -ms-autohiding-scrollbar;
+    }
+
     .btn {
       background-color: #bb6c00;
       color: #fff;
@@ -60,14 +70,13 @@
       border-radius: 4px;
       font-size: 14px;
       cursor: pointer;
-      height: 32px;
-      display: flex;
+      height: 32px; /* Igual alto para todos los botones */
+      display: inline-flex;
       align-items: center;
       text-decoration: none;
       transition: background 0.3s ease;
       white-space: nowrap;
       box-sizing: border-box;
-      flex-shrink: 0;
     }
     .btn:hover { background-color: #a55a00; text-decoration: none; }
 
@@ -115,7 +124,7 @@
       right: 0;
       height: 50px;
       color: white;
-      display: none;
+      display: none; /* oculto por defecto: se mostrará con clase visible */
       align-items: center;
       gap: 10px;
       padding: 0 16px;
@@ -125,19 +134,18 @@
       transition: opacity 0.35s ease, transform 0.25s ease;
       user-select: none;
       z-index: 10000;
-      background: transparent;
+      background: transparent; /* respetamos diseño visual actual */
     }
+
     #panelMiCuenta.visible { display: flex; opacity: 1; }
 
-    /* Inner wrapper controla layout; lo hacemos scrollable horizontalmente para permitir left-right scroll */
+    /* Inner wrapper to control layout of content + volver button */
     .panel-inner {
       display: flex;
       align-items: center;
       gap: 8px;
       width: 100%;
-      overflow-x: auto; /* permitir scroll horizontal en panel (excepto la sección exclusivo más adelante) */
-      -webkit-overflow-scrolling: touch;
-      white-space: nowrap;
+      min-width: 0;
     }
 
     /* Botones del panel */
@@ -154,7 +162,7 @@
       transition: background-color 0.25s ease;
       white-space: nowrap;
       text-decoration: none !important;
-      height: 32px;
+      height: 32px; /* Igual alto que los botones principales */
       box-sizing: border-box;
     }
     #panelMiCuenta .btn-panel:hover { background-color: #a55a00; }
@@ -169,38 +177,17 @@
       flex-shrink: 0;
     }
 
-    /* Contenedor usuario detalle - permitimos scroll horizontal en caso de que exceda pantalla */
-    .usuario-detalle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-      overflow-x: auto; /* permitir scroll si desborda */
-      -webkit-overflow-scrolling: touch;
-      flex-shrink: 0;
-    }
+    /* Contenedor usuario detalle */
+    .usuario-detalle { display: flex; align-items: center; gap: 8px; white-space: nowrap; min-width: 0; }
+    .usuario-datos { display: flex; gap: 15px; font-size: 14px; color: white; white-space: nowrap; align-items: center; min-width: 0; }
 
-    /* Nombre en negrita y resto no, pero mismo tamaño y alineado */
-    .usuario-nombre-apellido {
-      font-weight: 700; /* negrita para nombre y apellido */
-      font-size: 14px;
-      color: white;
-      display: inline-block;
-      line-height: 1;
-    }
-    .usuario-datos {
-      display: flex;
-      gap: 15px;
-      font-size: 14px;
-      color: white;
-      white-space: nowrap;
-      align-items: center;
-      overflow-x: auto; /* permitir scroll si desborda */
-      -webkit-overflow-scrolling: touch;
-    }
-    .usuario-datos span { font-weight: 400; font-size: 14px; } /* resto no en negrita, mismo tamaño */
+    /* Alineamiento y tamaño igual para todo: forzamos misma font-size; nombre y apellido en negrita */
+    .nombre-apellido { font-size: 14px; display: inline-flex; align-items: center; gap:6px; }
+    .nombre-apellido strong { font-weight: 700; font-size: inherit; line-height: 1; display: inline-block; }
 
-    /* Contenido exclusivo: según pedido, NO debe ser scrollable horizontalmente (se queda fijo y ocultará overflow) */
+    .usuario-datos span { font-weight: 400; font-size: 14px; line-height: 1; color: white; display: inline-block; white-space: nowrap; }
+
+    /* Contenido exclusivo */
     .contenedor-exclusivo {
       display: flex;
       align-items: center;
@@ -208,8 +195,7 @@
       white-space: nowrap;
       flex-grow: 1;
       justify-content: flex-start;
-      overflow: hidden; /* importante: NO scroll horizontal aquí */
-      flex-shrink: 1;
+      overflow: hidden; /* contenido exclusivo NO usa scroll nativo, se controla con flechas */
       min-width: 0;
     }
 
@@ -243,7 +229,8 @@
       margin-right: 0;
       justify-content: flex-start;
       overflow: hidden;
-      flex-shrink: 1;
+      min-width: 0;
+      max-width: 100%;
     }
     .articulo-exclusivo a {
       color: white;
@@ -268,30 +255,31 @@
       font-size: 12px;
     }
 
-    /* Botón volver a la derecha en pantalla escritorio */
+    /* Botón volver a la derecha en pantalla escritorio (se mantiene la apariencia original) */
     .back-wrapper { display: flex; align-items: center; margin-left: 10px; flex-shrink: 0; }
 
-    /* Adaptaciones móviles */
+    /* --- Comportamiento responsive --- */
     @media (max-width: 600px) {
-      /* Reducir 1px a los espacios laterales de la barra: si antes era 12px, ahora 11px */
-      .barra-contenido { padding-left: 11px; padding-right: 11px; max-width: 100%; }
-
       .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
       .popup-login input { width: 140px; }
-      #panelMiCuenta { font-size: 13px; padding: 0 10px; }
+      #panelMiCuenta { font-size: 13px; padding: 0 11px; } /* pediste quitar 1px a los espacios laterales en móvil (antes 12px), usamos 11px */
       #panelMiCuenta .btn-panel { padding: 5px 8px; height: 28px; }
+      .barra-contenido { padding-left: 11px; padding-right: 11px; max-width: 100%; } /* aplicación del -1px pedido */
       .usuario-datos { font-size: 13px; }
 
+      /* Estructura móvil: contenido exclusivo a la izquierda y el botón volver pegado a la derecha del panel
+         además hacemos que el artículo ocupe todo el ancho disponible para que se vea correctamente en celular
+      */
       #panelMiCuenta.visible {
         display: flex;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-left: 11px;
+        padding-right: 11px;
       }
 
       .panel-inner { gap: 8px; }
 
       .contenedor-exclusivo {
-        overflow: hidden; /* seguir sin scroll en contenido exclusivo */
+        overflow: hidden;
         min-width: 0;
         flex: 1 1 auto;
       }
@@ -305,33 +293,38 @@
 
       .articulo-exclusivo a { white-space: normal; }
 
+      /* Forzamos que el back-wrapper se ubique a la derecha con margin-left:auto */
       .back-wrapper { margin-left: auto; }
 
+      /* Aumentamos el touch area de las flechas en móvil */
       .flecha { padding: 8px 10px; min-width: 40px; }
 
+      /* Si hay badge, que se muestre antes del título y no rompa el ancho */
       .badge { margin-right: 8px; flex-shrink: 0; }
-
-      /* Escondemos las barras de scroll horizontales en móviles para todo lo scrollable */
-      .grupo-botones::-webkit-scrollbar,
-      .panel-inner::-webkit-scrollbar,
-      .usuario-detalle::-webkit-scrollbar,
-      .usuario-datos::-webkit-scrollbar {
-        display: none;
-        height: 0;
-        width: 0;
-      }
-      .grupo-botones { -ms-overflow-style: none; scrollbar-width: none; }
-      .panel-inner { -ms-overflow-style: none; scrollbar-width: none; }
-      .usuario-detalle { -ms-overflow-style: none; scrollbar-width: none; }
-      .usuario-datos { -ms-overflow-style: none; scrollbar-width: none; }
     }
 
-    /* Evitar scrollbars no deseadas en panel (desktop muestra una barra sutil si necesario) */
+    /* Hacemos que ciertos contenedores sean scrollables horizontalmente (sin barra visible en móviles)
+       Aplicamos la clase .scrollable en HTML/JS según sea necesario.
+    */
+    .scrollable::-webkit-scrollbar { height: 6px; }
+    .scrollable::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+    /* En móviles ocultamos las barras de scroll nativas visualmente pero permitimos el touch scroll */
+    @media (max-width: 600px) {
+      .scrollable::-webkit-scrollbar { display: none; }
+      .scrollable { -ms-overflow-style: none; scrollbar-width: none; }
+    }
+
+    /* Evitar scrollbars no deseadas en panel */
     #panelMiCuenta::-webkit-scrollbar { height: 6px; }
     #panelMiCuenta::-webkit-scrollbar-thumb { background: rgba(255 255 255 / 0.3); border-radius: 3px; }
 
-    /* Asegurar que elementos que deben truncar lo hagan correctamente */
-    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* Pequeños ajustes para que todo quede alineado y sin cambiar la ubicación de botones */
+    .barra-contenido > .grupo-botones:first-child { margin-left: 8px; }
+    .barra-contenido > .grupo-botones:last-child { margin-right: 8px; }
+
+    /* Accesibilidad: foco visible */
+    .btn:focus, .btn-panel:focus, .flecha:focus { outline: 2px solid rgba(255,255,255,0.7); outline-offset: 2px; }
 
   </style>
 </head>
@@ -339,27 +332,32 @@
 
   <div class="barra-flotante">
     <div class="barra-contenido" id="barraContenido">
-      <div class="grupo-botones" id="izquierda">
-        <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()">Iniciar sesión</button>
-        <span id="saludoUsuario" style="color:white; display:flex; align-items:center; gap:8px;"></span>
-      </div>
-      <div class="grupo-botones" id="derecha">
-        <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_blank">Suscribirme</a>
-        <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank">Ayuda</a>
+      <!-- Izquierda: grupo de botones; habilitado para scroll horizontal si hay overflow -->
+      <div class="grupo-botones scrollable" id="izquierda" aria-label="grupo izquierdo botones" role="region">
+        <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()" aria-controls="popupLogin">Iniciar sesión</button>
+        <span id="saludoUsuario" style="color:white; display:flex; align-items:center; gap:6px;"></span>
       </div>
 
-      <div id="panelMiCuenta"></div>
+      <!-- Panel (oculto/visible) -->
+      <div id="panelMiCuenta" aria-hidden="true"></div>
 
-      <div class="popup-login" id="popupLogin">
-        <input type="email" id="inputEmail" placeholder="Tu correo"/>
+      <!-- Derecha: botones de acción; también scrollable si se desborda -->
+      <div class="grupo-botones scrollable" id="derecha" aria-label="grupo derecho botones" role="region">
+        <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_blank" rel="noopener">Suscribirme</a>
+        <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank" rel="noopener">Ayuda</a>
+      </div>
+
+      <div class="popup-login" id="popupLogin" role="dialog" aria-modal="false" aria-hidden="true">
+        <input type="email" id="inputEmail" placeholder="Tu correo" aria-label="Correo electrónico"/>
         <button class="btn" onclick="validarEmail()">Ingresar</button>
-        <button class="btn" onclick="cerrarLogin()">✕</button>
-        <span class="mensaje-error" id="mensajeError"></span>
+        <button class="btn" onclick="cerrarLogin()" aria-label="Cerrar">✕</button>
+        <span class="mensaje-error" id="mensajeError" role="status" aria-live="polite"></span>
       </div>
     </div>
   </div>
 
   <script>
+    // Datos de ejemplo (no modificar)
     const usuarios = {
       "mauricioacostacom@gmail.com": {
         activo: true,
@@ -403,8 +401,9 @@
     const derecha = document.getElementById("derecha");
     const izquierda = document.getElementById("izquierda");
 
-    function mostrarLogin() { mensajeError.style.display = "none"; popupLogin.style.display = "flex"; inputEmail.focus(); }
-    function cerrarLogin() { popupLogin.style.display = "none"; inputEmail.value = ""; mensajeError.style.display = "none"; }
+    // Mostrar / cerrar login
+    function mostrarLogin() { mensajeError.style.display = "none"; popupLogin.style.display = "flex"; popupLogin.setAttribute("aria-hidden","false"); inputEmail.focus(); }
+    function cerrarLogin() { popupLogin.style.display = "none"; popupLogin.setAttribute("aria-hidden","true"); inputEmail.value = ""; mensajeError.style.display = "none"; }
 
     function validarEmail() {
       const email = inputEmail.value.trim().toLowerCase();
@@ -415,16 +414,18 @@
       } else { mensajeError.textContent = "El correo ingresado no está suscripto."; mensajeError.style.display = "inline-block"; }
     }
 
+    // Carga de sesión: mantiene funcionalidad de botones; actualiza saludo (nombre en primer lugar, foto si existe)
     function cargarSesion(usuario) {
       usuarioActual = usuario;
       btnIniciarSesion.style.display = "none";
       saludoUsuario.innerHTML = "";
       if (usuario.foto) {
-        const img = document.createElement("img"); img.src = usuario.foto; img.className = "foto-usuario"; saludoUsuario.appendChild(img);
+        const img = document.createElement("img"); img.src = usuario.foto; img.className = "foto-usuario"; img.alt = "Foto usuario"; saludoUsuario.appendChild(img);
       }
-      // Mostrar solo primer nombre como saludo en la barra principal (sin cambiar funcionalidad)
+      // Mostrar primer nombre en saludo (sin negrita aquí, solo saludo compacto)
       const primerNombre = usuario.nombre.split(" ")[0];
       saludoUsuario.appendChild(document.createTextNode(primerNombre));
+      // Reemplazamos los botones de la derecha (manteniendo funcionalidad)
       derecha.innerHTML = "";
 
       const btnCuenta = document.createElement("button");
@@ -442,17 +443,20 @@
       ocultarPanel();
     }
 
+    // Mostrar panel inicial con botones (inicio)
     function mostrarPanelInicio() {
       panelEstado = "inicio";
       construirPanelInicio();
       derecha.style.display = "none";
       izquierda.style.display = "none";
       panelMiCuenta.classList.add("visible");
+      panelMiCuenta.setAttribute("aria-hidden","false");
     }
 
     function construirPanelInicio() {
       panelMiCuenta.innerHTML = "";
 
+      // wrapper inner para controlar posicion del contenido y del boton volver
       const inner = document.createElement('div');
       inner.className = 'panel-inner';
 
@@ -460,8 +464,8 @@
       acciones.style.display = 'flex';
       acciones.style.gap = '8px';
       acciones.style.alignItems = 'center';
+      acciones.className = 'scrollable'; // acciones pueden scrollear horizontalmente si hay muchos botones
 
-      // Botones: "Usuario", "Contenido exclusivo", "Método de pago", "Próximas fechas de pago", "Dar de baja", "Ayuda"
       const btnNombre = document.createElement("button");
       btnNombre.className = "btn-panel";
       btnNombre.textContent = "Usuario";
@@ -492,6 +496,7 @@
       btnBaja.textContent = "Dar de baja suscripción";
       btnBaja.href = "https://www.prenoticia.com/baja-suscripción";
       btnBaja.target = "_blank";
+      btnBaja.rel = "noopener";
       acciones.appendChild(btnBaja);
 
       const btnAyuda = document.createElement("a");
@@ -499,10 +504,12 @@
       btnAyuda.textContent = "Ayuda";
       btnAyuda.href = "https://www.prenoticia.com/mi-cuenta-ayuda";
       btnAyuda.target = "_blank";
+      btnAyuda.rel = "noopener";
       acciones.appendChild(btnAyuda);
 
       inner.appendChild(acciones);
 
+      // Back wrapper (visible but colocado a la derecha por CSS en móvil y desktop)
       const backWrap = document.createElement('div');
       backWrap.className = 'back-wrapper';
       inner.appendChild(backWrap);
@@ -512,6 +519,7 @@
       construirBotonVolverInContainer(backWrap);
     }
 
+    // Contenido exclusivo: NO usa scroll nativo (overflow hidden) y se navega con flechas
     function construirExclusivo() {
       panelEstado = "detalle";
       panelMiCuenta.innerHTML = "";
@@ -528,35 +536,40 @@
       const cont = document.createElement("div");
       cont.className = "contenedor-exclusivo";
 
+      // Flechas: izquierda y derecha
       const flechaIzq = document.createElement("button");
       flechaIzq.className = "flecha";
       flechaIzq.textContent = "<";
+      flechaIzq.setAttribute("aria-label","anterior");
       flechaIzq.onclick = () => { articuloIndex = (articuloIndex - 1 + usuarioActual.articulos.length) % usuarioActual.articulos.length; mostrarArticulo(); };
 
       const flechaDer = document.createElement("button");
       flechaDer.className = "flecha";
       flechaDer.textContent = ">";
+      flechaDer.setAttribute("aria-label","siguiente");
       flechaDer.onclick = () => { articuloIndex = (articuloIndex + 1) % usuarioActual.articulos.length; mostrarArticulo(); };
 
       const articuloDiv = document.createElement("div");
       articuloDiv.className = "articulo-exclusivo";
 
+      // Badge (si el artículo tiene tipo: 'sorteo'|'codigo'|'exclusivo')
       const badge = document.createElement('span');
       badge.className = 'badge';
 
       const enlace = document.createElement("a");
       enlace.target = "_blank";
+      enlace.rel = "noopener";
 
-      // Estructura: flechas y articulo (NOTA: contenedor-exclusivo tiene overflow:hidden por pedido)
+      // Append elements: flechas, articulo con badge + link
       cont.appendChild(flechaIzq);
-      cont.appendChild(articuloDiv);
       cont.appendChild(flechaDer);
-
       articuloDiv.appendChild(badge);
       articuloDiv.appendChild(enlace);
+      cont.appendChild(articuloDiv);
 
       inner.appendChild(cont);
 
+      // Back wrapper: lo colocamos como hijo de inner para que en móvil quede a la derecha
       const backWrap = document.createElement('div');
       backWrap.className = 'back-wrapper';
       inner.appendChild(backWrap);
@@ -569,16 +582,20 @@
         const art = usuarioActual.articulos[articuloIndex];
         enlace.href = art.url;
         enlace.textContent = art.titulo;
+        // Mostrar badge según tipo
         if (art.tipo === 'sorteo') badge.textContent = 'SORTEO';
         else if (art.tipo === 'codigo') badge.textContent = 'CÓDIGO';
         else if (art.tipo === 'exclusivo') badge.textContent = 'EXCLUSIVO';
         else badge.textContent = '';
+
+        // Si no hay badge, ocultarlo visualmente pero mantener estructura
         badge.style.display = badge.textContent ? 'inline-flex' : 'none';
       }
 
       mostrarArticulo();
     }
 
+    // Construcción de detalles (nombre, método pago, proximos pagos)
     function construirDetalle(tipo) {
       panelEstado = "detalle";
       panelMiCuenta.innerHTML = "";
@@ -591,62 +608,46 @@
       contenido.style.display = 'flex';
       contenido.style.alignItems = 'center';
       contenido.style.gap = '8px';
-      contenido.style.flexShrink = '0';
+      contenido.style.minWidth = 0;
+      contenido.className = 'scrollable'; // permitimos scroll horizontal si el contenido supera el ancho
 
       if (tipo === "nombre") {
         const contUsuario = document.createElement("div");
         contUsuario.className = "usuario-detalle";
 
         if (usuarioActual.foto) {
-          const img = document.createElement("img"); img.src = usuarioActual.foto; img.className = "foto-usuario"; contUsuario.appendChild(img);
+          const img = document.createElement("img"); img.src = usuarioActual.foto; img.className = "foto-usuario"; img.alt = "Foto usuario"; contUsuario.appendChild(img);
         }
 
-        // Nombre y apellido en negrita, resto no; mismo tamaño y alineados
-        const nombreWrap = document.createElement("div");
-        nombreWrap.style.display = "flex";
-        nombreWrap.style.flexDirection = "column";
-        nombreWrap.style.justifyContent = "center";
-        nombreWrap.style.lineHeight = "1";
-
-        const nombreApellido = document.createElement("span");
-        nombreApellido.className = "usuario-nombre-apellido";
-        nombreApellido.textContent = usuarioActual.nombre + " " + usuarioActual.apellido;
-        nombreWrap.appendChild(nombreApellido);
-
-        contUsuario.appendChild(nombreWrap);
+        // Nombre y apellido en negrita pero todo alineado y mismo tamaño
+        const nombreSpan = document.createElement("div");
+        nombreSpan.className = "nombre-apellido";
+        // Usamos strong para nombre+apellido
+        const strongText = document.createElement("strong");
+        strongText.innerText = usuarioActual.nombre + " " + usuarioActual.apellido;
+        nombreSpan.appendChild(strongText);
+        contUsuario.appendChild(nombreSpan);
 
         contenido.appendChild(contUsuario);
 
-        const datos = document.createElement("div");
-        datos.className = "usuario-datos";
-
-        const emailSpan = document.createElement("span");
-        emailSpan.textContent = usuarioActual.email;
-        datos.appendChild(emailSpan);
-
-        const verificadoSpan = document.createElement("span");
-        verificadoSpan.textContent = usuarioActual.emailVerificado ? "✅ Email verificado" : "❌ Email no verificado";
-        datos.appendChild(verificadoSpan);
-
-        const paisSpan = document.createElement("span");
-        paisSpan.textContent = usuarioActual.pais || "";
-        datos.appendChild(paisSpan);
-
+        const datos = document.createElement("div"); datos.className = "usuario-datos";
+        const emailSpan = document.createElement("span"); emailSpan.textContent = usuarioActual.email; datos.appendChild(emailSpan);
+        const verificadoSpan = document.createElement("span"); verificadoSpan.textContent = usuarioActual.emailVerificado ? "✅ Email verificado" : "❌ Email no verificado"; datos.appendChild(verificadoSpan);
+        const paisSpan = document.createElement("span"); paisSpan.textContent = usuarioActual.pais || ""; datos.appendChild(paisSpan);
         contenido.appendChild(datos);
       }
       if (tipo === "metodoPago") {
-        const pagoSpan = document.createElement("div");
-        pagoSpan.style.fontSize = "14px";
-        pagoSpan.style.color = "white";
-        pagoSpan.textContent = `Método de pago: ${usuarioActual.medioPago || "No especificado"}`;
-        contenido.appendChild(pagoSpan);
+        const metodo = document.createElement("div");
+        metodo.style.fontSize = "14px";
+        metodo.textContent = `Método de pago: ${usuarioActual.medioPago || "No especificado"}`;
+        contenido.appendChild(metodo);
       }
       if (tipo === "proximosPagos") {
-        const fechasDiv = document.createElement("div");
-        fechasDiv.style.fontSize = "14px";
-        fechasDiv.style.color = "white";
-        fechasDiv.innerHTML = `Último pago: <b style="font-weight:700;">${usuarioActual.ultimoPago || "No disponible"}</b> &nbsp; Próximo pago: <b style="font-weight:700;">${usuarioActual.proximoPago || "No disponible"}</b>`;
-        contenido.appendChild(fechasDiv);
+        const pagos = document.createElement("div");
+        pagos.style.fontSize = "14px";
+        // mantenemos el estilo pero no cambiamos estructura
+        pagos.innerHTML = `Último pago: <b>${usuarioActual.ultimoPago || "No disponible"}</b> &nbsp; Próximo pago: <b>${usuarioActual.proximoPago || "No disponible"}</b>`;
+        contenido.appendChild(pagos);
       }
 
       inner.appendChild(contenido);
@@ -658,6 +659,7 @@
       construirBotonVolverInContainer(backWrap);
     }
 
+    // Construye botón volver dentro de un contenedor dado
     function construirBotonVolverInContainer(container) {
       container.innerHTML = '';
       const btnVolver = document.createElement("button");
@@ -667,6 +669,7 @@
       container.appendChild(btnVolver);
     }
 
+    // Para compatibilidad: construirBotonVolver si alguien lo llama
     function construirBotonVolver() {
       const btnVolver = document.createElement("button");
       btnVolver.className = "btn-panel";
@@ -676,18 +679,38 @@
       panelMiCuenta.appendChild(btnVolver);
     }
 
-    function ocultarPanel() {
-      panelMiCuenta.classList.remove("visible");
-      panelMiCuenta.innerHTML = "";
-      panelEstado = "cerrado";
-      derecha.style.display = "flex";
-      izquierda.style.display = "flex";
-    }
+    // Oculta panel y restaura barra
+    function ocultarPanel() { panelMiCuenta.classList.remove("visible"); panelMiCuenta.innerHTML = ""; panelMiCuenta.setAttribute("aria-hidden","true"); panelEstado = "cerrado"; derecha.style.display = "flex"; izquierda.style.display = "flex"; }
 
+    // Restauración de sesión si existe
     window.onload = () => {
       const emailGuardado = localStorage.getItem("usuarioLogueado");
       if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) { cargarSesion(usuarios[emailGuardado]); }
+      // Small touch: allow horizontal wheel scroll for scrollable containers on desktop (makes long button rows navigable)
+      enableHorizontalWheelScroll('.scrollable');
     };
+
+    // Utility: enable wheel horizontal scroll on desktop for elements matching selector
+    function enableHorizontalWheelScroll(selector) {
+      try {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+          el.addEventListener('wheel', function(e) {
+            // only when overflow happens
+            if (el.scrollWidth > el.clientWidth) {
+              // horizontal scroll with shift or vertical wheel
+              if (!e.shiftKey && Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+              e.preventDefault();
+              el.scrollLeft += e.deltaY;
+            }
+          }, { passive: false });
+        });
+      } catch (err) { /* no-op */ }
+    }
+
+    // Nota: el contenedor exclusivo usa flechas para navegar y NO activa scroll nativo por diseño pedido.
+    // Se mantiene toda la funcionalidad original de botones y se asegura que los nombres (nombre+apellido)
+    // estén en negrita mientras el resto del texto se muestra normal y alineado, todos con el mismo tamaño.
   </script>
 
 </body>
