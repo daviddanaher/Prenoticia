@@ -1,280 +1,321 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Barra Flotante con Panel Mi Cuenta</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: Arial, sans-serif; background: #fefefe; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Barra Flotante con Panel Mi Cuenta</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Arial, sans-serif; background: #fefefe; }
 
-    /* Barra flotante */
-    .barra-flotante {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 50px;
-      background-color: #f68e03;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0 5px;
-      z-index: 9999;
-      user-select: none;
-      overflow: hidden;
-    }
+  /* Barra flotante */
+  .barra-flotante {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background-color: #f68e03;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 5px;
+    z-index: 9999;
+    user-select: none;
+    overflow: hidden;
+  }
 
-    .barra-contenido {
-      width: 100%;
-      max-width: 1085px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      height: 100%;
-      padding: 0 15px; /* Espaciado lateral en escritorio */
-    }
+  .barra-contenido {
+    width: 100%;
+    max-width: 1085px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    height: 100%;
+    padding: 0 5px; /* margen interno en escritorio */
+  }
 
-    .grupo-botones {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      height: 100%;
-      flex-wrap: nowrap;
-      white-space: nowrap;
-    }
+  .grupo-botones {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
 
-    .btn {
-      background-color: #bb6c00;
-      color: #fff !important; /* Texto blanco */
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
-      font-size: 14px;
-      cursor: pointer;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      transition: background 0.3s ease;
-      white-space: nowrap;
-    }
-    .btn:hover {
-      background-color: #a55a00;
-      text-decoration: none;
-    }
+  .btn {
+    background-color: #bb6c00;
+    color: #fff !important; /* letras blancas */
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: background 0.3s ease;
+    white-space: nowrap;
+  }
+  .btn:hover {
+    background-color: #a55a00;
+    text-decoration: none;
+  }
 
-    .popup-login {
-      position: absolute;
-      top: 50px;
-      left: 0;
-      right: 0;
-      height: 50px;
-      background-color: #f68e03;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 0 10px;
-      animation: fadeIn 0.3s ease;
-      z-index: 10000;
-      user-select: auto;
-    }
+  /* Imagen usuario */
+  .img-usuario {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 6px;
+    border: 2px solid #fff;
+  }
 
-    .popup-login input {
-      padding: 6px;
-      border-radius: 4px;
-      border: none;
-      width: 200px;
-      font-size: 14px;
-    }
+  /* Popup login */
+  .popup-login {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background-color: #f68e03;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 10px;
+    animation: fadeIn 0.3s ease;
+    z-index: 10000;
+    user-select: auto;
+  }
 
-    .mensaje-error {
-      color: white;
-      background-color: red;
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 13px;
-      display: none;
-    }
+  .popup-login input {
+    padding: 6px;
+    border-radius: 4px;
+    border: none;
+    width: 200px;
+    font-size: 14px;
+  }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+  .mensaje-error {
+    color: white;
+    background-color: red;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    display: none;
+  }
 
-    /* Imagen de usuario */
-    .imagen-usuario {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 8px;
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
-    /* PANEL MI CUENTA dentro de la barra */
-    #panelMiCuenta {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 50px;
-      background-color: auto;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 10px;
-      white-space: nowrap;
-      font-size: 14px;
-      overflow-x: auto;
-      transition: opacity 0.35s ease;
-      user-select: none;
-      z-index: 10000;
-      border-radius: 0 4px 4px 0;
-      opacity: 0;
-      pointer-events: none;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
+  /* Panel Mi Cuenta */
+  #panelMiCuenta {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    white-space: nowrap;
+    font-size: 14px;
+    overflow-x: auto;
+    transition: opacity 0.35s ease;
+    user-select: none;
+    z-index: 10000;
+    border-radius: 0 4px 4px 0;
+    opacity: 0;
+    pointer-events: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  #panelMiCuenta.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #panelMiCuenta .btn-panel {
+    background: rgba(255 255 255 / 0.15);
+    border: 1px solid rgba(255 255 255 / 0.3);
+    color: #fff !important; /* letras blancas */
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.25s ease;
+    white-space: nowrap;
+  }
+  #panelMiCuenta .btn-panel:hover {
+    background: rgba(255 255 255 / 0.35);
+  }
+  #panelMiCuenta .valor {
+    margin-left: 6px;
+    font-weight: bold;
+  }
 
-    /* Botones dentro del panel */
-    #panelMiCuenta .btn-panel {
-      background: rgba(255 255 255 / 0.15);
-      border: 1px solid rgba(255 255 255 / 0.3);
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      transition: background-color 0.25s ease;
-      white-space: nowrap;
-      color: #fff !important; /* Texto blanco */
-    }
-    #panelMiCuenta .btn-panel:hover {
-      background: rgba(255 255 255 / 0.35);
-    }
-
-    /* Adaptaciones móviles */
-    @media (max-width: 600px) {
-      .barra-contenido { padding: 0 5px; }
-      .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
-      .popup-login input { width: 140px; }
-      #panelMiCuenta { font-size: 13px; padding: 0 6px; }
-      #panelMiCuenta .btn-panel { padding: 5px 8px; }
-    }
-  </style>
+  /* Responsive */
+  @media (max-width: 600px) {
+    .barra-contenido { padding: 0 3px; }
+    .btn { font-size: 13px; padding: 5px 8px; height: 28px; }
+    .popup-login input { width: 140px; }
+    #panelMiCuenta { font-size: 13px; padding: 0 6px; }
+    #panelMiCuenta .btn-panel { padding: 5px 8px; }
+  }
+</style>
 </head>
 <body>
 
-  <div class="barra-flotante">
-    <div class="barra-contenido" id="barraContenido">
-      <div class="grupo-botones" id="izquierda">
-        <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()">Iniciar sesión</button>
-        <span id="saludoUsuario" style="color:white; font-weight:bold; display:flex; align-items:center;"></span>
-      </div>
-
-      <div class="grupo-botones" id="derecha">
-        <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_blank">Suscribirme</a>
-        <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank">Ayuda</a>
-      </div>
-
-      <div id="panelMiCuenta"></div>
-
-      <div class="popup-login" id="popupLogin">
-        <input type="email" id="inputEmail" placeholder="Tu correo"/>
-        <button class="btn" onclick="validarEmail()">Ingresar</button>
-        <button class="btn" onclick="cerrarLogin()">✕</button>
-        <span class="mensaje-error" id="mensajeError"></span>
-      </div>
+<div class="barra-flotante">
+  <div class="barra-contenido" id="barraContenido">
+    <div class="grupo-botones" id="izquierda">
+      <button class="btn" id="btnIniciarSesion" onclick="mostrarLogin()">Iniciar sesión</button>
+      <span id="saludoUsuario" style="display:flex; align-items:center; color:white; font-weight:bold;"></span>
+    </div>
+    <div class="grupo-botones" id="derecha">
+      <a href="https://www.prenoticia.com/p/suscribirme-prenoticia.html" class="btn" target="_blank">Suscribirme</a>
+      <a href="https://www.prenoticia.com/mi-cuenta-ayuda" class="btn" target="_blank">Ayuda</a>
+    </div>
+    <div id="panelMiCuenta"></div>
+    <div class="popup-login" id="popupLogin">
+      <input type="email" id="inputEmail" placeholder="Tu correo"/>
+      <button class="btn" onclick="validarEmail()">Ingresar</button>
+      <button class="btn" onclick="cerrarLogin()">✕</button>
+      <span class="mensaje-error" id="mensajeError"></span>
     </div>
   </div>
+</div>
 
-  <script>
-    const usuarios = {
-      "mauricioacostacom@gmail.com": {
-        activo: true,
-        nombre: "Mauricio David",
-        apellido: "Acosta Danaher",
-        imagen: "https://pbs.twimg.com/profile_images/1907511710769930240/7oUtDTMv_400x400.jpg",
-        medioPago: "Mercado Pago",
-        ultimoPago: "31 de julio de 2025",
-        proximoPago: "31 de septiembre de 2025",
-        emailVerificado: true
-      },
-      "maximoantonioacosta@hotmail.com": {
-        activo: true,
-        nombre: "Máximo Antonio",
-        apellido: "Acosta",
-        imagen: "https://via.placeholder.com/150",
-        medioPago: "Mercado Pago",
-        ultimoPago: "20 de julio de 2025",
-        proximoPago: "20 de agosto de 2025",
-        emailVerificado: true
-      }
-    };
+<script>
+const usuarios = {
+  "mauricioacostacom@gmail.com": {
+    activo: true,
+    nombre: "Mauricio David",
+    apellido: "Acosta Danaher",
+    email: "mauricioacostacom@gmail.com",
+    medioPago: "Mercado Pago",
+    ultimoPago: "31 de julio de 2025",
+    proximoPago: "31 de septiembre de 2025",
+    pais: "Argentina",
+    emailVerificado: true,
+    foto: "https://pbs.twimg.com/profile_images/1907511710769930240/7oUtDTMv_400x400.jpg"
+  },
+  "maximoantonioacosta@hotmail.com": {
+    activo: true,
+    nombre: "Máximo Antonio",
+    apellido: "Acosta",
+    email: "maximoantonioacosta@hotmail.com",
+    medioPago: "Mercado Pago",
+    ultimoPago: "20 de julio de 2025",
+    proximoPago: "20 de agosto de 2025",
+    pais: "Argentina",
+    emailVerificado: true,
+    foto: "https://i.ibb.co/ZmQshJc/user2.jpg"
+  }
+};
 
-    const saludoUsuario = document.getElementById("saludoUsuario");
-    const btnIniciarSesion = document.getElementById("btnIniciarSesion");
-    const popupLogin = document.getElementById("popupLogin");
-    const inputEmail = document.getElementById("inputEmail");
-    const mensajeError = document.getElementById("mensajeError");
-    const panelMiCuenta = document.getElementById("panelMiCuenta");
-    const derecha = document.getElementById("derecha");
-    const izquierda = document.getElementById("izquierda");
-    let usuarioActual = null;
+const btnIniciarSesion = document.getElementById("btnIniciarSesion");
+const saludoUsuario = document.getElementById("saludoUsuario");
+const popupLogin = document.getElementById("popupLogin");
+const mensajeError = document.getElementById("mensajeError");
+const inputEmail = document.getElementById("inputEmail");
+const panelMiCuenta = document.getElementById("panelMiCuenta");
+const derecha = document.getElementById("derecha");
+const izquierda = document.getElementById("izquierda");
 
-    function mostrarLogin() {
-      mensajeError.style.display = "none";
-      popupLogin.style.display = "flex";
-      inputEmail.focus();
-    }
-    function cerrarLogin() {
-      popupLogin.style.display = "none";
-      inputEmail.value = "";
-    }
-    function validarEmail() {
-      const email = inputEmail.value.trim().toLowerCase();
-      if (usuarios[email] && usuarios[email].activo) {
-        usuarioActual = usuarios[email];
-        localStorage.setItem("usuarioLogueado", email);
-        cargarSesion();
-        cerrarLogin();
-      } else {
-        mensajeError.textContent = "Cuenta no encontrada o inactiva.";
-        mensajeError.style.display = "inline-block";
-      }
-    }
+let panelEstado = "cerrado";
+let usuarioActual = null;
 
-    function cargarSesion() {
-      btnIniciarSesion.style.display = "none";
-      saludoUsuario.innerHTML = `
-        <img src="${usuarioActual.imagen}" class="imagen-usuario" alt="Foto usuario">
-        Hola, ${usuarioActual.nombre.split(" ")[0]}
-      `;
-      derecha.innerHTML = `
-        <button class="btn" onclick="mostrarPanel()">Mi cuenta</button>
-        <button class="btn" onclick="cerrarSesion()">Cerrar sesión</button>
-      `;
-    }
-    function cerrarSesion() {
-      localStorage.removeItem("usuarioLogueado");
-      location.reload();
-    }
-    function mostrarPanel() {
-      alert("Aquí iría la lógica del panel como en tu código original");
-    }
+function mostrarLogin() {
+  mensajeError.style.display = "none";
+  popupLogin.style.display = "flex";
+  inputEmail.focus();
+}
+function cerrarLogin() {
+  popupLogin.style.display = "none";
+  inputEmail.value = "";
+  mensajeError.style.display = "none";
+}
+function validarEmail() {
+  const email = inputEmail.value.trim().toLowerCase();
+  if (!email) {
+    mensajeError.textContent = "Por favor, ingresá tu correo electrónico";
+    mensajeError.style.display = "inline-block";
+    return;
+  }
+  if (usuarios[email] && usuarios[email].activo) {
+    localStorage.setItem("usuarioLogueado", email);
+    cargarSesion(usuarios[email]);
+    cerrarLogin();
+  } else {
+    mensajeError.textContent = "Cuenta inactiva o no encontrada.";
+    mensajeError.style.display = "inline-block";
+  }
+}
 
-    window.onload = () => {
-      const emailGuardado = localStorage.getItem("usuarioLogueado");
-      if (emailGuardado && usuarios[emailGuardado]) {
-        usuarioActual = usuarios[emailGuardado];
-        cargarSesion();
-      }
-    };
-  </script>
+function cargarSesion(usuario) {
+  usuarioActual = usuario;
+  btnIniciarSesion.style.display = "none";
+  const primerNombre = usuario.nombre.split(" ")[0];
+  saludoUsuario.innerHTML = `<img src="${usuario.foto}" class="img-usuario"/>${primerNombre}`;
+  derecha.innerHTML = `
+    <button class="btn" onclick="mostrarPanelInicio()">Mi cuenta</button>
+    <button class="btn" onclick="cerrarSesion()">Cerrar sesión</button>
+  `;
+}
+function cerrarSesion() {
+  localStorage.removeItem("usuarioLogueado");
+  location.reload();
+}
 
+function mostrarPanelInicio() {
+  panelEstado = "inicio";
+  panelMiCuenta.classList.add("visible");
+  panelMiCuenta.innerHTML = `
+    <button class="btn-panel" onclick="construirDetalle('nombre')">Nombre completo</button>
+    <button class="btn-panel" onclick="construirDetalle('metodoPago')">Método de pago</button>
+    <button class="btn-panel" onclick="construirDetalle('proximosPagos')">Próximas fechas de pago</button>
+    <a class="btn-panel" href="https://www.prenoticia.com/baja-suscripción" target="_blank">Dar de baja suscripción</a>
+    <button class="btn-panel" onclick="ocultarPanel()">← Volver</button>
+  `;
+  derecha.style.display = "none";
+  izquierda.style.display = "none";
+}
+function construirDetalle(tipo) {
+  panelEstado = "detalle";
+  panelMiCuenta.innerHTML = "";
+  if (tipo === "nombre") {
+    panelMiCuenta.innerHTML = `Nombre: ${usuarioActual.nombre} ${usuarioActual.apellido} (Email: ${usuarioActual.email})`;
+  } else if (tipo === "metodoPago") {
+    panelMiCuenta.innerHTML = `Método de pago: ${usuarioActual.medioPago || "No especificado"}`;
+  } else if (tipo === "proximosPagos") {
+    panelMiCuenta.innerHTML = `Último pago: <b>${usuarioActual.ultimoPago}</b> - Próximo pago: <b>${usuarioActual.proximoPago}</b>`;
+  }
+  panelMiCuenta.innerHTML += `<button class="btn-panel" onclick="mostrarPanelInicio()">← Volver</button>`;
+}
+function ocultarPanel() {
+  panelMiCuenta.classList.remove("visible");
+  panelMiCuenta.innerHTML = "";
+  derecha.style.display = "flex";
+  izquierda.style.display = "flex";
+}
+
+window.onload = () => {
+  const emailGuardado = localStorage.getItem("usuarioLogueado");
+  if (emailGuardado && usuarios[emailGuardado] && usuarios[emailGuardado].activo) {
+    cargarSesion(usuarios[emailGuardado]);
+  }
+};
+</script>
 </body>
 </html>
